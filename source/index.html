@@ -1,0 +1,88 @@
+<!doctype html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>FHIR Questionnarie Viewer</title>
+
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0], j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-59GQ6JK');</script>
+    <!-- End Google Tag Manager -->
+
+
+    <style id="antiClickjack">
+      body{display:none !important;}
+    </style>
+    <script type="text/javascript">
+      if (self === top) {
+        var antiClickjack = document.getElementById("antiClickjack");
+        antiClickjack.parentNode.removeChild(antiClickjack);
+      } else {
+        top.location = self.location;
+      }
+    </script>
+
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+    <link href="https://fonts.googleapis.com/css?family=Droid+Sans:400,700"
+     rel="stylesheet" type="text/css">
+    <link href="https://clinicaltables.nlm.nih.gov/lforms-versions/20.1.1/styles/lforms.min.css"
+    media="screen" rel="stylesheet" />
+  </head>
+  <body>
+
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-59GQ6JK" height="0" width="0" style="display:none;visibility:hidden" title="googletagmanager" sandbox></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <!--[if lt IE 9]>
+    <p class=alert><b>Note:</b> It appears you are using an unsupported
+     version of the IE browser. This website will not work properly with
+     IE 8 or below.</p>
+    <![endif]-->
+
+    <!-- page header -->
+    <div id="header">
+      <div id="siteNameBox">
+        <span id=siteName>FHIR Quesionnaire Viewer</span><br>
+      </div>
+    </div>
+    <!-- end page header -->
+
+    <div id="form-input">
+
+      <div id="intro">
+        <p>This is a tool that allows you to render a FHIR Quesionnaire, along with a provided FHIR resource package file. </p>
+
+        <p>https://clinicaltables.nlm.nih.gov/loinc_form_definitions?loinc_num=[LOINC_NUM]></p>
+        <p>(https://clinicaltables.nlm.nih.gov/loinc_form_definitions?loinc_num=34565-2)</p>
+        <p>(https://lforms-smart-fhir.nlm.nih.gov/v/r4/fhir/Questionnaire/55418-8-x)</p>
+        <p>(https://lforms-smart-fhir.nlm.nih.gov/v/r4/fhir/Questionnaire/24322-0-x)</p>
+  
+      </div>
+
+      <div id="settings" class="section">
+        <div class="url-row">
+          <div class='url-name'>URL of a FHIR Questionnaire:</div>
+          <div class='url-value'><input type="text" id="urlQuestionnaire"></div>
+        </div>
+        <div class="url-row">
+          <div class='url-name'>URL of a FHIR resource package:</div>
+          <div class='url-value'><input type="text" id="urlPackage"></div>
+        </div>
+      </div>
+      <button id=load onclick="app.viewQuestionnaire()">Load Data</button>
+
+    </div>
+    <div id="lforms"></div>
+
+  <script
+   src="https://clinicaltables.nlm.nih.gov/lforms-versions/24.1.4/lforms.min.js"></script>
+  <script
+   src="https://clinicaltables.nlm.nih.gov/lforms-versions/24.1.4/fhir/R4/lformsFHIR.min.js"></script>
+
+  </body>
+</html>
