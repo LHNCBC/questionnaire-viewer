@@ -32,7 +32,7 @@
     <link href="https://clinicaltables.nlm.nih.gov/lforms-versions/20.1.1/styles/lforms.min.css"
     media="screen" rel="stylesheet" />
   </head>
-  <body onload="app.onPageLoad()">
+  <body>
 
     <!-- Google Tag Manager (noscript) -->
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-59GQ6JK" height="0" width="0" style="display:none;visibility:hidden" title="googletagmanager" sandbox></iframe></noscript>
@@ -55,8 +55,13 @@
     <div id="form-input">
 
       <div id="intro">
-        <p>This is a tool that allows you to render a FHIR Quesionnaire, with a FHIR resource package file that provides resources needed by the Questionaire. </p>       
-        <p>See <a href="https://confluence.hl7.org/display/FHIR/NPM+Package+Specification" target="_blank">https://confluence.hl7.org/display/FHIR/NPM+Package+Specification</a></p>
+        <p>This is a tool that allows you to render a FHIR Quesionnaire, along with a provided FHIR resource package file. </p>
+
+        <p>https://clinicaltables.nlm.nih.gov/loinc_form_definitions?loinc_num=[LOINC_NUM]></p>
+        <p>(https://clinicaltables.nlm.nih.gov/loinc_form_definitions?loinc_num=34565-2)</p>
+        <p>(https://lforms-smart-fhir.nlm.nih.gov/v/r4/fhir/Questionnaire/55418-8-x)</p>
+        <p>(https://lforms-smart-fhir.nlm.nih.gov/v/r4/fhir/Questionnaire/24322-0-x)</p>
+  
       </div>
 
       <div id="settings" class="section">
@@ -69,15 +74,20 @@
           <div class='url-value'><input type="text" id="urlPackage"></div>
         </div>
       </div>
-      <button id="load" onclick="app.viewQuestionnaire()">Load Data</button>
+      <button id=load onclick="app.viewQuestionnaire()">Load Data</button>
 
     </div>
     <div id="lforms"></div>
 
   <!-- <script
-   src="https://clinicaltables.nlm.nih.gov/lforms-versions/24.2.0/lforms.min.js"></script>
+   src="https://clinicaltables.nlm.nih.gov/lforms-versions/24.1.4/lforms.min.js"></script>
   <script
-   src="https://clinicaltables.nlm.nih.gov/lforms-versions/24.2.0/fhir/R4/lformsFHIR.min.js"></script> -->
+   src="https://clinicaltables.nlm.nih.gov/lforms-versions/24.1.4/fhir/R4/lformsFHIR.min.js"></script> -->
+
+   <!-- <script
+   src="lforms.min.js"></script>
+  <script
+   src="lformsFHIR.min.js"></script> -->
 
     <script src="http://localhost:8080/latest/lforms.min.js"></script>
     <script src="http://localhost:8080/latest/fhir/R4/lformsFHIR.min.js"></script>
