@@ -7,12 +7,16 @@ import untar from "js-untar";
 import str2ab from "string-to-arraybuffer";
 
 
-function addForm(dataQ, dataPackage) {
+function addQuestionnaire(dataQ, dataPackage) {
 
   let lfData = dataQ;
   if (lfData.resourceType === "Questionnaire" && lfData.item) {
     // Convert FHIR Questionnaire to LForms format
-    lfData = LForms.FHIR.R4.SDC.convertQuestionnaireToLForms(dataQ);
+    lfData = LForms.FHIR.R4.SDC.convertQuestionnaireToLForms(dataQ);    
+  }
+
+  if (dataPackage) {
+    lfData._packageStore = dataPackage;
   }
     
   // Turn off the top-level questions and controls (optional)
@@ -31,11 +35,21 @@ function loadQuestionnaire(urlQ) {
   fetch(urlQ)
   .then(res => res.json())
   .then(json => {
-    addForm(json)
+    addQuestionnaire(json)
   })
 }
 
-function loadPackage(urlPackage) {
+
+function loadQuestionnaireWithPackage(urlQ, dataPackage) {
+  fetch(urlQ)
+  .then(res => res.json())
+  .then(json => {
+    addQuestionnaire(json, dataPackage)
+  })
+}
+
+  //https://stackoverflow.com/questions/47443433/extracting-gzip-data-in-javascript-with-pako-encoding-issues
+function loadPackageAndQuestionnaire(urlPackage, urlQ) {
 
     var resTypesNeeded = ['ValueSet', 'CodeSystem'];
     var packageFiles = {};
@@ -128,6 +142,7 @@ function loadPackage(urlPackage) {
               }              
             }
             console.log(resources);
+            loadQuestionnaireWithPackage(urlQ, resources)
           });
         };
 
@@ -145,20 +160,22 @@ export function viewQuestionnaire() {
 
   let urlLaunch = window.location.href;
 
-  urlLaunch = urlLaunch + "?q=" + "https://lforms-smart-fhir.nlm.nih.gov/v/r4/fhir/Questionnaire/24322-0-x" + "&p=" + "https://build.fhir.org/ig/HL7/sdc/package.tgz";
+  urlLaunch = urlLaunch + "?q=" + "http://localhost:8080/questionnaire-use-package.json" + "&p=" + "http://localhost:8080/package.json.tgz";
+//  urlLaunch = urlLaunch + "?q=" + "http://localhost:8080/questionnaire-use-package.json" ;
 
   let parsedUrl = parse(urlLaunch, true);
   let urlQuestionnaireParam = parsedUrl && parsedUrl.query ? parsedUrl.query.q : null;
 
-  if (urlQuestionnaireParam) {
-    loadQuestionnaire(urlQuestionnaireParam)
-  }
 
   let urlPackageParam = parsedUrl && parsedUrl.query ? parsedUrl.query.p : null;
 
-  if (urlPackageParam) {
-    loadPackage(urlPackageParam)
+  if (urlQuestionnaireParam && urlPackageParam) {
+    loadPackageAndQuestionnaire(urlPackageParam, urlQuestionnaireParam)
   }
+  else if (urlQuestionnaireParam) {
+    loadQuestionnaire(urlQuestionnaireParam)
+  }
+
 
 
 }
