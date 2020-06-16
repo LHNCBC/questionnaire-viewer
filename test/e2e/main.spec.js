@@ -16,7 +16,7 @@ describe('FHIR Questionnaire Viewer', function() {
       browser.get('/');
     });
     
-    it('should load a Questionnaire without resource pakcage', function () {
+    it('should load a Questionnaire without resource package', function () {
       let urlQ = element(by.id('urlQuestionnaire')),
       urlP =  element(by.id('urlPackage')),
       firstItem =  element(by.id('/q1/1')),
@@ -35,7 +35,7 @@ describe('FHIR Questionnaire Viewer', function() {
     });
   
   
-    it('should load a Questionnaire with a resource packcage', function () {
+    it('should load a Questionnaire with a resource package', function () {
       let urlQ = element(by.id('urlQuestionnaire')),
       urlP =  element(by.id('urlPackage')),
       firstItem =  element(by.id('/q1/1')),
@@ -76,7 +76,7 @@ describe('FHIR Questionnaire Viewer', function() {
     });
   
   
-    it('should load a Questionnaire without resource packcage', function () {
+    it('should load a Questionnaire without resource package', function () {
       let url = browser.baseUrl + '/?q=' + browser.baseUrl + '/questionnaire-use-package.json';
       console.log(url);
       browser.get(url);
@@ -96,7 +96,7 @@ describe('FHIR Questionnaire Viewer', function() {
     });
   
   
-    it('should load a Questionnaire with a resource packcage', function () {
+    it('should load a Questionnaire with a resource package', function () {
       let url = browser.baseUrl + '/?q=' + browser.baseUrl + '/questionnaire-use-package.json' + '&p=' + browser.baseUrl + '/package.json.tgz';
       console.log(url);
       browser.get(url);
