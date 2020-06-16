@@ -10,14 +10,14 @@ import str2ab from "string-to-arraybuffer";
 /**
  * Add a FHIR Questionnaire to page and display it
  * @param {*} dataQ FHIR Questionnaire data (LForms format also supported)
- * @param {*} dataPackage FHIR resource package data
+ * @param {*} dataPackage FHIR resource package data, optional
  */
 function addQuestionnaire(dataQ, dataPackage) {
 
   let lfData = dataQ;
   // Convert FHIR Questionnaire to LForms format
   if (lfData.resourceType === "Questionnaire" && lfData.item) {    
-    lfData = LForms.FHIR.R4.SDC.convertQuestionnaireToLForms(dataQ);    
+    lfData = LForms.Util.convertFHIRQuestionnaireToLForms(dataQ, 'R4');    
   }
 
   // Add resource package if there is one
@@ -38,30 +38,12 @@ function addQuestionnaire(dataQ, dataPackage) {
 
 
 /**
- * Load a FHIR Questionnaire resource data and add it to page
- * @param {*} urlQ URL of a FHIR Qustionnaire resource
- */
-function loadQuestionnaire(urlQ) {
-
-  fetch(urlQ)
-    .then(res => res.json())
-    .then(json => {
-      addQuestionnaire(json)
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
-  
-}
-
-
-/**
  * Load a FHIR Questionnaire resource, along with FHIR resource package data
  * and add it to pageLoad a FHIR resource package.
  * @param {*} urlQ URL of a FHIR Questionnaire resource
- * @param {*} packageData a FHIR resource package
+ * @param {*} packageData a FHIR resource package, optional
  */
-function loadQuestionnaireWithPackage(urlQ, packageData) {
+function loadQuestionnaire(urlQ, packageData) {
 
   fetch(urlQ)  
     .then(res => res.json())
@@ -79,7 +61,7 @@ function loadQuestionnaireWithPackage(urlQ, packageData) {
 /**
  * Load a FHIR resource package file, which is a gzipped tar file. 
  * See https://confluence.hl7.org/display/FHIR/NPM+Package+Specification
- * It then process the file in memory and call loadQuestionnaireWithPackage to add the questionnaire to page.
+ * It then processes the file in memory and call loadQuestionnaire to add the questionnaire to the page.
  * See https://stackoverflow.com/questions/47443433/extracting-gzip-data-in-javascript-with-pako-encoding-issues
  * @param {*} urlPackage URL of a FHIR resource package
  * @param {*} urlQ URL of a FHIR Questionnaire resource
@@ -148,10 +130,10 @@ function loadPackageAndQuestionnaire(urlPackage, urlQ) {
               })
               .then(function(extractedFiles) {
                 // all extracted files
-                let resInIndex = {};
-                // only process the fiels listed in .index.json
+                let resInIndex = {}; // key is the file name, value is file info object
+                // only process the files listed in .index.json
                 let indexFile = extractedFiles.find(function(file) { return file.name === 'package/.index.json';});
-                if (indexFile && indexFile) {
+                if (indexFile) {
                   let indexFileContent = indexFile.readAsJSON();
                   for (let i=0, iLen = indexFileContent.files.length; i<iLen; i++) {
                     let fileInfo = indexFileContent.files[i];
@@ -160,11 +142,11 @@ function loadPackageAndQuestionnaire(urlPackage, urlQ) {
                     }
                   }
 
-                  // remove the 'package/' from the file name and add fiel content
+                  // remove the 'package/' from the file name and add file content
                   for (let j=0, jLen = extractedFiles.length; j<jLen; j++) {
                     let extractedFile = extractedFiles[j];
                     let fileInfo = resInIndex[extractedFile.name.replace(/^package\//, "")];
-                    if (fileInfo) {
+                    if (fileInfo && (fileInfo.resourceType === 'ValueSet' || fileInfo.resourceType === 'CodeSystem')) {
                       fileInfo.fileContent = extractedFile.readAsJSON();
                       packageData.push(fileInfo);                  
                     }  
@@ -175,7 +157,7 @@ function loadPackageAndQuestionnaire(urlPackage, urlQ) {
                 // See https://confluence.hl7.org/display/FHIR/NPM+Package+Specification
 
                 // load questionnaire with the pakcage data
-                loadQuestionnaireWithPackage(urlQ, packageData)
+                loadQuestionnaire(urlQ, packageData)
               })
               .catch(function (err) {
                 console.error('Untar Error', urlPackage, error);

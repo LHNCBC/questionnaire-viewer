@@ -6,7 +6,7 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 
 module.exports = {
-  entry: './source/js/app.js',
+  entry: ['whatwg-fetch', './source/js/app.js'],
   optimization: {
     minimizer: [new TerserJSPlugin({sourceMap: true}), new OptimizeCSSAssetsPlugin({})],
   },
