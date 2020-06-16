@@ -3,7 +3,7 @@ import '../css/app.css';
 
 import parse from "url-parse";
 import pako from "pako";
-import untar from "js-untar";
+import untar from "js-untar-lhc";
 import str2ab from "string-to-arraybuffer";
 
 
