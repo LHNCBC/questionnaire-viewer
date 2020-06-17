@@ -9,7 +9,6 @@ body {
 /* Styles for the header */
 #header {
   position: relative;
-  font-size: 8px;
   font-family: 'Droid Sans',Arial,Helvetica,sans-serif;
   color: #202020;
   border-top: 2px solid #0BACB6;
@@ -22,7 +21,11 @@ body {
   margin-top: 10px;
 }
 #siteName {
-  font-size: 300%;
+  font-size: 150%;
+}
+#tagLine {
+  padding: 6px 2px 0px 0px;
+  font-size: 80%;
 }
 /* End of styles for the header */
 
