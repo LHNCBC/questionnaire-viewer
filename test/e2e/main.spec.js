@@ -23,7 +23,7 @@ describe('FHIR Questionnaire Viewer', function() {
       btn = element(by.id('load'));
   
       urlQ.clear();
-      urlQ.sendKeys("http://localhost:8080/questionnaire-use-package.json");
+      urlQ.sendKeys(browser.baseUrl + '/questionnaire-use-package.json');
       btn.click();
       browser.wait(EC.visibilityOf(firstItem));
       firstItem.click();
@@ -44,9 +44,9 @@ describe('FHIR Questionnaire Viewer', function() {
       btn = element(by.id('load'));
   
       urlQ.clear();
-      urlQ.sendKeys("http://localhost:8080/questionnaire-use-package.json");
+      urlQ.sendKeys(browser.baseUrl + '/questionnaire-use-package.json');
       urlP.clear();
-      urlP.sendKeys("http://localhost:8080/package.json.tgz");
+      urlP.sendKeys(browser.baseUrl + '/package.json.tgz');
       btn.click();
       browser.wait(EC.visibilityOf(firstItem));
   
