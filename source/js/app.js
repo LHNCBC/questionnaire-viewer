@@ -6,6 +6,8 @@ import pako from "pako";
 import untar from "js-untar-lhc";
 import str2ab from "string-to-arraybuffer";
 
+let urlQSelected = null;
+let urlPSelected = null;
 
 /**
  * Add a FHIR Questionnaire to page and display it
@@ -31,8 +33,21 @@ function addQuestionnaire(dataQ, dataPackage) {
     hideFormControls: true
   };
   
+  console.log(urlQSelected)
+  console.log(urlPSelected)
+  
   // Add the form to the page
   LForms.Util.addFormToPage(lfData, "lforms");
+
+  let formNotes = document.getElementById('form-notes');
+  let formRendered = document.querySelector('lforms');
+  if (formRendered && urlQSelected) {
+    let notes = "The following Questionnaire was loaded from " + urlQSelected;
+    if (urlPSelected) {
+      notes += ", with resources from " + urlPSelected;
+    }
+    formNotes.innerHTML  = notes;
+  }
 
 }
 
@@ -188,6 +203,9 @@ export function onPageLoad() {
   let urlQuestionnaireParam = parsedUrl && parsedUrl.query ? parsedUrl.query.q : null;
   let urlPackageParam = parsedUrl && parsedUrl.query ? parsedUrl.query.p : null;
 
+  urlQSelected = urlQuestionnaireParam;
+  urlPSelected = urlPackageParam;
+
   // hide input panel if parameters are provided in URL
   if (urlQuestionnaireParam ) {
     inputPanel.style.display = 'none'
@@ -219,6 +237,9 @@ export function viewQuestionnaire() {
   inputPanel.style.display = ''
   let urlQ = document.getElementById('urlQuestionnaire').value;
   let urlP = document.getElementById('urlPackage').value;
+
+  urlQSelected = urlQ;
+  urlPSelected = urlP;
 
   if (urlQ && urlP) {
     loadPackageAndQuestionnaire(urlP, urlQ)

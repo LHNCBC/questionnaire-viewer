@@ -64,6 +64,10 @@ body {
   border: 2px solid #17b4e3;
   padding-left: 0.25em;
 }
+#param-notes {
+  font-size: 80%;
+  margin: 10px;
+}
 
 #load {
   border-radius: 4px;
@@ -72,3 +76,6 @@ body {
   margin: 10px 5px;
 }
 
+#form-notes {
+  margin: 5px;
+}

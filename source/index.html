@@ -56,7 +56,7 @@
     <div id="form-input">
 
       <div id="intro">
-        <p>This is a tool that allows you to render a FHIR Questionnaire, with a FHIR resource package file that provides resources needed by the Questionnaire. </p>       
+        <p>This is a tool that allows you to render a FHIR Questionnaire (JSON), with a FHIR resource package file that provides resources needed by the Questionnaire. </p>       
         <p>See <a href="https://confluence.hl7.org/display/FHIR/NPM+Package+Specification" target="_blank">https://confluence.hl7.org/display/FHIR/NPM+Package+Specification</a></p>
       </div>
 
@@ -69,16 +69,21 @@
           <div class='url-name'>URL of a FHIR resource package:</div>
           <div class='url-value'><input type="text" id="urlPackage"></div>
         </div>
+
+        <div id="param-notes">*Note: These field values can be specified in the URL. Use URL parameter "q" to provide the URL for the Questionnaire JSON, and parameter "p" to provide the URL for the FHIR resource package (package.tgz).</div>
       </div>
       <button id="load" onclick="app.viewQuestionnaire()">Load Data</button>
 
     </div>
-    <div id="lforms"></div>
+    <div id="form-view">
+      <div id="form-notes"></div>
+      <div id="lforms"></div>
+    </div>
 
-  <script
-   src="https://clinicaltables.nlm.nih.gov/lforms-versions/25.1.1/lforms.min.js"></script>
-  <script
-   src="https://clinicaltables.nlm.nih.gov/lforms-versions/25.1.1/fhir/R4/lformsFHIR.min.js"></script>
+    <script
+    src="https://clinicaltables.nlm.nih.gov/lforms-versions/25.1.1/lforms.min.js"></script>
+    <script
+    src="https://clinicaltables.nlm.nih.gov/lforms-versions/25.1.1/fhir/R4/lformsFHIR.min.js"></script>
 
   </body>
 </html>
