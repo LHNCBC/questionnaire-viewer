@@ -12,7 +12,7 @@ module.exports = {
   },
   output: {
     filename: 'app.[contenthash].js',
-    path: path.resolve(__dirname, 'public'),
+    path: path.resolve(__dirname, 'docs'),
     library: 'app',
     libraryTarget: 'umd'
   },

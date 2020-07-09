@@ -17,7 +17,7 @@ module.exports = merge(common, {
   mode: 'development',
   devtool: 'inline-source-map',
   devServer: {
-    contentBase: ['./public', './test/data/'],
+    contentBase: ['./docs', './test/data/'],
     host: '0.0.0.0',
     //host: 'localhost',
     port: port,
