@@ -3,6 +3,11 @@
 This log documents the significant changes for each release.
 This project follows [Semantic Versioning](http://semver.org/).
 
+## [0.0.4] - 07-28-2020
+### Added
+- Added support for package files that do not contain a .index.json file,
+  which is actually optional.
+s
 ## [0.0.3] - 07-21-2020
 ### Fixed
 - Updated the lforms package to get a needed fix.
