@@ -92,6 +92,7 @@ function loadQuestionnaire(urlQ, packageData) {
 /**
  * Construct a files info array with the same structure of 'files' in .index.json 
 *  where resourceType, url and version are used in LHC-Forms to identifier a resource.
+*  See https://confluence.hl7.org/display/FHIR/NPM+Package+Specification#NPMPackageSpecification-.index.json
  * @param {*} extractedFiles an array of extracted files from a tgz file
  */
 function constructResourcePackage(extractedFiles) {
