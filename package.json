@@ -1,6 +1,6 @@
 {
   "name": "questionnaire-viewer",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "description": "A website for rendering a FHIR Quesitonniare using LHC-Forms widget",
   "main": "app.js",
   "scripts": {

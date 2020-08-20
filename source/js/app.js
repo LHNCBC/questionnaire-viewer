@@ -8,6 +8,7 @@ import str2ab from "string-to-arraybuffer";
 
 let urlQSelected = null;
 let urlPSelected = null;
+let results = {hasUrlQ: false, gotQ: false, hasUrlP: false, gotP: false}
 
 /**
  * Add a FHIR Questionnaire to page and display it
@@ -17,7 +18,7 @@ let urlPSelected = null;
 function addQuestionnaire(dataQ, dataPackage) {
 
   // remove previously added form if any
-  let formContainer = document.getElementById('lforms');
+  let formContainer = document.getElementById('qv-lforms');
   while (formContainer.firstChild) {
     formContainer.removeChild(formContainer.lastChild);
   }
@@ -26,10 +27,13 @@ function addQuestionnaire(dataQ, dataPackage) {
 
     let lfData = dataQ;
     // Convert FHIR Questionnaire to LForms format
-    if (lfData.resourceType === "Questionnaire" && lfData.item) {    
-      lfData = LForms.Util.convertFHIRQuestionnaireToLForms(dataQ, 'R4');    
+    try {
+      lfData = LForms.Util.convertFHIRQuestionnaireToLForms(dataQ);    
+    }  
+    catch(error) {
+      let message = "The Questionnaire loaded from " + urlQSelected + " cannot be prcoessed by LHC-Forms, please check if the Questionnaire is valid or if it has features that LHC-Forms does not support yet.";
+      throw message;
     }
-  
     // Add resource package if there is one
     if (dataPackage) {
       lfData._packageStore = dataPackage;
@@ -42,30 +46,55 @@ function addQuestionnaire(dataQ, dataPackage) {
     };
       
     // Add the form to the page
-    LForms.Util.addFormToPage(lfData, "lforms");
-  
+    try {
+      LForms.Util.addFormToPage(lfData, "qv-lforms");
+    }
+    catch(error) {
+      let message = "The Questionnaire loaded from " + urlQSelected + " cannot be prcoessed by LHC-Forms, please check if the Questionnaire is valid or if it has features that LHC-Forms does not support yet."   
+      throw message;
+    }
   }
+  
+  showInfoMessages();
+}
 
-  let formNotes = document.getElementById('form-notes');
+
+/**
+ * Display information message once a Questionnaire is successfully loaded,
+ * with or without a package file loaded successfully.
+ */
+function showInfoMessages() {
+  let formNotes = document.getElementById('qv-form-notes');
   let formRendered = document.querySelector('lforms');
-  let notes;
-  if (urlQSelected && formRendered) {
+  let notes = "";
+  if (results.hasUrlQ && results.gotQ && formRendered) {
     notes = "The following Questionnaire was loaded from " + urlQSelected;
-    if (urlPSelected) {
-      if (dataPackage) {
+    if (results.hasUrlP) {
+      if (results.gotP) {
         notes += ", with resources from " + urlPSelected;
       }
       else {
-        notes += ", but failed to load resources from " + urlPSelected;
+        switch (results.pErrorLocation) {
+          case "untar":
+            notes += ", but failed to untar the package file from " + urlPSelected;
+            break;
+          case "unzip":
+            notes += ", but failed to unzip the package file from " + urlPSelected;
+            break;
+          case "reader":
+            notes += ", but failed to read the package file from " + urlPSelected;
+            break;
+          case "fetch": 
+            notes += ", but failed to fetch the package file from " + urlPSelected;
+            break;
+          default:
+            notes += ", but failed to fetch/process the package file from " + urlPSelected;
+        }
       }
-    }    
+    }
+    notes += ".";
   }
-  else {
-    notes = "Failed to load the Questionnaire from " + urlQSelected;
-  }
-
   formNotes.innerHTML  = notes;
-
 }
 
 
@@ -80,10 +109,24 @@ function loadQuestionnaire(urlQ, packageData) {
   fetch(urlQ)  
     .then(res => res.json())
     .then(json => {
-      addQuestionnaire(json, packageData)
+      if (json && json.resourceType === "Questionnaire") {
+        results.gotQ = true;
+        addQuestionnaire(json, packageData)
+      }
+      else {
+        console.error('Error:', json);
+        throw "Failed to load the Questionnaire from " + urlQ;
+      }      
     })
     .catch(error => {
       console.error('Error:', error);
+      if (typeof error === 'string') {
+        throw error;
+      }
+      else {
+        throw "Failed to load the Questionnaire from " + urlQ;
+      }
+
     });
 
 }
@@ -135,9 +178,15 @@ function loadPackageAndQuestionnaire(urlPackage, urlQ) {
   
     if (urlPackage) {
       fetch(urlPackage)
-        .then(res => res.blob())
         .then(response => {
-
+          if(!response.ok) {
+            throw response.ok // let catch handle it
+          }
+          else {
+            return response.blob();
+          }
+         })
+         .then(response => {
           let reader = new FileReader();
           reader.onload = function(event){
 
@@ -146,10 +195,8 @@ function loadPackageAndQuestionnaire(urlPackage, urlQ) {
 
               // base64 includes header info "data:application/gzip;base64,"
               // "data:application/gzip;base64,H4sIAAkTyF4AA+3RMQ6DMAyF4cw9RU6A4hDCeSIRdWMgRtDbN4BYkTpAl/9bLFtveJI1F210VXMjV8UQttn2odt3OfaDeCNtjN6JBFfv4mvSWHdnqdNcNE3WmiWN70++yuWpPFHoWVr/b4ek6fXvJgAAAAAAAAAAAAAAAACAX3wBvhQL0QAoAAA="
-
               // remove the header info
               let base64Content = base64.replace(/^data:[\/\+;a-zA-Z0-9\._-]+;base64,/, "");
-
               // convert arraybuffer to string
               const strData = atob(base64Content);
 
@@ -194,51 +241,62 @@ function loadPackageAndQuestionnaire(urlPackage, urlQ) {
                   // }
                 })
                 .then(function(extractedFiles) {
-                  // all extracted files
-                  let resInIndex = {}; // key is the file name, value is file info object
-                  // check if the optional file, .index.json, is in the package
-                  let indexFile = extractedFiles.find(function(file) { return file.name === 'package/.index.json';});
-                  // only process files listed in .index.json if there is a .index.json
-                  if (indexFile) {
-                    let indexFileContent = indexFile.readAsJSON();
-                    for (let i=0, iLen = indexFileContent.files.length; i<iLen; i++) {
-                      let fileInfo = indexFileContent.files[i];
-                      if (fileInfo.resourceType === 'ValueSet' || fileInfo.resourceType === 'CodeSystem') {
-                        resInIndex[fileInfo.filename] = fileInfo;
+                  if (Array.isArray(extractedFiles) && extractedFiles.length > 0) {
+                    // all extracted files
+                    let resInIndex = {}; // key is the file name, value is file info object
+                    // check if the optional file, .index.json, is in the package
+                    let indexFile = extractedFiles.find(function(file) { return file.name === 'package/.index.json';});
+                    // only process files listed in .index.json if there is a .index.json
+                    if (indexFile) {
+                      let indexFileContent = indexFile.readAsJSON();
+                      for (let i=0, iLen = indexFileContent.files.length; i<iLen; i++) {
+                        let fileInfo = indexFileContent.files[i];
+                        if (fileInfo.resourceType === 'ValueSet' || fileInfo.resourceType === 'CodeSystem') {
+                          resInIndex[fileInfo.filename] = fileInfo;
+                        }
                       }
+                      // remove the 'package/' from the file name and add file content
+                      for (let j=0, jLen = extractedFiles.length; j<jLen; j++) {
+                        let extractedFile = extractedFiles[j];
+                        let fileInfo = resInIndex[extractedFile.name.replace(/^package\//, "")];
+                        if (fileInfo && (fileInfo.resourceType === 'ValueSet' || fileInfo.resourceType === 'CodeSystem')) {
+                          fileInfo.fileContent = extractedFile.readAsJSON();
+                          packageData.push(fileInfo);                  
+                        }  
+                      }              
                     }
-                    // remove the 'package/' from the file name and add file content
-                    for (let j=0, jLen = extractedFiles.length; j<jLen; j++) {
-                      let extractedFile = extractedFiles[j];
-                      let fileInfo = resInIndex[extractedFile.name.replace(/^package\//, "")];
-                      if (fileInfo && (fileInfo.resourceType === 'ValueSet' || fileInfo.resourceType === 'CodeSystem')) {
-                        fileInfo.fileContent = extractedFile.readAsJSON();
-                        packageData.push(fileInfo);                  
-                      }  
-                    }              
-                  }
-                  // process all .json files in the /package directory if there is no .index.json
-                  else {
-                    packageData = constructResourcePackage(extractedFiles)
-                  }
-                  
-                  // packageData has the same structure of the .index.json file in the package file, with an extra fileContent
-                  // that contains the data in each resource file.
-                  // See https://confluence.hl7.org/display/FHIR/NPM+Package+Specification
+                    // process all .json files in the /package directory if there is no .index.json
+                    else {
+                      packageData = constructResourcePackage(extractedFiles)
+                    }
+                    
+                    // packageData has the same structure of the .index.json file in the package file, with an extra fileContent
+                    // that contains the data in each resource file.
+                    // See https://confluence.hl7.org/display/FHIR/NPM+Package+Specification
 
-                  // load questionnaire with the pakcage data
-                  loadQuestionnaire(urlQ, packageData)
+                    // load questionnaire with the pakcage data
+                    results.gotP = true;
+                    loadQuestionnaire(urlQ, packageData)
+                  }
+                  else {
+                    results.gotP = false;
+                    results.pErrorLocation = "untar";
+                    loadQuestionnaire(urlQ, packageData)
+                  }
                 })
-                .catch(function (err) {
+                .catch(function (error) {
                   console.error('Untar Error', urlPackage, error);
+                  results.gotP = false;
+                  results.pErrorLocation = "untar";
                   // try to load the questionnaire without the package
                   loadQuestionnaire(urlQ)
                 });
 
             }
-            catch(e) {
-              console.log("Unable to process the resource package file.")
-              console.log(e)
+            catch(error) {
+              console.log("Unzip Error", urlPackage, error)
+              results.gotP = false;
+              results.pErrorLocation = "unzip";
               // try to load the questionnaire without the package
               loadQuestionnaire(urlQ)
             }
@@ -247,14 +305,18 @@ function loadPackageAndQuestionnaire(urlPackage, urlQ) {
 
           reader.onerror = function (error) {
             console.error('FileReader Error', urlPackage, error);
+            results.gotP = false;            
+            esults.pErrorLocation = "reader";
             // try to load the questionnaire without the package
             loadQuestionnaire(urlQ)
           };
 
-          reader.readAsDataURL(response);
+          reader.readAsDataURL(response);          
         })
         .catch(error => {
           console.error('Fetch Error:', urlPackage, error);
+          results.gotP = false;
+          results.pErrorLocation = "fetch"
           // try to load the questionnaire without the package
           loadQuestionnaire(urlQ)
         });
@@ -263,28 +325,54 @@ function loadPackageAndQuestionnaire(urlPackage, urlQ) {
 
 
 /**
+ * A catch-all error handler that all errors/excaptions that are not caught
+ * It also catches expections from promise.
+ * @param {} eventOrMessage an error message or object
+ */
+function onError(eventOrMessage) {
+  let message = eventOrMessage && eventOrMessage.reason ? eventOrMessage.reason : eventOrMessage;
+  if (message) {
+    let divError = document.getElementById('qv-error');
+    divError.style.display = '';
+    let divMessage = document.getElementById('qv-error-message');
+    divMessage.innerHTML = message;
+  }
+}
+
+
+/**
  * Page's onLoad event hanlder. Check URL parameters to load FHIR Questionnarie and resource package
  */
 export function onPageLoad() {
+
+  // add a catch-all-error handler
+  window.addEventListener("error", onError);
+  window.addEventListener("unhandledrejection", onError); //catches exception from promise
+  
   // http://localhost:4029/?q=http://localhost:8080/questionnaire-use-package.json&p=http://localhost:8080/package.json.tgz
-  let inputPanel = document.getElementById('form-input');
+  let inputPanel = document.getElementById('qv-form-input');
   let urlLaunch = window.location.href;
   let parsedUrl = parse(urlLaunch, true);
   let urlQuestionnaireParam = parsedUrl && parsedUrl.query ? parsedUrl.query.q : null;
   let urlPackageParam = parsedUrl && parsedUrl.query ? parsedUrl.query.p : null;
+  
+  results = {hasUrlQ: false, gotQ: false, hasUrlP: false, gotP: false};
 
   urlQSelected = urlQuestionnaireParam;
   urlPSelected = urlPackageParam;
 
-  // hide input panel if parameters are provided in URL
-  if (urlQuestionnaireParam ) {
-    inputPanel.style.display = 'none'
+  // show input panel if parameters are not provided in URL
+  if (!urlQuestionnaireParam ) {
+    inputPanel.style.display = ''
   }
 
   if (urlQuestionnaireParam && urlPackageParam) {
+    results.hasUrlP = true;
+    results.hasUrlQ = true;
     loadPackageAndQuestionnaire(urlPackageParam, urlQuestionnaireParam)
   }
   else if (urlQuestionnaireParam) {
+    results.hasUrlQ = true;
     loadQuestionnaire(urlQuestionnaireParam)
   }
 
@@ -302,20 +390,26 @@ export function viewQuestionnaire() {
   // https://lforms-smart-fhir.nlm.nih.gov/v/r4/fhir/Questionnaire/55418-8-x
   // https://lforms-smart-fhir.nlm.nih.gov/v/r4/fhir/Questionnaire/24322-0-x
 
-  let inputPanel = document.getElementById('form-input');
+  let inputPanel = document.getElementById('qv-form-input');
 
   inputPanel.style.display = ''
   let urlQ = document.getElementById('urlQuestionnaire').value;
   let urlP = document.getElementById('urlPackage').value;
 
+  results = {hasUrlQ: false, gotQ: false, hasUrlP: false, gotP: false};
+
   urlQSelected = urlQ;
   urlPSelected = urlP;
 
   if (urlQ && urlP) {
+    results.hasUrlP = true;
+    results.hasUrlQ = true;
     loadPackageAndQuestionnaire(urlP, urlQ)
   }
   else if (urlQ) {
+    results.hasUrlQ = true;
     loadQuestionnaire(urlQ)
+    
   }
 
 }

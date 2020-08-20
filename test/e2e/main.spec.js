@@ -20,8 +20,8 @@ describe('FHIR Questionnaire Viewer', function() {
       let urlQ = element(by.id('urlQuestionnaire')),
       urlP =  element(by.id('urlPackage')),
       firstItem =  element(by.id('/q1/1')),
-      btn = element(by.id('load')),
-      notes = element(by.id('form-notes'));
+      btn = element(by.id('qv-btn-load')),
+      notes = element(by.id('qv-form-notes'));
   
       urlQ.clear();
       urlQ.sendKeys(browser.baseUrl + '/questionnaire-use-package.json');
@@ -44,8 +44,8 @@ describe('FHIR Questionnaire Viewer', function() {
       firstItem =  element(by.id('/q1/1')),
       secondItem =  element(by.id('/q2/1')),
       thirdItem =  element(by.id('/q3/1')),
-      btn = element(by.id('load')),
-      notes = element(by.id('form-notes'));
+      btn = element(by.id('qv-btn-load')),
+      notes = element(by.id('qv-form-notes'));
 
       urlQ.clear();
       urlQ.sendKeys(browser.baseUrl + '/questionnaire-use-package.json');
@@ -75,8 +75,8 @@ describe('FHIR Questionnaire Viewer', function() {
       firstItem =  element(by.id('/q1/1')),
       secondItem =  element(by.id('/q2/1')),
       thirdItem =  element(by.id('/q3/1')),
-      btn = element(by.id('load')),
-      notes = element(by.id('form-notes'));
+      btn = element(by.id('qv-btn-load')),
+      notes = element(by.id('qv-form-notes'));
 
       urlQ.clear();
       urlQ.sendKeys(browser.baseUrl + '/questionnaire-use-package.json');
@@ -114,14 +114,14 @@ describe('FHIR Questionnaire Viewer', function() {
   
     it('should load a Questionnaire without resource package', function () {
 
-      let notes = element(by.id('form-notes'));
+      let notes = element(by.id('qv-form-notes'));
     
       let url = browser.baseUrl + '/?q=' + browser.baseUrl + '/questionnaire-use-package.json';
       console.log(url);
       browser.get(url);
 
       let firstItem =  element(by.id('/q1/1')),
-      inputPanel = element(by.id('form-input'));
+      inputPanel = element(by.id('qv-form-input'));
   
       browser.wait(EC.visibilityOf(firstItem));
       firstItem.click();
@@ -146,8 +146,8 @@ describe('FHIR Questionnaire Viewer', function() {
       let firstItem =  element(by.id('/q1/1')),
       secondItem =  element(by.id('/q2/1')),
       thirdItem =  element(by.id('/q3/1')),
-      inputPanel = element(by.id('form-input')),
-      notes = element(by.id('form-notes'));
+      inputPanel = element(by.id('qv-form-input')),
+      notes = element(by.id('qv-form-notes'));
       
       browser.wait(EC.visibilityOf(firstItem));
   
@@ -177,8 +177,8 @@ describe('FHIR Questionnaire Viewer', function() {
       let firstItem =  element(by.id('/q1/1')),
       secondItem =  element(by.id('/q2/1')),
       thirdItem =  element(by.id('/q3/1')),
-      inputPanel = element(by.id('form-input')),
-      notes = element(by.id('form-notes'));
+      inputPanel = element(by.id('qv-form-input')),
+      notes = element(by.id('qv-form-notes'));
       
       browser.wait(EC.visibilityOf(firstItem));
   
