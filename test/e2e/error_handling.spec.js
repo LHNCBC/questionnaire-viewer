@@ -5,7 +5,7 @@ const { $, browser } = require("protractor");
 const os = require("os"),
   EC = protractor.ExpectedConditions;
 
-fdescribe('FHIR Questionnaire Viewer', function() {
+describe('FHIR Questionnaire Viewer', function() {
 
   describe('Error handling when URLs are provided on page', function() {
     beforeAll(function () {

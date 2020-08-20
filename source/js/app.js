@@ -31,7 +31,9 @@ function addQuestionnaire(dataQ, dataPackage) {
       lfData = LForms.Util.convertFHIRQuestionnaireToLForms(dataQ);    
     }  
     catch(error) {
+      console.error('Error:', error);
       let message = "The Questionnaire loaded from " + urlQSelected + " cannot be prcoessed by LHC-Forms, please check if the Questionnaire is valid or if it has features that LHC-Forms does not support yet.";
+      results.gotQ = false;
       throw message;
     }
     // Add resource package if there is one
@@ -50,6 +52,8 @@ function addQuestionnaire(dataQ, dataPackage) {
       LForms.Util.addFormToPage(lfData, "qv-lforms");
     }
     catch(error) {
+      console.error('Error:', error);
+      results.gotQ = false;
       let message = "The Questionnaire loaded from " + urlQSelected + " cannot be prcoessed by LHC-Forms, please check if the Questionnaire is valid or if it has features that LHC-Forms does not support yet."   
       throw message;
     }
@@ -339,6 +343,17 @@ function onError(eventOrMessage) {
   }
 }
 
+/**
+ * Clear up messgaes before next Questionnaire is loaded
+ */
+function resetMessages() {
+  let divError = document.getElementById('qv-error');
+  if (divError) divError.style.display = 'none';
+  let divMessage = document.getElementById('qv-error-message');
+  if (divMessage) divMessage.innerHTML ='';
+  let formNotes = document.getElementById('qv-form-notes');
+  if (formNotes) formNotes.innerHTML = ''
+}
 
 /**
  * Page's onLoad event hanlder. Check URL parameters to load FHIR Questionnarie and resource package
@@ -349,6 +364,9 @@ export function onPageLoad() {
   window.addEventListener("error", onError);
   window.addEventListener("unhandledrejection", onError); //catches exception from promise
   
+  // reset messages
+  resetMessages();
+
   // http://localhost:4029/?q=http://localhost:8080/questionnaire-use-package.json&p=http://localhost:8080/package.json.tgz
   let inputPanel = document.getElementById('qv-form-input');
   let urlLaunch = window.location.href;
@@ -389,6 +407,9 @@ export function viewQuestionnaire() {
   // https://clinicaltables.nlm.nih.gov/loinc_form_definitions?loinc_num=34565-2
   // https://lforms-smart-fhir.nlm.nih.gov/v/r4/fhir/Questionnaire/55418-8-x
   // https://lforms-smart-fhir.nlm.nih.gov/v/r4/fhir/Questionnaire/24322-0-x
+
+  // reset messages
+  resetMessages();
 
   let inputPanel = document.getElementById('qv-form-input');
 

@@ -36,8 +36,38 @@ describe('FHIR Questionnaire Viewer', function() {
       expect(notes.getText()).toContain('/questionnaire-use-package.json');
   
     });
+          
+    it('should load both R4 and STU3 versions of Questionnaire', function () {
+      let urlQ = element(by.id('urlQuestionnaire')),
+      urlP =  element(by.id('urlPackage')),
+      dropdown =  element(by.id('/8352-7/1')),
+      btn = element(by.id('qv-btn-load')),
+      notes = element(by.id('qv-form-notes'));
   
+      // r4
+      urlQ.clear();
+      urlQ.sendKeys(browser.baseUrl + '/weightHeightQuestionnaire_r4.json');
+      btn.click();
+      browser.wait(EC.visibilityOf(dropdown));
+      dropdown.click();
+      dropdown.sendKeys(protractor.Key.ARROW_DOWN);
+      dropdown.sendKeys(protractor.Key.TAB);
+      expect(dropdown.getAttribute('value')).toBe('Underwear or less');
+      expect(notes.getText()).toContain('/weightHeightQuestionnaire_r4.json');
   
+      // stu3
+      urlQ.clear();
+      urlQ.sendKeys(browser.baseUrl + '/weightHeightQuestionnaire_stu3.json');
+      btn.click();
+      browser.wait(EC.visibilityOf(dropdown));
+      dropdown.click();
+      dropdown.sendKeys(protractor.Key.ARROW_DOWN);
+      dropdown.sendKeys(protractor.Key.TAB);
+      expect(dropdown.getAttribute('value')).toBe('Underwear or less');
+      expect(notes.getText()).toContain('/weightHeightQuestionnaire_stu3.json');
+    });
+
+
     it('should load a Questionnaire with a resource package', function () {
       let urlQ = element(by.id('urlQuestionnaire')),
       urlP =  element(by.id('urlPackage')),
@@ -137,6 +167,34 @@ describe('FHIR Questionnaire Viewer', function() {
 
     });
   
+    it('should load both R4 and STU3 versions of Questionnaire', function () {
+      let dropdown =  element(by.id('/8352-7/1')),
+      notes = element(by.id('qv-form-notes'));
+
+      let url = browser.baseUrl + '/?q=' + browser.baseUrl + '/weightHeightQuestionnaire_r4.json';
+      browser.get(url);
+
+      // r4
+      browser.wait(EC.visibilityOf(dropdown));
+      dropdown.click();
+      dropdown.sendKeys(protractor.Key.ARROW_DOWN);
+      dropdown.sendKeys(protractor.Key.TAB);
+      expect(dropdown.getAttribute('value')).toBe('Underwear or less');
+      expect(notes.getText()).toContain('/weightHeightQuestionnaire_r4.json');
+  
+      // stu3
+      url = browser.baseUrl + '/?q=' + browser.baseUrl + '/weightHeightQuestionnaire_stu3.json';
+      browser.get(url);
+
+      browser.wait(EC.visibilityOf(dropdown));
+      dropdown.click();
+      dropdown.sendKeys(protractor.Key.ARROW_DOWN);
+      dropdown.sendKeys(protractor.Key.TAB);
+      expect(dropdown.getAttribute('value')).toBe('Underwear or less');
+      expect(notes.getText()).toContain('/weightHeightQuestionnaire_stu3.json');
+    });
+
+
   
     it('should load a Questionnaire with a resource package', function () {
       let url = browser.baseUrl + '/?q=' + browser.baseUrl + '/questionnaire-use-package.json' + '&p=' + browser.baseUrl + '/package.json.tgz';
