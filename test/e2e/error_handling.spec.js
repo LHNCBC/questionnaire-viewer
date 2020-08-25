@@ -60,10 +60,21 @@ describe('FHIR Questionnaire Viewer', function() {
 
     });
 
+
+    it('should show related errors when a Questionnaire URL is empty', function () {
+      let urlQ = element(by.id('urlQuestionnaire')),
+      btn = element(by.id('qv-btn-load'));
+      urlQ.clear();
+      btn.click();
+      expect(error.isDisplayed()).toBe(true);
+      expect(error.getText()).toContain("Please provide the URL of a FHIR Questionnaire")
+
+    });
+
     it('should show related errors when a Questionnaire failed to load', function () {
       loadQuestionnaire("invalid_url.json")
       expect(error.isDisplayed()).toBe(true);
-      expect(error.getText()).toContain("Failed to load the Questionnaire from")
+      expect(error.getText()).toContain("No data returned from")
       expect(error.getText()).toContain("invalid_url.json")
 
     });
@@ -71,7 +82,7 @@ describe('FHIR Questionnaire Viewer', function() {
     it('should show related errors when a url for Questionnaire returns a resource that is not a Questionnaire', function () {
       loadQuestionnaire("questionnaire-use-package-invalid-not-questionnaire.json")
       expect(error.isDisplayed()).toBe(true);
-      expect(error.getText()).toContain("Failed to load the Questionnaire from")
+      expect(error.getText()).toContain("No Questionnaire (JSON) returned from")
       expect(error.getText()).toContain("questionnaire-use-package-invalid-not-questionnaire.json")
 
     });
@@ -99,23 +110,23 @@ describe('FHIR Questionnaire Viewer', function() {
       // don't know how to test it yet
     });
 
-    it('should show related info message when Questionaire is fine, but the package file is a currupted gzip file', function () {
-      loadQuestionnaire("questionnaire-use-package.json", "package.json.currupted_gzip.tgz")
+    it('should show related info message when Questionaire is fine, but the package file is a corrupted gzip file', function () {
+      loadQuestionnaire("questionnaire-use-package.json", "package.json.corrupted_gzip.tgz")
       expect(error.isDisplayed()).toBeFalsy();
       expect(info.getText()).toContain("The following Questionnaire was loaded from");
       expect(info.getText()).toContain("questionnaire-use-package.json")
       expect(info.getText()).toContain("but failed to unzip the package file from");
-      expect(info.getText()).toContain("package.json.currupted_gzip.tgz");
+      expect(info.getText()).toContain("package.json.corrupted_gzip.tgz");
 
     });
 
-    it('should show related info message when Questionaire is fine, but the package file contains a currupted tar file', function () {
-      loadQuestionnaire("questionnaire-use-package.json", "package.json.currupted_tar.tgz")
+    it('should show related info message when Questionaire is fine, but the package file contains a corrupted tar file', function () {
+      loadQuestionnaire("questionnaire-use-package.json", "package.json.corrupted_tar.tgz")
       expect(error.isDisplayed()).toBeFalsy();
       expect(info.getText()).toContain("The following Questionnaire was loaded from");
       expect(info.getText()).toContain("questionnaire-use-package.json")
       expect(info.getText()).toContain("but failed to untar the package file from");
-      expect(info.getText()).toContain("package.json.currupted_tar.tgz");
+      expect(info.getText()).toContain("package.json.corrupted_tar.tgz");
 
     });
 
@@ -175,7 +186,7 @@ describe('FHIR Questionnaire Viewer', function() {
     it('should show related errors when a Questionnaire failed to load', function () {
       loadQuestionnaire("invalid_url.json")
       expect(error.isDisplayed()).toBe(true);
-      expect(error.getText()).toContain("Failed to load the Questionnaire from")
+      expect(error.getText()).toContain("No data returned from")
       expect(error.getText()).toContain("invalid_url.json")
       expect(inputs.isDisplayed()).toBeFalsy();
 
@@ -184,7 +195,7 @@ describe('FHIR Questionnaire Viewer', function() {
     it('should show related errors when a url for Questionnaire returns a resource that is not a Questionnaire', function () {
       loadQuestionnaire("questionnaire-use-package-invalid-not-questionnaire.json")
       expect(error.isDisplayed()).toBe(true);
-      expect(error.getText()).toContain("Failed to load the Questionnaire from")
+      expect(error.getText()).toContain("No Questionnaire (JSON) returned from")
       expect(error.getText()).toContain("questionnaire-use-package-invalid-not-questionnaire.json")
       expect(inputs.isDisplayed()).toBeFalsy();
 
@@ -214,24 +225,24 @@ describe('FHIR Questionnaire Viewer', function() {
       // don't know how to test it yet
     });
 
-    it('should show related info message when Questionaire is fine, but the package file is a currupted gzip file', function () {
-      loadQuestionnaire("questionnaire-use-package.json", "package.json.currupted_gzip.tgz")
+    it('should show related info message when Questionaire is fine, but the package file is a corrupted gzip file', function () {
+      loadQuestionnaire("questionnaire-use-package.json", "package.json.corrupted_gzip.tgz")
       expect(error.isDisplayed()).toBeFalsy();
       expect(info.getText()).toContain("The following Questionnaire was loaded from");
       expect(info.getText()).toContain("questionnaire-use-package.json")
       expect(info.getText()).toContain("but failed to unzip the package file from");
-      expect(info.getText()).toContain("package.json.currupted_gzip.tgz");
+      expect(info.getText()).toContain("package.json.corrupted_gzip.tgz");
       expect(inputs.isDisplayed()).toBeFalsy();
 
     });
 
-    it('should show related info message when Questionaire is fine, but the package file contains a currupted tar file', function () {
-      loadQuestionnaire("questionnaire-use-package.json", "package.json.currupted_tar.tgz")
+    it('should show related info message when Questionaire is fine, but the package file contains a corrupted tar file', function () {
+      loadQuestionnaire("questionnaire-use-package.json", "package.json.corrupted_tar.tgz")
       expect(error.isDisplayed()).toBeFalsy();
       expect(info.getText()).toContain("The following Questionnaire was loaded from");
       expect(info.getText()).toContain("questionnaire-use-package.json")
       expect(info.getText()).toContain("but failed to untar the package file from");
-      expect(info.getText()).toContain("package.json.currupted_tar.tgz");
+      expect(info.getText()).toContain("package.json.corrupted_tar.tgz");
       expect(inputs.isDisplayed()).toBeFalsy();
 
     });

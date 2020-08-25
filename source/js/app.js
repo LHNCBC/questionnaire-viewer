@@ -17,13 +17,11 @@ let results = {hasUrlQ: false, gotQ: false, hasUrlP: false, gotP: false}
  */
 function addQuestionnaire(dataQ, dataPackage) {
 
-  // remove previously added form if any
-  let formContainer = document.getElementById('qv-lforms');
-  while (formContainer.firstChild) {
-    formContainer.removeChild(formContainer.lastChild);
-  }
-
   if (dataQ && dataQ.resourceType === "Questionnaire") {
+
+    let message = "The Questionnaire loaded from " + urlQSelected + 
+    " cannot be prcoessed by LHC-Forms, please check if the Questionnaire is valid" +
+    " or if it has features that LHC-Forms does not support yet.";
 
     let lfData = dataQ;
     // Convert FHIR Questionnaire to LForms format
@@ -32,9 +30,8 @@ function addQuestionnaire(dataQ, dataPackage) {
     }  
     catch(error) {
       console.error('Error:', error);
-      let message = "The Questionnaire loaded from " + urlQSelected + " cannot be prcoessed by LHC-Forms, please check if the Questionnaire is valid or if it has features that LHC-Forms does not support yet.";
       results.gotQ = false;
-      throw message;
+      showErrorMessages(message)
     }
     // Add resource package if there is one
     if (dataPackage) {
@@ -54,8 +51,7 @@ function addQuestionnaire(dataQ, dataPackage) {
     catch(error) {
       console.error('Error:', error);
       results.gotQ = false;
-      let message = "The Questionnaire loaded from " + urlQSelected + " cannot be prcoessed by LHC-Forms, please check if the Questionnaire is valid or if it has features that LHC-Forms does not support yet."   
-      throw message;
+      showErrorMessages(message)
     }
   }
   
@@ -98,7 +94,7 @@ function showInfoMessages() {
     }
     notes += ".";
   }
-  formNotes.innerHTML  = notes;
+  formNotes.textContent  = notes;
 }
 
 
@@ -111,24 +107,30 @@ function showInfoMessages() {
 function loadQuestionnaire(urlQ, packageData) {
 
   fetch(urlQ)  
-    .then(res => res.json())
+    .then(res => {
+      if (res.ok) {
+        return res.json()
+      }
+      else {
+        return Promise.reject("No data returned from " + urlQ)
+      }
+    })
     .then(json => {
       if (json && json.resourceType === "Questionnaire") {
         results.gotQ = true;
         addQuestionnaire(json, packageData)
       }
       else {
-        console.error('Error:', json);
-        throw "Failed to load the Questionnaire from " + urlQ;
+        return Promise.reject("No Questionnaire (JSON) returned from " + urlQ)
       }      
     })
     .catch(error => {
       console.error('Error:', error);
       if (typeof error === 'string') {
-        throw error;
+        showErrorMessages(error);
       }
       else {
-        throw "Failed to load the Questionnaire from " + urlQ;
+        showErrorMessages("Failed to load Questionnaire from " + urlQ);
       }
 
     });
@@ -237,13 +239,13 @@ function loadPackageAndQuestionnaire(urlPackage, urlQ) {
               //    where the side of charCodes could be too big.
               // 2) Uncaught SyntaxError: Unexpected token ï in JSON at position 0
               untar(abData)
-                .progress(function(extractedFile) {
+                // .progress(function(extractedFile) {
                   // do something with a single extracted file
                   //let fileStrContent = extractedFile.readAsString();
                   // if (extractedFile && extractedFile.name.match(/\.json$/)) {              
                   //   packageFiles[extractedFile.name] = extractedFile.readAsJSON();
                   // }
-                })
+                // })
                 .then(function(extractedFiles) {
                   if (Array.isArray(extractedFiles) && extractedFiles.length > 0) {
                     // all extracted files
@@ -329,30 +331,36 @@ function loadPackageAndQuestionnaire(urlPackage, urlQ) {
 
 
 /**
- * A catch-all error handler that all errors/excaptions that are not caught
- * It also catches expections from promise.
- * @param {} eventOrMessage an error message or object
+ * Show error messages
+ * @param {} message an error message
  */
-function onError(eventOrMessage) {
-  let message = eventOrMessage && eventOrMessage.reason ? eventOrMessage.reason : eventOrMessage;
+function showErrorMessages(message) {
   if (message) {
     let divError = document.getElementById('qv-error');
     divError.style.display = '';
     let divMessage = document.getElementById('qv-error-message');
-    divMessage.innerHTML = message;
+    divMessage.textContent = message;
   }
 }
 
+
 /**
- * Clear up messgaes before next Questionnaire is loaded
+ * Clear up messgaes and previously loaded form before next Questionnaire is loaded
  */
-function resetMessages() {
+function resetPage() {
   let divError = document.getElementById('qv-error');
   if (divError) divError.style.display = 'none';
   let divMessage = document.getElementById('qv-error-message');
-  if (divMessage) divMessage.innerHTML ='';
+  if (divMessage) divMessage.textContent ='';
   let formNotes = document.getElementById('qv-form-notes');
-  if (formNotes) formNotes.innerHTML = ''
+  if (formNotes) formNotes.textContent = ''
+
+  // remove previously added form if any
+  let formContainer = document.getElementById('qv-lforms');
+  while (formContainer.firstChild) {
+    formContainer.removeChild(formContainer.lastChild);
+  }
+  
 }
 
 /**
@@ -360,12 +368,7 @@ function resetMessages() {
  */
 export function onPageLoad() {
 
-  // add a catch-all-error handler
-  window.addEventListener("error", onError);
-  window.addEventListener("unhandledrejection", onError); //catches exception from promise
-  
-  // reset messages
-  resetMessages();
+  resetPage();
 
   // http://localhost:4029/?q=http://localhost:8080/questionnaire-use-package.json&p=http://localhost:8080/package.json.tgz
   let inputPanel = document.getElementById('qv-form-input');
@@ -408,8 +411,7 @@ export function viewQuestionnaire() {
   // https://lforms-smart-fhir.nlm.nih.gov/v/r4/fhir/Questionnaire/55418-8-x
   // https://lforms-smart-fhir.nlm.nih.gov/v/r4/fhir/Questionnaire/24322-0-x
 
-  // reset messages
-  resetMessages();
+  resetPage();
 
   let inputPanel = document.getElementById('qv-form-input');
 
@@ -429,8 +431,10 @@ export function viewQuestionnaire() {
   }
   else if (urlQ) {
     results.hasUrlQ = true;
-    loadQuestionnaire(urlQ)
-    
+    loadQuestionnaire(urlQ)    
+  }
+  else {
+    showErrorMessages("Please provide the URL of a FHIR Questionnaire.")
   }
 
 }
