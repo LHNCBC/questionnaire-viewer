@@ -60,6 +60,21 @@ function addQuestionnaire(dataQ, dataPackage) {
 
 
 /**
+ * Show or hide the loading message
+ * @param {*} show a flag decides whether to show or hide the loading message
+ */
+function setLoadingMessage(show) {
+  let loadingEle = document.getElementById('qv-loading');
+  if (show) {
+    loadingEle.style.display = '';
+  }
+  else {
+    loadingEle.style.display = 'none';
+  }
+}
+
+
+/**
  * Display information message once a Questionnaire is successfully loaded,
  * with or without a package file loaded successfully.
  */
@@ -95,6 +110,8 @@ function showInfoMessages() {
     notes += ".";
   }
   formNotes.textContent  = notes;
+
+  setLoadingMessage(false);
 }
 
 
@@ -180,153 +197,153 @@ function constructResourcePackage(extractedFiles) {
  */  
 function loadPackageAndQuestionnaire(urlPackage, urlQ) {
 
-    let packageData = [];
-  
-    if (urlPackage) {
-      fetch(urlPackage)
+  let packageData = [];
+
+  if (urlPackage) {
+    fetch(urlPackage)
+      .then(response => {
+        if(!response.ok) {
+          throw response.ok // let catch handle it
+        }
+        else {
+          return response.blob();
+        }
+        })
         .then(response => {
-          if(!response.ok) {
-            throw response.ok // let catch handle it
-          }
-          else {
-            return response.blob();
-          }
-         })
-         .then(response => {
-          let reader = new FileReader();
-          reader.onload = function(event){
+        let reader = new FileReader();
+        reader.onload = function(event){
 
-            try {
-              let base64 =   event.target.result;
+          try {
+            let base64 =   event.target.result;
 
-              // base64 includes header info "data:application/gzip;base64,"
-              // "data:application/gzip;base64,H4sIAAkTyF4AA+3RMQ6DMAyF4cw9RU6A4hDCeSIRdWMgRtDbN4BYkTpAl/9bLFtveJI1F210VXMjV8UQttn2odt3OfaDeCNtjN6JBFfv4mvSWHdnqdNcNE3WmiWN70++yuWpPFHoWVr/b4ek6fXvJgAAAAAAAAAAAAAAAACAX3wBvhQL0QAoAAA="
-              // remove the header info
-              let base64Content = base64.replace(/^data:[\/\+;a-zA-Z0-9\._-]+;base64,/, "");
-              // convert arraybuffer to string
-              const strData = atob(base64Content);
+            // base64 includes header info "data:application/gzip;base64,"
+            // "data:application/gzip;base64,H4sIAAkTyF4AA+3RMQ6DMAyF4cw9RU6A4hDCeSIRdWMgRtDbN4BYkTpAl/9bLFtveJI1F210VXMjV8UQttn2odt3OfaDeCNtjN6JBFfv4mvSWHdnqdNcNE3WmiWN70++yuWpPFHoWVr/b4ek6fXvJgAAAAAAAAAAAAAAAACAX3wBvhQL0QAoAAA="
+            // remove the header info
+            let base64Content = base64.replace(/^data:[\/\+;a-zA-Z0-9\._-]+;base64,/, "");
+            // convert arraybuffer to string
+            const strData = atob(base64Content);
 
-              // split it into an array rather than a "string"
-              const charData = strData.split('').map(function(x){return x.charCodeAt(0); });
-      
-              // convert to binary
-              const binData = new Uint8Array(charData);
-      
-              // inflate
-              const unzippedData = pako.inflate(binData);
-                          
-              // unzippedData could be too long and result in an error: 
-              //  "Uncaught RangeError: Maximum call stack size exceeded"
-              // Use the following loop instead 
-              const uint16Data = new Uint16Array(unzippedData);
-              let strAsciiData ="";
-              let len = uint16Data.length;
-              for (let i = 0; i < len; i++) {
-                strAsciiData += String.fromCharCode(uint16Data[i]);
-              }
+            // split it into an array rather than a "string"
+            const charData = strData.split('').map(function(x){return x.charCodeAt(0); });
+    
+            // convert to binary
+            const binData = new Uint8Array(charData);
+    
+            // inflate
+            const unzippedData = pako.inflate(binData);
+                        
+            // unzippedData could be too long and result in an error: 
+            //  "Uncaught RangeError: Maximum call stack size exceeded"
+            // Use the following loop instead 
+            const uint16Data = new Uint16Array(unzippedData);
+            let strAsciiData ="";
+            let len = uint16Data.length;
+            for (let i = 0; i < len; i++) {
+              strAsciiData += String.fromCharCode(uint16Data[i]);
+            }
 
-              // convert string to ArrayBuffer
-              const abData = str2ab(strAsciiData);
+            // convert string to ArrayBuffer
+            const abData = str2ab(strAsciiData);
 
-              // process the tar file
-              // Note:
-              //let fileJsonContent = extractedFile.readAsJSON(); 
-              // readAsString (and readAsJSON) encountered two errors on on sample package.tgz file
-              // 1) Uncaught RangeError: Maximum call stack size exceeded
-              //    this is caused by the same reason above
-              //    on line #89 in untar.js :
-              //    (this._string = String.fromCharCode.apply(null, charCodes))
-              //    where the side of charCodes could be too big.
-              // 2) Uncaught SyntaxError: Unexpected token ï in JSON at position 0
-              untar(abData)
-                // .progress(function(extractedFile) {
-                  // do something with a single extracted file
-                  //let fileStrContent = extractedFile.readAsString();
-                  // if (extractedFile && extractedFile.name.match(/\.json$/)) {              
-                  //   packageFiles[extractedFile.name] = extractedFile.readAsJSON();
-                  // }
-                // })
-                .then(function(extractedFiles) {
-                  if (Array.isArray(extractedFiles) && extractedFiles.length > 0) {
-                    // all extracted files
-                    let resInIndex = {}; // key is the file name, value is file info object
-                    // check if the optional file, .index.json, is in the package
-                    let indexFile = extractedFiles.find(function(file) { return file.name === 'package/.index.json';});
-                    // only process files listed in .index.json if there is a .index.json
-                    if (indexFile) {
-                      let indexFileContent = indexFile.readAsJSON();
-                      for (let i=0, iLen = indexFileContent.files.length; i<iLen; i++) {
-                        let fileInfo = indexFileContent.files[i];
-                        if (fileInfo.resourceType === 'ValueSet' || fileInfo.resourceType === 'CodeSystem') {
-                          resInIndex[fileInfo.filename] = fileInfo;
-                        }
+            // process the tar file
+            // Note:
+            //let fileJsonContent = extractedFile.readAsJSON(); 
+            // readAsString (and readAsJSON) encountered two errors on on sample package.tgz file
+            // 1) Uncaught RangeError: Maximum call stack size exceeded
+            //    this is caused by the same reason above
+            //    on line #89 in untar.js :
+            //    (this._string = String.fromCharCode.apply(null, charCodes))
+            //    where the side of charCodes could be too big.
+            // 2) Uncaught SyntaxError: Unexpected token ï in JSON at position 0
+            untar(abData)
+              // .progress(function(extractedFile) {
+                // do something with a single extracted file
+                //let fileStrContent = extractedFile.readAsString();
+                // if (extractedFile && extractedFile.name.match(/\.json$/)) {              
+                //   packageFiles[extractedFile.name] = extractedFile.readAsJSON();
+                // }
+              // })
+              .then(function(extractedFiles) {
+                if (Array.isArray(extractedFiles) && extractedFiles.length > 0) {
+                  // all extracted files
+                  let resInIndex = {}; // key is the file name, value is file info object
+                  // check if the optional file, .index.json, is in the package
+                  let indexFile = extractedFiles.find(function(file) { return file.name === 'package/.index.json';});
+                  // only process files listed in .index.json if there is a .index.json
+                  if (indexFile) {
+                    let indexFileContent = indexFile.readAsJSON();
+                    for (let i=0, iLen = indexFileContent.files.length; i<iLen; i++) {
+                      let fileInfo = indexFileContent.files[i];
+                      if (fileInfo.resourceType === 'ValueSet' || fileInfo.resourceType === 'CodeSystem') {
+                        resInIndex[fileInfo.filename] = fileInfo;
                       }
-                      // remove the 'package/' from the file name and add file content
-                      for (let j=0, jLen = extractedFiles.length; j<jLen; j++) {
-                        let extractedFile = extractedFiles[j];
-                        let fileInfo = resInIndex[extractedFile.name.replace(/^package\//, "")];
-                        if (fileInfo && (fileInfo.resourceType === 'ValueSet' || fileInfo.resourceType === 'CodeSystem')) {
-                          fileInfo.fileContent = extractedFile.readAsJSON();
-                          packageData.push(fileInfo);                  
-                        }  
-                      }              
                     }
-                    // process all .json files in the /package directory if there is no .index.json
-                    else {
-                      packageData = constructResourcePackage(extractedFiles)
-                    }
-                    
-                    // packageData has the same structure of the .index.json file in the package file, with an extra fileContent
-                    // that contains the data in each resource file.
-                    // See https://confluence.hl7.org/display/FHIR/NPM+Package+Specification
-
-                    // load questionnaire with the pakcage data
-                    results.gotP = true;
-                    loadQuestionnaire(urlQ, packageData)
+                    // remove the 'package/' from the file name and add file content
+                    for (let j=0, jLen = extractedFiles.length; j<jLen; j++) {
+                      let extractedFile = extractedFiles[j];
+                      let fileInfo = resInIndex[extractedFile.name.replace(/^package\//, "")];
+                      if (fileInfo && (fileInfo.resourceType === 'ValueSet' || fileInfo.resourceType === 'CodeSystem')) {
+                        fileInfo.fileContent = extractedFile.readAsJSON();
+                        packageData.push(fileInfo);                  
+                      }  
+                    }              
                   }
+                  // process all .json files in the /package directory if there is no .index.json
                   else {
-                    results.gotP = false;
-                    results.pErrorLocation = "untar";
-                    loadQuestionnaire(urlQ, packageData)
+                    packageData = constructResourcePackage(extractedFiles)
                   }
-                })
-                .catch(function (error) {
-                  console.error('Untar Error', urlPackage, error);
+                  
+                  // packageData has the same structure of the .index.json file in the package file, with an extra fileContent
+                  // that contains the data in each resource file.
+                  // See https://confluence.hl7.org/display/FHIR/NPM+Package+Specification
+
+                  // load questionnaire with the pakcage data
+                  results.gotP = true;
+                  loadQuestionnaire(urlQ, packageData)
+                }
+                else {
                   results.gotP = false;
                   results.pErrorLocation = "untar";
-                  // try to load the questionnaire without the package
-                  loadQuestionnaire(urlQ)
-                });
+                  loadQuestionnaire(urlQ, packageData)
+                }
+              })
+              .catch(function (error) {
+                console.error('Untar Error', urlPackage, error);
+                results.gotP = false;
+                results.pErrorLocation = "untar";
+                // try to load the questionnaire without the package
+                loadQuestionnaire(urlQ)
+              });
 
-            }
-            catch(error) {
-              console.log("Unzip Error", urlPackage, error)
-              results.gotP = false;
-              results.pErrorLocation = "unzip";
-              // try to load the questionnaire without the package
-              loadQuestionnaire(urlQ)
-            }
-
-          };
-
-          reader.onerror = function (error) {
-            console.error('FileReader Error', urlPackage, error);
-            results.gotP = false;            
-            esults.pErrorLocation = "reader";
+          }
+          catch(error) {
+            console.log("Unzip Error", urlPackage, error)
+            results.gotP = false;
+            results.pErrorLocation = "unzip";
             // try to load the questionnaire without the package
             loadQuestionnaire(urlQ)
-          };
+          }
 
-          reader.readAsDataURL(response);          
-        })
-        .catch(error => {
-          console.error('Fetch Error:', urlPackage, error);
-          results.gotP = false;
-          results.pErrorLocation = "fetch"
+        };
+
+        reader.onerror = function (error) {
+          console.error('FileReader Error', urlPackage, error);
+          results.gotP = false;            
+          esults.pErrorLocation = "reader";
           // try to load the questionnaire without the package
           loadQuestionnaire(urlQ)
-        });
-    }  
+        };
+
+        reader.readAsDataURL(response);          
+      })
+      .catch(error => {
+        console.error('Fetch Error:', urlPackage, error);
+        results.gotP = false;
+        results.pErrorLocation = "fetch"
+        // try to load the questionnaire without the package
+        loadQuestionnaire(urlQ)
+      });
+  }  
 }
 
 
@@ -341,6 +358,8 @@ function showErrorMessages(message) {
     let divMessage = document.getElementById('qv-error-message');
     divMessage.textContent = message;
   }
+
+  setLoadingMessage(false);
 }
 
 
@@ -361,6 +380,8 @@ function resetPage() {
     formContainer.removeChild(formContainer.lastChild);
   }
   
+  setLoadingMessage(false);
+
 }
 
 /**
@@ -390,10 +411,12 @@ export function onPageLoad() {
   if (urlQuestionnaireParam && urlPackageParam) {
     results.hasUrlP = true;
     results.hasUrlQ = true;
+    setLoadingMessage(true);
     loadPackageAndQuestionnaire(urlPackageParam, urlQuestionnaireParam)
   }
   else if (urlQuestionnaireParam) {
     results.hasUrlQ = true;
+    setLoadingMessage(true);
     loadQuestionnaire(urlQuestionnaireParam)
   }
 
@@ -427,10 +450,12 @@ export function viewQuestionnaire() {
   if (urlQ && urlP) {
     results.hasUrlP = true;
     results.hasUrlQ = true;
+    setLoadingMessage(true);
     loadPackageAndQuestionnaire(urlP, urlQ)
   }
   else if (urlQ) {
     results.hasUrlQ = true;
+    setLoadingMessage(true);
     loadQuestionnaire(urlQ)    
   }
   else {
