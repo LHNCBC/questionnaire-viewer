@@ -25,6 +25,8 @@
       }
     </script>
 
+    
+
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
     <link href="https://fonts.googleapis.com/css?family=Droid+Sans:400,700"
@@ -53,37 +55,45 @@
     </div>
     <!-- end page header -->
 
-    <div id="form-input">
+    <div id="qv-form-input" style="display:none">
 
-      <div id="intro">
+      <div id="qv-form-input-intro">
         <p>This is a tool that allows you to render a FHIR Questionnaire (JSON), with a FHIR resource package file that provides resources needed by the Questionnaire. </p>
         <p>See <a href="https://confluence.hl7.org/display/FHIR/NPM+Package+Specification" target="_blank">https://confluence.hl7.org/display/FHIR/NPM+Package+Specification</a></p>
       </div>
 
-      <div id="settings">
-        <div class="url-row">
-          <div class='url-name'>URL of a FHIR Questionnaire:</div>
-          <div class='url-value'><input type="text" id="urlQuestionnaire"></div>
+      <div id="qv-form-input-settings">
+        <div class="qv-url-row">
+          <div class='qv-url-name'><span>URL of a FHIR Questionnaire:</span></div>
+          <div class='qv-url-value'><input type="text" id="urlQuestionnaire"></div>
         </div>
-        <div class="url-row">
-          <div class='url-name'>URL of a FHIR resource package:</div>
-          <div class='url-value'><input type="text" id="urlPackage"></div>
+        <div class="qv-url-row">
+          <div class='qv-url-name'>URL of a FHIR resource package:</div>
+          <div class='qv-url-value'><input type="text" id="urlPackage"></div>
         </div>
 
-        <div id="param-notes">*Note: These field values can be specified in the URL. Use URL parameter "q" to provide the URL for the Questionnaire JSON, and parameter "p" to provide the URL for the FHIR resource package (package.tgz).</div>
+        <div id="qv-param-notes">*Note: These field values can be specified in the URL. Use URL parameter "q" to provide the URL for the Questionnaire JSON, and parameter "p" to provide the URL for the FHIR resource package (package.tgz).</div>
       </div>
-      <button id="load" onclick="app.viewQuestionnaire()">Load Data</button>
+      <button id="qv-btn-load" onclick="app.viewQuestionnaire()">Load Data</button>
 
     </div>
-    <div id="form-view">
-      <div id="form-notes"></div>
-      <div id="lforms"></div>
+    <div id="qv-error" style="display:none">
+      <div id="qv-error-header">Errors</div>
+      <div id='qv-error-message'></div>
+    </div>
+    <div id="qv-loading" style="display:none"> 
+      Loading ...
     </div>
 
-    <script
-    src="https://clinicaltables.nlm.nih.gov/lforms-versions/25.1.2/lforms.min.js"></script>
-    <script
-    src="https://clinicaltables.nlm.nih.gov/lforms-versions/25.1.2/fhir/R4/lformsFHIR.min.js"></script>
+    <div id="qv-form-view">
+      <div id="qv-form-notes"></div>
+      <div id="qv-lforms"></div>
+    </div>
+
+    <script src="https://clinicaltables.nlm.nih.gov/lforms-versions/25.1.5/lforms.min.js"></script>
+    <script src="https://clinicaltables.nlm.nih.gov/lforms-versions/25.1.5/fhir/R4/lformsFHIR.min.js"></script>
+    <script src="https://clinicaltables.nlm.nih.gov/lforms-versions/25.1.5/fhir/STU3/lformsFHIR.min.js"></script>
+
 
   </body>
 </html>

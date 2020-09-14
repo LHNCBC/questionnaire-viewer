@@ -20,8 +20,8 @@ describe('FHIR Questionnaire Viewer', function() {
       let urlQ = element(by.id('urlQuestionnaire')),
       urlP =  element(by.id('urlPackage')),
       firstItem =  element(by.id('/q1/1')),
-      btn = element(by.id('load')),
-      notes = element(by.id('form-notes'));
+      btn = element(by.id('qv-btn-load')),
+      notes = element(by.id('qv-form-notes'));
   
       urlQ.clear();
       urlQ.sendKeys(browser.baseUrl + '/questionnaire-use-package.json');
@@ -36,16 +36,46 @@ describe('FHIR Questionnaire Viewer', function() {
       expect(notes.getText()).toContain('/questionnaire-use-package.json');
   
     });
+          
+    it('should load both R4 and STU3 versions of Questionnaire', function () {
+      let urlQ = element(by.id('urlQuestionnaire')),
+      urlP =  element(by.id('urlPackage')),
+      dropdown =  element(by.id('/8352-7/1')),
+      btn = element(by.id('qv-btn-load')),
+      notes = element(by.id('qv-form-notes'));
   
+      // r4
+      urlQ.clear();
+      urlQ.sendKeys(browser.baseUrl + '/weightHeightQuestionnaire_r4.json');
+      btn.click();
+      browser.wait(EC.visibilityOf(dropdown));
+      dropdown.click();
+      dropdown.sendKeys(protractor.Key.ARROW_DOWN);
+      dropdown.sendKeys(protractor.Key.TAB);
+      expect(dropdown.getAttribute('value')).toBe('Underwear or less');
+      expect(notes.getText()).toContain('/weightHeightQuestionnaire_r4.json');
   
+      // stu3
+      urlQ.clear();
+      urlQ.sendKeys(browser.baseUrl + '/weightHeightQuestionnaire_stu3.json');
+      btn.click();
+      browser.wait(EC.visibilityOf(dropdown));
+      dropdown.click();
+      dropdown.sendKeys(protractor.Key.ARROW_DOWN);
+      dropdown.sendKeys(protractor.Key.TAB);
+      expect(dropdown.getAttribute('value')).toBe('Underwear or less');
+      expect(notes.getText()).toContain('/weightHeightQuestionnaire_stu3.json');
+    });
+
+
     it('should load a Questionnaire with a resource package', function () {
       let urlQ = element(by.id('urlQuestionnaire')),
       urlP =  element(by.id('urlPackage')),
       firstItem =  element(by.id('/q1/1')),
       secondItem =  element(by.id('/q2/1')),
       thirdItem =  element(by.id('/q3/1')),
-      btn = element(by.id('load')),
-      notes = element(by.id('form-notes'));
+      btn = element(by.id('qv-btn-load')),
+      notes = element(by.id('qv-form-notes'));
 
       urlQ.clear();
       urlQ.sendKeys(browser.baseUrl + '/questionnaire-use-package.json');
@@ -75,8 +105,8 @@ describe('FHIR Questionnaire Viewer', function() {
       firstItem =  element(by.id('/q1/1')),
       secondItem =  element(by.id('/q2/1')),
       thirdItem =  element(by.id('/q3/1')),
-      btn = element(by.id('load')),
-      notes = element(by.id('form-notes'));
+      btn = element(by.id('qv-btn-load')),
+      notes = element(by.id('qv-form-notes'));
 
       urlQ.clear();
       urlQ.sendKeys(browser.baseUrl + '/questionnaire-use-package.json');
@@ -114,14 +144,14 @@ describe('FHIR Questionnaire Viewer', function() {
   
     it('should load a Questionnaire without resource package', function () {
 
-      let notes = element(by.id('form-notes'));
+      let notes = element(by.id('qv-form-notes'));
     
       let url = browser.baseUrl + '/?q=' + browser.baseUrl + '/questionnaire-use-package.json';
       console.log(url);
       browser.get(url);
 
       let firstItem =  element(by.id('/q1/1')),
-      inputPanel = element(by.id('form-input'));
+      inputPanel = element(by.id('qv-form-input'));
   
       browser.wait(EC.visibilityOf(firstItem));
       firstItem.click();
@@ -137,6 +167,34 @@ describe('FHIR Questionnaire Viewer', function() {
 
     });
   
+    it('should load both R4 and STU3 versions of Questionnaire', function () {
+      let dropdown =  element(by.id('/8352-7/1')),
+      notes = element(by.id('qv-form-notes'));
+
+      let url = browser.baseUrl + '/?q=' + browser.baseUrl + '/weightHeightQuestionnaire_r4.json';
+      browser.get(url);
+
+      // r4
+      browser.wait(EC.visibilityOf(dropdown));
+      dropdown.click();
+      dropdown.sendKeys(protractor.Key.ARROW_DOWN);
+      dropdown.sendKeys(protractor.Key.TAB);
+      expect(dropdown.getAttribute('value')).toBe('Underwear or less');
+      expect(notes.getText()).toContain('/weightHeightQuestionnaire_r4.json');
+  
+      // stu3
+      url = browser.baseUrl + '/?q=' + browser.baseUrl + '/weightHeightQuestionnaire_stu3.json';
+      browser.get(url);
+
+      browser.wait(EC.visibilityOf(dropdown));
+      dropdown.click();
+      dropdown.sendKeys(protractor.Key.ARROW_DOWN);
+      dropdown.sendKeys(protractor.Key.TAB);
+      expect(dropdown.getAttribute('value')).toBe('Underwear or less');
+      expect(notes.getText()).toContain('/weightHeightQuestionnaire_stu3.json');
+    });
+
+
   
     it('should load a Questionnaire with a resource package', function () {
       let url = browser.baseUrl + '/?q=' + browser.baseUrl + '/questionnaire-use-package.json' + '&p=' + browser.baseUrl + '/package.json.tgz';
@@ -146,8 +204,8 @@ describe('FHIR Questionnaire Viewer', function() {
       let firstItem =  element(by.id('/q1/1')),
       secondItem =  element(by.id('/q2/1')),
       thirdItem =  element(by.id('/q3/1')),
-      inputPanel = element(by.id('form-input')),
-      notes = element(by.id('form-notes'));
+      inputPanel = element(by.id('qv-form-input')),
+      notes = element(by.id('qv-form-notes'));
       
       browser.wait(EC.visibilityOf(firstItem));
   
@@ -177,8 +235,8 @@ describe('FHIR Questionnaire Viewer', function() {
       let firstItem =  element(by.id('/q1/1')),
       secondItem =  element(by.id('/q2/1')),
       thirdItem =  element(by.id('/q3/1')),
-      inputPanel = element(by.id('form-input')),
-      notes = element(by.id('form-notes'));
+      inputPanel = element(by.id('qv-form-input')),
+      notes = element(by.id('qv-form-notes'));
       
       browser.wait(EC.visibilityOf(firstItem));
   
