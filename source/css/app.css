@@ -73,9 +73,6 @@ body {
   margin: 10px 5px;
 }
 
-#qv-form-notes {
-  margin: 5px;
-}
 
 #qv-error-header {
   font-size: 120%;
@@ -91,4 +88,22 @@ body {
   font-size: 400%;
   padding: 20px;
   color: steelblue;
+}
+
+#qv-form-notes {
+  margin: 5px;
+}
+#qv-form-warning {
+  padding: 2px;
+  width: 100%;
+  height: 15rem;
+  overflow-y: scroll;
+  border: 1px solid #17b4e3;
+  border-radius: 4px;
+  padding: 4px;
+}
+#qv-btn-show-warning {
+  border: 1px solid #17b4e3;
+  border-radius: 4px;
+  margin: 4px;
 }
