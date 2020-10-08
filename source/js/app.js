@@ -79,7 +79,7 @@ function setLoadingMessage(show) {
  * with or without a package file loaded successfully.
  */
 function showInfoMessages() {
-  let formNotes = document.getElementById('qv-form-notes');
+  let formInfo = document.getElementById('qv-form-info');
   let formRendered = document.querySelector('lforms');
   let notes = "";
   if (results.hasUrlQ && results.gotQ && formRendered) {
@@ -108,10 +108,41 @@ function showInfoMessages() {
       }
     }
     notes += ".";
+    // check answer resource loading message
+    let answerMessages = LForms.Util.getAnswersResourceStatus();
+    if (answerMessages && answerMessages.length > 0) {
+      notes += ' Some FHIR ValueSet Resource(s) failed to load.'  
+      // show the button
+      let btnWarning = document.getElementById('qv-btn-show-warning');
+      if (btnWarning) btnWarning.style.display = '';
+
+      // add warning messages
+      let formWarning = document.getElementById('qv-form-warning');
+      formWarning.innerHTML = answerMessages.join('<br />')
+    }
+    
   }
-  formNotes.textContent  = notes;
+  
+  formInfo.textContent  = notes;
 
   setLoadingMessage(false);
+}
+
+
+/**
+ * Show/Hide the warning messages and change button label accordingly
+ */
+export function toggleWarning() {
+  let formWarning = document.getElementById('qv-form-warning');
+  let btnWarning = document.getElementById('qv-btn-show-warning');
+  if (formWarning.style.display === 'none') {
+    formWarning.style.display = "";
+    btnWarning.textContent = "Hide Warning Messages";
+  }
+  else {
+    formWarning.style.display = "none";
+    btnWarning.textContent = "Show Warning Messages";
+  }
 }
 
 
@@ -371,8 +402,13 @@ function resetPage() {
   if (divError) divError.style.display = 'none';
   let divMessage = document.getElementById('qv-error-message');
   if (divMessage) divMessage.textContent ='';
-  let formNotes = document.getElementById('qv-form-notes');
-  if (formNotes) formNotes.textContent = ''
+  let formInfo = document.getElementById('qv-form-info');
+  if (formInfo) formInfo.textContent = ''
+  let formWarning = document.getElementById('qv-form-warning');
+  if (formWarning) formWarning.textContent = '';
+  if (formWarning) formWarning.style.display = 'none';
+  let btnWarning = document.getElementById('qv-btn-show-warning');
+  if (btnWarning) btnWarning.style.display = 'none';
 
   // remove previously added form if any
   let formContainer = document.getElementById('qv-lforms');

@@ -3,6 +3,12 @@
 This log documents the significant changes for each release.
 This project follows [Semantic Versioning](http://semver.org/).
 
+## [0.2.0] - 10-07-2020
+### Added
+- Added a button to show warning messages when answer lists are not loaded from
+  URLs specified in Questionnaire
+- Updated lforms to v26.2.0
+
 ## [0.1.0] - 09-08-2020
 ### Added
 - Added an error handler that catches most errors and displays relevant messages

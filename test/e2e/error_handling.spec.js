@@ -18,14 +18,15 @@ describe('FHIR Questionnaire Viewer', function() {
     });
 
     let error = element(by.id('qv-error'));
-    let info = element(by.id('qv-form-notes'));
+    let info = element(by.id('qv-form-info'));
+    let warning = element(by.id('qv-form-warning'));
+    let btnWarning = element(by.id('qv-btn-show-warning'));
 
     function loadQuestionnaire(qFileName, pFileName) {
       let urlQ = element(by.id('urlQuestionnaire')),
       urlP =  element(by.id('urlPackage')),
       firstItem =  element(by.id('/q1/1')),
-      btn = element(by.id('qv-btn-load')),
-      notes = element(by.id('qv-form-notes'));
+      btn = element(by.id('qv-btn-load'));
   
       urlQ.clear();
       urlQ.sendKeys(browser.baseUrl + '/' + qFileName);
@@ -134,8 +135,34 @@ describe('FHIR Questionnaire Viewer', function() {
       // no tests yet
     });
 
+    it('should show warings when a Questionnaire is loaded but answer list are not loaded from urls', function () {
+      loadQuestionnaire("questionnaire-use-package.json")
+      expect(info.getText()).toContain("questionnaire-use-package.json")
+      expect(error.isDisplayed()).toBeFalsy();
+      expect(btnWarning.isDisplayed()).toBe(true);
+      expect(warning.isDisplayed()).toBeFalsy();
+      expect(btnWarning.getText()).toContain("Show Warning Messages");
+      // show messages
+      btnWarning.click();
+      expect(btnWarning.getText()).toContain("Hide Warning Messages");
+      expect(warning.isDisplayed()).toBe(true);
+      expect(warning.getText()).toContain("http://hl7.org/fhir/ValueSet/example-expansion|20150622");
+      expect(warning.getText()).toContain("http://hl7.org/fhir/ValueSet/example-expansion");
 
+      // hide messages
+      btnWarning.click();
+      expect(btnWarning.getText()).toContain("Show Warning Messages");
+      expect(warning.isDisplayed()).toBeFalsy();
+    });
 
+    it('should not show warings when a Questionnaire is loaded with all answer lists', function () {
+      loadQuestionnaire("questionnaire-use-package.json", "package.json.tgz")
+      expect(error.isDisplayed()).toBeFalsy();
+      expect(btnWarning.isDisplayed()).toBeFalsy();
+      expect(warning.isDisplayed()).toBeFalsy();
+      expect(info.getText()).toContain("questionnaire-use-package.json")
+      
+    });
   });
 
   describe('Error handling when URLs are provided as url parameters', function() {
@@ -149,8 +176,10 @@ describe('FHIR Questionnaire Viewer', function() {
     });
 
     let error = element(by.id('qv-error'));
-    let info = element(by.id('qv-form-notes'));
+    let info = element(by.id('qv-form-info'));
     let inputs = element(by.id('qv-form-input-settings'));
+    let warning = element(by.id('qv-form-warning'));
+    let btnWarning = element(by.id('qv-btn-show-warning'));
 
     function loadQuestionnaire(qFileName, pFileName) {
 
@@ -251,7 +280,34 @@ describe('FHIR Questionnaire Viewer', function() {
       // no tests yet
     });
 
+    it('should show warings when a Questionnaire is loaded but answer list are not loaded from urls', function () {
+      loadQuestionnaire("questionnaire-use-package.json")
+      expect(info.getText()).toContain("questionnaire-use-package.json")
+      expect(error.isDisplayed()).toBeFalsy();
+      expect(btnWarning.isDisplayed()).toBe(true);
+      expect(warning.isDisplayed()).toBeFalsy();
+      expect(btnWarning.getText()).toContain("Show Warning Messages");
+      // show messages
+      btnWarning.click();
+      expect(btnWarning.getText()).toContain("Hide Warning Messages");
+      expect(warning.isDisplayed()).toBe(true);
+      expect(warning.getText()).toContain("http://hl7.org/fhir/ValueSet/example-expansion|20150622");
+      expect(warning.getText()).toContain("http://hl7.org/fhir/ValueSet/example-expansion");
 
+      // hide messages
+      btnWarning.click();
+      expect(btnWarning.getText()).toContain("Show Warning Messages");
+      expect(warning.isDisplayed()).toBeFalsy();
+    });
+
+    it('should not show warings when a Questionnaire is loaded with all answer lists', function () {
+      loadQuestionnaire("questionnaire-use-package.json", "package.json.tgz")
+      expect(error.isDisplayed()).toBeFalsy();
+      expect(error.isDisplayed()).toBeFalsy();
+      expect(btnWarning.isDisplayed()).toBeFalsy();
+      expect(warning.isDisplayed()).toBeFalsy();
+      expect(info.getText()).toContain("questionnaire-use-package.json")      
+    });
 
   });
   
