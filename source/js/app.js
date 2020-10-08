@@ -111,7 +111,7 @@ function showInfoMessages() {
     // check answer resource loading message
     let answerMessages = LForms.Util.getAnswersResourceStatus();
     if (answerMessages && answerMessages.length > 0) {
-      notes += ' Some FHIR ValueSet Resource(s) were failed to load.'  
+      notes += ' Some FHIR ValueSet Resource(s) failed to load.'  
       // show the button
       let btnWarning = document.getElementById('qv-btn-show-warning');
       if (btnWarning) btnWarning.style.display = '';
