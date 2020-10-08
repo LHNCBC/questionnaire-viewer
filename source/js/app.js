@@ -107,10 +107,11 @@ function showInfoMessages() {
         }
       }
     }
+    notes += ".";
     // check answer resource loading message
     let answerMessages = LForms.Util.getAnswersResourceStatus();
     if (answerMessages && answerMessages.length > 0) {
-      notes += ', with missing FHIR Resources'  
+      notes += ' Some FHIR ValueSet Resource(s) were failed to load.'  
       // show the button
       let btnWarning = document.getElementById('qv-btn-show-warning');
       if (btnWarning) btnWarning.style.display = '';
@@ -119,7 +120,7 @@ function showInfoMessages() {
       let formWarning = document.getElementById('qv-form-warning');
       formWarning.innerHTML = answerMessages.join('<br />')
     }
-    notes += ".";
+    
   }
   
   formInfo.textContent  = notes;
@@ -128,6 +129,9 @@ function showInfoMessages() {
 }
 
 
+/**
+ * Show/Hide the warning messages and change button label accordingly
+ */
 export function toggleWarning() {
   let formWarning = document.getElementById('qv-form-warning');
   let btnWarning = document.getElementById('qv-btn-show-warning');
