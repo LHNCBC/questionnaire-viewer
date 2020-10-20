@@ -3,6 +3,11 @@
 This log documents the significant changes for each release.
 This project follows [Semantic Versioning](http://semver.org/).
 
+## [0.3.0] - 10-20-2020
+### Added
+- Updated lforms to v26.3.1, which fixed a bug in importing STU3 FHIR 
+  Questionnaie's "options" attibute.
+
 ## [0.2.0] - 10-07-2020
 ### Added
 - Added a button to show warning messages when answer lists are not loaded from
