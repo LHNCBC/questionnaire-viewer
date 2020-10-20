@@ -280,7 +280,7 @@ describe('FHIR Questionnaire Viewer', function() {
       // no tests yet
     });
 
-    it('should show warings when a Questionnaire is loaded but answer list are not loaded from urls', function () {
+    it('should show warings when a R4 Questionnaire is loaded but answer list are not loaded from urls', function () {
       loadQuestionnaire("questionnaire-use-package.json")
       expect(info.getText()).toContain("questionnaire-use-package.json")
       expect(error.isDisplayed()).toBeFalsy();
@@ -293,6 +293,28 @@ describe('FHIR Questionnaire Viewer', function() {
       expect(warning.isDisplayed()).toBe(true);
       expect(warning.getText()).toContain("http://hl7.org/fhir/ValueSet/example-expansion|20150622");
       expect(warning.getText()).toContain("http://hl7.org/fhir/ValueSet/example-expansion");
+
+      // hide messages
+      btnWarning.click();
+      expect(btnWarning.getText()).toContain("Show Warning Messages");
+      expect(warning.isDisplayed()).toBeFalsy();
+    });
+
+    it('should show warings when a STU3 Questionnaire is loaded but answer list are not loaded from urls', function () {
+      loadQuestionnaire("4712701.json")
+      expect(info.getText()).toContain("4712701.json")
+      expect(error.isDisplayed()).toBeFalsy();
+      expect(btnWarning.isDisplayed()).toBe(true);
+      expect(warning.isDisplayed()).toBeFalsy();
+      expect(btnWarning.getText()).toContain("Show Warning Messages");
+      // show messages
+      btnWarning.click();
+      expect(btnWarning.getText()).toContain("Hide Warning Messages");
+      expect(warning.isDisplayed()).toBe(true);
+      expect(warning.getText()).toContain("http://hl7.org/fhir/ValueSet/v3-ActEncounterCode"); // 1st message
+      expect(warning.getText()).toContain("http://uni-koeln.de/fhir/ValueSet/ecog"); // 2nd message
+      expect(warning.getText()).toContain("http://uni-koeln.de/fhir/ValueSet/icd-o-3-m-lunge"); // 3rd message
+      expect(warning.getText()).toContain("http://uni-koeln.de/fhir/ValueSet/uicc-lunge"); // 11th message
 
       // hide messages
       btnWarning.click();
