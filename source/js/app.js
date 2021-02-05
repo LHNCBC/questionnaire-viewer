@@ -511,7 +511,7 @@ export function onPageLoad() {
     inputPanel.style.display = ''
   }
   else {
-    // use package file only if both a package file and a FHIR server are present
+    // If both a package file and a FHIR server are present, use only the package file.
     if (urlPSelected) {
       usePackage = true;
     }
@@ -531,6 +531,8 @@ export function viewQuestionnaire() {
   // https://lforms-smart-fhir.nlm.nih.gov/v/r4/fhir/Questionnaire/55418-8-x
   // https://lforms-smart-fhir.nlm.nih.gov/v/r4/fhir/Questionnaire/24322-0-x
 
+  // https://lforms-fhir.nlm.nih.gov/baseR4
+  
   resetPage();
 
   let inputPanel = document.getElementById('qv-form-input');
@@ -542,5 +544,22 @@ export function viewQuestionnaire() {
   usePackage = document.getElementById('radioPackage').checked;
 
   showQuestionnaire();
+
+}
+
+/**
+ * Toggle the disable/enable attributes of the input fields for package URL and FHRI server URL
+ * @param {*} eleId2Disable the id of the input field to be disabled
+ * @param {*} eleId2Enable the id of the input field to be enabled
+ */
+export function toggleInputFields(eleId2Disable, eleId2Enable) {
+  let eleDisable = document.getElementById(eleId2Disable);
+  if (eleDisable) {
+    eleDisable.disabled = true;
+  }
+  let eleEnable = document.getElementById(eleId2Enable);
+  if (eleEnable) {
+    eleEnable.disabled = false;
+  }
 
 }

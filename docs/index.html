@@ -33,7 +33,7 @@
      rel="stylesheet" type="text/css">
     <link href="https://clinicaltables.nlm.nih.gov/lforms-versions/25.1.2/styles/lforms.min.css"
     media="screen" rel="stylesheet" />
-  <link href="app.d5aa3618ec3260e1aaf3.css" rel="stylesheet"></head>
+  <link href="app.94b075e9cfbbdc849bb8.css" rel="stylesheet"></head>
   <body onload="app.onPageLoad()">
 
     <!-- Google Tag Manager (noscript) -->
@@ -58,7 +58,7 @@
     <div id="qv-form-input" style="display:none">
 
       <div id="qv-form-input-intro">
-        <p>This is a tool that allows you to render a FHIR Questionnaire (JSON), with a FHIR resource package file that provides resources needed by the Questionnaire. </p>
+        <p>This is a tool that allows you to render a FHIR Questionnaire (JSON), with its needed resources from either a FHIR resource package file or a FHIR server.</p>
         <p>See <a href="https://confluence.hl7.org/display/FHIR/NPM+Package+Specification" target="_blank">https://confluence.hl7.org/display/FHIR/NPM+Package+Specification</a></p>
       </div>
 
@@ -69,22 +69,22 @@
         </div>
         <div class="qv-url-row">          
           <div class='qv-url-name'>
-            <input type="radio" id="radioPackage" name="resourceURL" value="package" checked>
+            <input type="radio" id="radioPackage" name="resourceURL" value="package" checked onclick="app.toggleInputFields('urlFhirServer', 'urlPackage')">
             <label for="radioPackage">URL of a FHIR resource package:</label>
           </div>
           <div class='qv-url-value'><input type="text" id="urlPackage"></div>
         </div>
         <div class="qv-url-row">          
           <div class='qv-url-name'>
-            <input type="radio" id="radioFhirServer" name="resourceURL" value="fhirServer">
+            <input type="radio" id="radioFhirServer" name="resourceURL" value="fhirServer" onclick="app.toggleInputFields('urlPackage', 'urlFhirServer')">
             <label for="radioFhirServer">URL of a FHIR server for resources:</label>
           </div>
-          <div class='qv-url-value'><input type="text" id="urlFhirServer"></div>
+          <div class='qv-url-value'><input type="text" id="urlFhirServer" disabled></div>
         </div>
 
         <div id="qv-param-notes">*Note: These field values can be specified in the URL. 
           Use URL parameter "q" to provide the URL for a Questionnaire JSON, and
-          parameter "p" to provide the URL for a FHIR resource package (package.tgz), or
+          optionally either parameter "p" to provide the URL for a FHIR resource package (package.tgz), or
           parameter "s" to provide the URL for a FHIR server.</div>
       </div>
       <button id="qv-btn-load" onclick="app.viewQuestionnaire()">Load Data</button>
@@ -114,5 +114,5 @@
     <script src="https://clinicaltables.nlm.nih.gov/lforms-versions/28.1.2/fhir/STU3/lformsFHIR.min.js"></script>
 
 
-  <script type="text/javascript" src="app.8f4774989d845feb3810.js"></script></body>
+  <script type="text/javascript" src="app.845161aa1b4bb079e404.js"></script></body>
 </html>
