@@ -5,9 +5,12 @@ import parse from "url-parse";
 import pako from "pako";
 import untar from "js-untar-lhc";
 import str2ab from "string-to-arraybuffer";
+import FHIR from 'fhirclient';
 
 let urlQSelected = null;
 let urlPSelected = null;
+let urlSSelected = null;
+let usePackage = null;
 let results = {hasUrlQ: false, gotQ: false, hasUrlP: false, gotP: false}
 
 /**
@@ -46,7 +49,9 @@ function addQuestionnaire(dataQ, dataPackage) {
       
     // Add the form to the page
     try {
-      LForms.Util.addFormToPage(lfData, "qv-lforms");
+      LForms.Util.addFormToPage(lfData, "qv-lforms").then(function(){
+        showInfoMessages();
+      });
     }
     catch(error) {
       console.error('Error:', error);
@@ -55,7 +60,7 @@ function addQuestionnaire(dataQ, dataPackage) {
     }
   }
   
-  showInfoMessages();
+
 }
 
 
@@ -107,6 +112,13 @@ function showInfoMessages() {
         }
       }
     }
+    else if (results.hasUrlS && !results.gotS) {
+      notes += ", but failed to access to the FHIR Server at " + urlSSelected;
+    }
+    else if (results.hasUrlS && results.gotS) {
+      notes += ", with resources loaded from the FHIR Server at " + urlSSelected;
+    }
+    
     notes += ".";
     // check answer resource loading message
     let answerMessages = LForms.Util.getAnswersResourceStatus();
@@ -119,8 +131,7 @@ function showInfoMessages() {
       // add warning messages
       let formWarning = document.getElementById('qv-form-warning');
       formWarning.innerHTML = answerMessages.join('<br />')
-    }
-    
+    }      
   }
   
   formInfo.textContent  = notes;
@@ -420,6 +431,66 @@ function resetPage() {
 
 }
 
+
+/**
+ * Sets up a client for a standard (open) FHIR server.
+ * @param urlFhirServer the URL of a FHIR server.
+ * @param commCallback A callback function that will be passed a boolean as to
+ *  whether communication with the server was successfully established.
+ */
+function setupFHIRServer(urlFhirServer) {
+  try {
+    let fhir = FHIR.client(urlFhirServer);
+    LForms.Util.setFHIRContext(fhir);
+    // Retrieve the fhir version
+    LForms.Util.getServerFHIRReleaseID(function(releaseID) {
+      if (releaseID !== undefined) {
+        results.gotS = true;    
+      }
+      else {
+        results.gotS = false;
+        LForms.Util.setFHIRContext(null);
+      }
+      loadQuestionnaire(urlQSelected)
+    });  
+  }
+  catch (e) {
+    results.gotS = false;
+    console.log(e)
+    loadQuestionnaire(urlQSelected)
+  }
+}
+
+/**
+ * Show a Questionnaire based on the parameters
+ */
+function showQuestionnaire() {
+
+  results = {hasUrlQ: false, gotQ: false, hasUrlP: false, gotP: false, hasUrlS: false, gotS: false};
+
+  if (urlQSelected && usePackage && urlPSelected) {
+    results.hasUrlP = true;
+    results.hasUrlQ = true;
+    setLoadingMessage(true);
+    loadPackageAndQuestionnaire(urlPSelected, urlQSelected)
+  }
+  else if (urlQSelected) {
+    results.hasUrlQ = true;
+    setLoadingMessage(true);
+    if (!usePackage && urlSSelected) {
+      results.hasUrlS = true;
+      setupFHIRServer(urlSSelected);
+    }
+    else {
+      loadQuestionnaire(urlQSelected)    
+    }
+    
+  }
+  else {
+    showErrorMessages("Please provide the URL of a FHIR Questionnaire.")
+  }
+
+}
 /**
  * Page's onLoad event hanlder. Check URL parameters to load FHIR Questionnarie and resource package
  */
@@ -431,31 +502,21 @@ export function onPageLoad() {
   let inputPanel = document.getElementById('qv-form-input');
   let urlLaunch = window.location.href;
   let parsedUrl = parse(urlLaunch, true);
-  let urlQuestionnaireParam = parsedUrl && parsedUrl.query ? parsedUrl.query.q : null;
-  let urlPackageParam = parsedUrl && parsedUrl.query ? parsedUrl.query.p : null;
-  
-  results = {hasUrlQ: false, gotQ: false, hasUrlP: false, gotP: false};
-
-  urlQSelected = urlQuestionnaireParam;
-  urlPSelected = urlPackageParam;
+  urlQSelected = parsedUrl && parsedUrl.query ? parsedUrl.query.q : null;
+  urlPSelected = parsedUrl && parsedUrl.query ? parsedUrl.query.p : null;
+  urlSSelected = parsedUrl && parsedUrl.query ? parsedUrl.query.s : null;
 
   // show input panel if parameters are not provided in URL
-  if (!urlQuestionnaireParam ) {
+  if (!urlQSelected ) {
     inputPanel.style.display = ''
   }
-
-  if (urlQuestionnaireParam && urlPackageParam) {
-    results.hasUrlP = true;
-    results.hasUrlQ = true;
-    setLoadingMessage(true);
-    loadPackageAndQuestionnaire(urlPackageParam, urlQuestionnaireParam)
+  else {
+    // use package file only if both a package file and a FHIR server are present
+    if (urlPSelected) {
+      usePackage = true;
+    }
+    showQuestionnaire();
   }
-  else if (urlQuestionnaireParam) {
-    results.hasUrlQ = true;
-    setLoadingMessage(true);
-    loadQuestionnaire(urlQuestionnaireParam)
-  }
-
 }
 
 
@@ -475,27 +536,11 @@ export function viewQuestionnaire() {
   let inputPanel = document.getElementById('qv-form-input');
 
   inputPanel.style.display = ''
-  let urlQ = document.getElementById('urlQuestionnaire').value;
-  let urlP = document.getElementById('urlPackage').value;
+  urlQSelected = document.getElementById('urlQuestionnaire').value;
+  urlPSelected = document.getElementById('urlPackage').value;
+  urlSSelected = document.getElementById('urlFhirServer').value;
+  usePackage = document.getElementById('radioPackage').checked;
 
-  results = {hasUrlQ: false, gotQ: false, hasUrlP: false, gotP: false};
-
-  urlQSelected = urlQ;
-  urlPSelected = urlP;
-
-  if (urlQ && urlP) {
-    results.hasUrlP = true;
-    results.hasUrlQ = true;
-    setLoadingMessage(true);
-    loadPackageAndQuestionnaire(urlP, urlQ)
-  }
-  else if (urlQ) {
-    results.hasUrlQ = true;
-    setLoadingMessage(true);
-    loadQuestionnaire(urlQ)    
-  }
-  else {
-    showErrorMessages("Please provide the URL of a FHIR Questionnaire.")
-  }
+  showQuestionnaire();
 
 }

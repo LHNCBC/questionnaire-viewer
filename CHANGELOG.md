@@ -3,6 +3,12 @@
 This log documents the significant changes for each release.
 This project follows [Semantic Versioning](http://semver.org/).
 
+## [0.4.0] - 02-05-2020
+### Added
+- Added an option to specify a FHIR server for needed resources.
+### Updated
+- Updated lforms to verison 28.1.2
+
 ## [0.3.0] - 10-20-2020
 ### Added
 - Updated lforms to v26.3.1, which fixed a bug in importing STU3 FHIR 

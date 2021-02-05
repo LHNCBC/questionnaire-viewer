@@ -1,6 +1,6 @@
 {
   "name": "questionnaire-viewer",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "A website for rendering a FHIR Quesitonniare using LHC-Forms widget",
   "main": "app.js",
   "scripts": {
@@ -21,6 +21,7 @@
   "devDependencies": {
     "@babel/core": "^7.6.0",
     "@babel/preset-env": "^7.6.0",
+    "@babel/polyfill": "^7.12.1",
     "babel-loader": "^8.0.6",
     "clean-webpack-plugin": "^3.0.0",
     "css-loader": "^3.1.0",
@@ -41,6 +42,7 @@
     "webpack-merge": "^4.2.2"
   },
   "dependencies": {
+    "fhirclient": "^2.3.10",
     "js-untar-lhc": "^2.1.1",
     "pako": "^1.0.11",
     "string-to-arraybuffer": "^1.0.2",
