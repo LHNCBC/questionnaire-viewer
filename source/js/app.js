@@ -438,10 +438,9 @@ function resetPage() {
 /**
  * Sets up a client for a standard (open) FHIR server.
  * @param urlFhirServer the URL of a FHIR server.
- * @param commCallback A callback function that will be passed a boolean as to
  *  whether communication with the server was successfully established.
  */
-function setupFHIRServer(urlFhirServer) {
+function setupFHIRServerAndLoadQuestionnaire(urlFhirServer) {
   try {
     let fhir = FHIR.client(urlFhirServer);
     LForms.Util.setFHIRContext(fhir);
@@ -492,9 +491,8 @@ function showQuestionnaire() {
       // has a FHIR server URL
       if (urlSSelected) {
         results.hasUrlS = true;
-        setupFHIRServer(urlSSelected);
+        setupFHIRServerAndLoadQuestionnaire(urlSSelected);
       }
-      loadQuestionnaire(urlQSelected);    
     }
 
   }
