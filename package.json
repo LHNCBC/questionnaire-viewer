@@ -1,7 +1,7 @@
 {
   "name": "questionnaire-viewer",
   "version": "0.4.0",
-  "description": "A website for rendering a FHIR Quesitonnaire using the LHC-Forms widget",
+  "description": "A website for rendering a FHIR Questionnaire using the LHC-Forms widget",
   "main": "app.js",
   "scripts": {
     "update-webdriver": "node node_modules/protractor/bin/webdriver-manager update --versions.chrome $(google-chrome --version |awk '{print $NF}')",

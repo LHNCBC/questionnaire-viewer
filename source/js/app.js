@@ -426,6 +426,9 @@ function resetPage() {
   while (formContainer.firstChild) {
     formContainer.removeChild(formContainer.lastChild);
   }
+
+  // reset FHIR contect 
+  LForms.Util.setFHIRContext(null);
   
   setLoadingMessage(false);
 
@@ -468,24 +471,34 @@ function showQuestionnaire() {
 
   results = {hasUrlQ: false, gotQ: false, hasUrlP: false, gotP: false, hasUrlS: false, gotS: false};
 
-  if (urlQSelected && usePackage && urlPSelected) {
-    results.hasUrlP = true;
+  // has a Questionnaire URL
+  if (urlQSelected) {
     results.hasUrlQ = true;
     setLoadingMessage(true);
-    loadPackageAndQuestionnaire(urlPSelected, urlQSelected)
-  }
-  else if (urlQSelected) {
-    results.hasUrlQ = true;
-    setLoadingMessage(true);
-    if (!usePackage && urlSSelected) {
-      results.hasUrlS = true;
-      setupFHIRServer(urlSSelected);
+    // use a resource package 
+    if (usePackage) {
+      // has a resource package URL
+      if (urlPSelected) {
+        results.hasUrlP = true;
+        loadPackageAndQuestionnaire(urlPSelected, urlQSelected)
+      }
+      // no resource package URL
+      else {
+        loadQuestionnaire(urlQSelected);
+      }
     }
+    // use a FHIR server
     else {
-      loadQuestionnaire(urlQSelected)    
+      // has a FHIR server URL
+      if (urlSSelected) {
+        results.hasUrlS = true;
+        setupFHIRServer(urlSSelected);
+      }
+      loadQuestionnaire(urlQSelected);    
     }
-    
+
   }
+  // no Questionnaire URL
   else {
     showErrorMessages("Please provide the URL of a FHIR Questionnaire.")
   }
@@ -528,10 +541,8 @@ export function viewQuestionnaire() {
   // Some sample URLs for FHIR Questionnaire / LForms data
   // https://clinicaltables.nlm.nih.gov/loinc_form_definitions?loinc_num=[LOINC_NUM]>
   // https://clinicaltables.nlm.nih.gov/loinc_form_definitions?loinc_num=34565-2
-  // https://lforms-smart-fhir.nlm.nih.gov/v/r4/fhir/Questionnaire/55418-8-x
-  // https://lforms-smart-fhir.nlm.nih.gov/v/r4/fhir/Questionnaire/24322-0-x
-
-  // https://lforms-fhir.nlm.nih.gov/baseR4
+  // https://lforms-fhir.nlm.nih.gov/baseR4/Questionnaire/55418-8
+  // https://lforms-fhir.nlm.nih.gov/baseR4/Questionnaire/24322-0
   
   resetPage();
 
