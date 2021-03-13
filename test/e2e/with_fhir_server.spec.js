@@ -42,7 +42,7 @@ describe('FHIR Questionnaire Viewer with a specified FHIR server: ', function() 
       secondItem.click();
       secondItem.sendKeys(protractor.Key.ARROW_DOWN);
       secondItem.sendKeys(protractor.Key.TAB);
-      expect(secondItem.getAttribute('value')).toBe('Attested');
+      expect(secondItem.getAttribute('value')).toBe('Re-Validation failed');
       thirdItem.click();
       thirdItem.sendKeys(protractor.Key.ARROW_DOWN);
       thirdItem.sendKeys(protractor.Key.TAB);
@@ -58,7 +58,7 @@ describe('FHIR Questionnaire Viewer with a specified FHIR server: ', function() 
       secondItem.sendKeys(protractor.Key.ARROW_DOWN);
       secondItem.sendKeys(protractor.Key.ARROW_DOWN);
       secondItem.sendKeys(protractor.Key.TAB);
-      expect(secondItem.getAttribute('value')).toBe('written');
+      expect(secondItem.getAttribute('value')).toBe('verbal');
       thirdItem.click();
       thirdItem.sendKeys(protractor.Key.ARROW_DOWN);
       thirdItem.sendKeys(protractor.Key.TAB);
@@ -99,11 +99,11 @@ describe('FHIR Questionnaire Viewer with a specified FHIR server: ', function() 
       secondItem.click();
       secondItem.sendKeys(protractor.Key.ARROW_DOWN);
       secondItem.sendKeys(protractor.Key.TAB);
-      expect(secondItem.getAttribute('value')).toBe('Attested');
+      expect(secondItem.getAttribute('value')).toBe('Re-Validation failed');
       thirdItem.click();
       thirdItem.sendKeys(protractor.Key.ARROW_DOWN);
       thirdItem.sendKeys(protractor.Key.TAB);
-      expect(thirdItem.getAttribute('value')).toBe('Attested');
+      expect(thirdItem.getAttribute('value')).toBe('Re-Validation failed');
 
       // 2nd run
       firstItem.click();
@@ -115,12 +115,12 @@ describe('FHIR Questionnaire Viewer with a specified FHIR server: ', function() 
       secondItem.sendKeys(protractor.Key.ARROW_DOWN);
       secondItem.sendKeys(protractor.Key.ARROW_DOWN);
       secondItem.sendKeys(protractor.Key.TAB);
-      expect(secondItem.getAttribute('value')).toBe('written');
+      expect(secondItem.getAttribute('value')).toBe('verbal');
       thirdItem.click();
       thirdItem.sendKeys(protractor.Key.ARROW_DOWN);
       thirdItem.sendKeys(protractor.Key.ARROW_DOWN);
       thirdItem.sendKeys(protractor.Key.TAB);
-      expect(thirdItem.getAttribute('value')).toBe('written');
+      expect(thirdItem.getAttribute('value')).toBe('verbal');
 
       expect(notes.getText()).toContain('/x-fhir-query-test.R4.json');
       expect(notes.getText()).toContain('https://lforms-fhir.nlm.nih.gov/baseR4');    
@@ -161,7 +161,7 @@ describe('FHIR Questionnaire Viewer with a specified FHIR server: ', function() 
       secondItem.click();
       secondItem.sendKeys(protractor.Key.ARROW_DOWN);
       secondItem.sendKeys(protractor.Key.TAB);
-      expect(secondItem.getAttribute('value')).toBe('Attested');
+      expect(secondItem.getAttribute('value')).toBe('Re-Validation failed');
       thirdItem.click();
       thirdItem.sendKeys(protractor.Key.ARROW_DOWN);
       thirdItem.sendKeys(protractor.Key.TAB);
@@ -177,7 +177,7 @@ describe('FHIR Questionnaire Viewer with a specified FHIR server: ', function() 
       secondItem.sendKeys(protractor.Key.ARROW_DOWN);
       secondItem.sendKeys(protractor.Key.ARROW_DOWN);
       secondItem.sendKeys(protractor.Key.TAB);
-      expect(secondItem.getAttribute('value')).toBe('written');
+      expect(secondItem.getAttribute('value')).toBe('verbal');
       thirdItem.click();
       thirdItem.sendKeys(protractor.Key.ARROW_DOWN);
       thirdItem.sendKeys(protractor.Key.TAB);
@@ -212,11 +212,11 @@ describe('FHIR Questionnaire Viewer with a specified FHIR server: ', function() 
       secondItem.click();
       secondItem.sendKeys(protractor.Key.ARROW_DOWN);
       secondItem.sendKeys(protractor.Key.TAB);
-      expect(secondItem.getAttribute('value')).toBe('Attested');
+      expect(secondItem.getAttribute('value')).toBe('Re-Validation failed');
       thirdItem.click();
       thirdItem.sendKeys(protractor.Key.ARROW_DOWN);
       thirdItem.sendKeys(protractor.Key.TAB);
-      expect(thirdItem.getAttribute('value')).toBe('Attested');
+      expect(thirdItem.getAttribute('value')).toBe('Re-Validation failed');
 
       // 2nd run
       firstItem.click();
@@ -228,12 +228,12 @@ describe('FHIR Questionnaire Viewer with a specified FHIR server: ', function() 
       secondItem.sendKeys(protractor.Key.ARROW_DOWN);
       secondItem.sendKeys(protractor.Key.ARROW_DOWN);
       secondItem.sendKeys(protractor.Key.TAB);
-      expect(secondItem.getAttribute('value')).toBe('written');
+      expect(secondItem.getAttribute('value')).toBe('verbal');
       thirdItem.click();
       thirdItem.sendKeys(protractor.Key.ARROW_DOWN);
       thirdItem.sendKeys(protractor.Key.ARROW_DOWN);
       thirdItem.sendKeys(protractor.Key.TAB);
-      expect(thirdItem.getAttribute('value')).toBe('written');
+      expect(thirdItem.getAttribute('value')).toBe('verbal');
 
       expect(notes.getText()).toContain('/x-fhir-query-test.R4.json');
       expect(notes.getText()).toContain('https://lforms-fhir.nlm.nih.gov/baseR4');   

@@ -493,8 +493,11 @@ function showQuestionnaire() {
         results.hasUrlS = true;
         setupFHIRServerAndLoadQuestionnaire(urlSSelected);
       }
+      // no FHIR server URL
+      else {
+        loadQuestionnaire(urlQSelected);
+      }
     }
-
   }
   // no Questionnaire URL
   else {

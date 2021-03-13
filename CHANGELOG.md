@@ -7,7 +7,7 @@ This project follows [Semantic Versioning](http://semver.org/).
 ### Added
 - Added an option to specify a FHIR server for needed resources.
 ### Updated
-- Updated lforms to verison 28.1.2
+- Updated lforms to verison 28.1.4
 
 ## [0.3.0] - 10-20-2020
 ### Added
