@@ -427,7 +427,7 @@ function resetPage() {
     formContainer.removeChild(formContainer.lastChild);
   }
 
-  // reset FHIR contect 
+  // reset FHIR context 
   LForms.Util.setFHIRContext(null);
   
   setLoadingMessage(false);
