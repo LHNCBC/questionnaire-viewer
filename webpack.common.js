@@ -4,9 +4,8 @@ const TerserJSPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
-
 module.exports = {
-  entry: ['whatwg-fetch', './source/js/app.js'],
+  entry: ['@babel/polyfill', 'whatwg-fetch', './source/js/app.js'],
   optimization: {
     minimizer: [new TerserJSPlugin({sourceMap: true}), new OptimizeCSSAssetsPlugin({})],
   },
@@ -54,7 +53,7 @@ module.exports = {
             presets: [['@babel/preset-env',
               {
                 "targets": {
-                  "browsers": "ie >= 10"
+                  "browsers": "ie >= 11"
                 }
               }
             ]]

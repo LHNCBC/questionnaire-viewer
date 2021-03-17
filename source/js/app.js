@@ -5,9 +5,12 @@ import parse from "url-parse";
 import pako from "pako";
 import untar from "js-untar-lhc";
 import str2ab from "string-to-arraybuffer";
+import FHIR from 'fhirclient';
 
 let urlQSelected = null;
 let urlPSelected = null;
+let urlSSelected = null;
+let usePackage = null;
 let results = {hasUrlQ: false, gotQ: false, hasUrlP: false, gotP: false}
 
 /**
@@ -46,7 +49,9 @@ function addQuestionnaire(dataQ, dataPackage) {
       
     // Add the form to the page
     try {
-      LForms.Util.addFormToPage(lfData, "qv-lforms");
+      LForms.Util.addFormToPage(lfData, "qv-lforms").then(function(){
+        showInfoMessages();
+      });
     }
     catch(error) {
       console.error('Error:', error);
@@ -55,7 +60,7 @@ function addQuestionnaire(dataQ, dataPackage) {
     }
   }
   
-  showInfoMessages();
+
 }
 
 
@@ -107,6 +112,13 @@ function showInfoMessages() {
         }
       }
     }
+    else if (results.hasUrlS && !results.gotS) {
+      notes += ", but failed to access to the FHIR Server at " + urlSSelected;
+    }
+    else if (results.hasUrlS && results.gotS) {
+      notes += ", with resources loaded from the FHIR Server at " + urlSSelected;
+    }
+    
     notes += ".";
     // check answer resource loading message
     let answerMessages = LForms.Util.getAnswersResourceStatus();
@@ -119,8 +131,7 @@ function showInfoMessages() {
       // add warning messages
       let formWarning = document.getElementById('qv-form-warning');
       formWarning.innerHTML = answerMessages.join('<br />')
-    }
-    
+    }      
   }
   
   formInfo.textContent  = notes;
@@ -415,11 +426,85 @@ function resetPage() {
   while (formContainer.firstChild) {
     formContainer.removeChild(formContainer.lastChild);
   }
+
+  // reset FHIR context 
+  LForms.Util.setFHIRContext(null);
   
   setLoadingMessage(false);
 
 }
 
+
+/**
+ * Sets up a client for a standard (open) FHIR server.
+ * @param urlFhirServer the URL of a FHIR server.
+ *  whether communication with the server was successfully established.
+ */
+function setupFHIRServerAndLoadQuestionnaire(urlFhirServer) {
+  try {
+    let fhir = FHIR.client(urlFhirServer);
+    LForms.Util.setFHIRContext(fhir);
+    // Retrieve the fhir version
+    LForms.Util.getServerFHIRReleaseID(function(releaseID) {
+      if (releaseID !== undefined) {
+        results.gotS = true;    
+      }
+      else {
+        results.gotS = false;
+        LForms.Util.setFHIRContext(null);
+      }
+      loadQuestionnaire(urlQSelected)
+    });  
+  }
+  catch (e) {
+    results.gotS = false;
+    console.log(e)
+    loadQuestionnaire(urlQSelected)
+  }
+}
+
+/**
+ * Show a Questionnaire based on the parameters
+ */
+function showQuestionnaire() {
+
+  results = {hasUrlQ: false, gotQ: false, hasUrlP: false, gotP: false, hasUrlS: false, gotS: false};
+
+  // has a Questionnaire URL
+  if (urlQSelected) {
+    results.hasUrlQ = true;
+    setLoadingMessage(true);
+    // use a resource package 
+    if (usePackage) {
+      // has a resource package URL
+      if (urlPSelected) {
+        results.hasUrlP = true;
+        loadPackageAndQuestionnaire(urlPSelected, urlQSelected)
+      }
+      // no resource package URL
+      else {
+        loadQuestionnaire(urlQSelected);
+      }
+    }
+    // use a FHIR server
+    else {
+      // has a FHIR server URL
+      if (urlSSelected) {
+        results.hasUrlS = true;
+        setupFHIRServerAndLoadQuestionnaire(urlSSelected);
+      }
+      // no FHIR server URL
+      else {
+        loadQuestionnaire(urlQSelected);
+      }
+    }
+  }
+  // no Questionnaire URL
+  else {
+    showErrorMessages("Please provide the URL of a FHIR Questionnaire.")
+  }
+
+}
 /**
  * Page's onLoad event hanlder. Check URL parameters to load FHIR Questionnarie and resource package
  */
@@ -431,31 +516,21 @@ export function onPageLoad() {
   let inputPanel = document.getElementById('qv-form-input');
   let urlLaunch = window.location.href;
   let parsedUrl = parse(urlLaunch, true);
-  let urlQuestionnaireParam = parsedUrl && parsedUrl.query ? parsedUrl.query.q : null;
-  let urlPackageParam = parsedUrl && parsedUrl.query ? parsedUrl.query.p : null;
-  
-  results = {hasUrlQ: false, gotQ: false, hasUrlP: false, gotP: false};
-
-  urlQSelected = urlQuestionnaireParam;
-  urlPSelected = urlPackageParam;
+  urlQSelected = parsedUrl && parsedUrl.query ? parsedUrl.query.q : null;
+  urlPSelected = parsedUrl && parsedUrl.query ? parsedUrl.query.p : null;
+  urlSSelected = parsedUrl && parsedUrl.query ? parsedUrl.query.s : null;
 
   // show input panel if parameters are not provided in URL
-  if (!urlQuestionnaireParam ) {
+  if (!urlQSelected ) {
     inputPanel.style.display = ''
   }
-
-  if (urlQuestionnaireParam && urlPackageParam) {
-    results.hasUrlP = true;
-    results.hasUrlQ = true;
-    setLoadingMessage(true);
-    loadPackageAndQuestionnaire(urlPackageParam, urlQuestionnaireParam)
+  else {
+    // If both a package file and a FHIR server are present, use only the package file.
+    if (urlPSelected) {
+      usePackage = true;
+    }
+    showQuestionnaire();
   }
-  else if (urlQuestionnaireParam) {
-    results.hasUrlQ = true;
-    setLoadingMessage(true);
-    loadQuestionnaire(urlQuestionnaireParam)
-  }
-
 }
 
 
@@ -467,35 +542,36 @@ export function viewQuestionnaire() {
   // Some sample URLs for FHIR Questionnaire / LForms data
   // https://clinicaltables.nlm.nih.gov/loinc_form_definitions?loinc_num=[LOINC_NUM]>
   // https://clinicaltables.nlm.nih.gov/loinc_form_definitions?loinc_num=34565-2
-  // https://lforms-smart-fhir.nlm.nih.gov/v/r4/fhir/Questionnaire/55418-8-x
-  // https://lforms-smart-fhir.nlm.nih.gov/v/r4/fhir/Questionnaire/24322-0-x
-
+  // https://lforms-fhir.nlm.nih.gov/baseR4/Questionnaire/55418-8
+  // https://lforms-fhir.nlm.nih.gov/baseR4/Questionnaire/24322-0
+  
   resetPage();
 
   let inputPanel = document.getElementById('qv-form-input');
 
   inputPanel.style.display = ''
-  let urlQ = document.getElementById('urlQuestionnaire').value;
-  let urlP = document.getElementById('urlPackage').value;
+  urlQSelected = document.getElementById('urlQuestionnaire').value;
+  urlPSelected = document.getElementById('urlPackage').value;
+  urlSSelected = document.getElementById('urlFhirServer').value;
+  usePackage = document.getElementById('radioPackage').checked;
 
-  results = {hasUrlQ: false, gotQ: false, hasUrlP: false, gotP: false};
+  showQuestionnaire();
 
-  urlQSelected = urlQ;
-  urlPSelected = urlP;
+}
 
-  if (urlQ && urlP) {
-    results.hasUrlP = true;
-    results.hasUrlQ = true;
-    setLoadingMessage(true);
-    loadPackageAndQuestionnaire(urlP, urlQ)
+/**
+ * Toggle the disable/enable attributes of the input fields for package URL and FHRI server URL
+ * @param {*} eleId2Disable the id of the input field to be disabled
+ * @param {*} eleId2Enable the id of the input field to be enabled
+ */
+export function toggleInputFields(eleId2Disable, eleId2Enable) {
+  let eleDisable = document.getElementById(eleId2Disable);
+  if (eleDisable) {
+    eleDisable.disabled = true;
   }
-  else if (urlQ) {
-    results.hasUrlQ = true;
-    setLoadingMessage(true);
-    loadQuestionnaire(urlQ)    
-  }
-  else {
-    showErrorMessages("Please provide the URL of a FHIR Questionnaire.")
+  let eleEnable = document.getElementById(eleId2Enable);
+  if (eleEnable) {
+    eleEnable.disabled = false;
   }
 
 }
