@@ -20,8 +20,8 @@
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.6.0",
-    "@babel/preset-env": "^7.6.0",
     "@babel/polyfill": "^7.12.1",
+    "@babel/preset-env": "^7.6.0",
     "babel-loader": "^8.0.6",
     "clean-webpack-plugin": "^3.0.0",
     "css-loader": "^3.1.0",
@@ -44,9 +44,11 @@
   "dependencies": {
     "fhirclient": "^2.3.10",
     "js-untar-lhc": "^2.1.1",
+    "lforms": "^29.0.3",
+    "lforms-updater": "^29.0.0",
     "pako": "^1.0.11",
     "string-to-arraybuffer": "^1.0.2",
-    "url-parse": "^1.4.7",
+    "url-parse": "^1.5.1",
     "whatwg-fetch": "^3.0.0"
   }
 }

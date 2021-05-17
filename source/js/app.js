@@ -6,6 +6,8 @@ import pako from "pako";
 import untar from "js-untar-lhc";
 import str2ab from "string-to-arraybuffer";
 import FHIR from 'fhirclient';
+import lformsUpdater from 'lforms-updater';
+
 
 let urlQSelected = null;
 let urlPSelected = null;
@@ -22,15 +24,18 @@ function addQuestionnaire(dataQ, dataPackage) {
 
   if (dataQ && dataQ.resourceType === "Questionnaire") {
 
-    let message = "The Questionnaire loaded from " + urlQSelected + 
+    let message = "The Questionnaire loaded from " + urlQSelected +
     " cannot be prcoessed by LHC-Forms, please check if the Questionnaire is valid" +
     " or if it has features that LHC-Forms does not support yet.";
 
+    // Run the updater in case it was created with an older version of
+    // LHC-Forms.
+    dataQ = lformsUpdater.update(dataQ);
     let lfData = dataQ;
     // Convert FHIR Questionnaire to LForms format
     try {
-      lfData = LForms.Util.convertFHIRQuestionnaireToLForms(dataQ);    
-    }  
+      lfData = LForms.Util.convertFHIRQuestionnaireToLForms(dataQ);
+    }
     catch(error) {
       console.error('Error:', error);
       results.gotQ = false;
@@ -40,13 +45,13 @@ function addQuestionnaire(dataQ, dataPackage) {
     if (dataPackage) {
       lfData._packageStore = dataPackage;
     }
-      
+
     // Turn off the top-level questions and controls (optional)
     lfData.templateOptions = {
       showFormHeader: false,
       hideFormControls: true
     };
-      
+
     // Add the form to the page
     try {
       LForms.Util.addFormToPage(lfData, "qv-lforms").then(function(){
@@ -59,7 +64,7 @@ function addQuestionnaire(dataQ, dataPackage) {
       showErrorMessages(message)
     }
   }
-  
+
 
 }
 
@@ -104,7 +109,7 @@ function showInfoMessages() {
           case "reader":
             notes += ", but failed to read the package file from " + urlPSelected;
             break;
-          case "fetch": 
+          case "fetch":
             notes += ", but failed to fetch the package file from " + urlPSelected;
             break;
           default:
@@ -118,12 +123,12 @@ function showInfoMessages() {
     else if (results.hasUrlS && results.gotS) {
       notes += ", with resources loaded from the FHIR Server at " + urlSSelected;
     }
-    
+
     notes += ".";
     // check answer resource loading message
     let answerMessages = LForms.Util.getAnswersResourceStatus();
     if (answerMessages && answerMessages.length > 0) {
-      notes += ' Some FHIR ValueSet Resource(s) failed to load.'  
+      notes += ' Some FHIR ValueSet Resource(s) failed to load.'
       // show the button
       let btnWarning = document.getElementById('qv-btn-show-warning');
       if (btnWarning) btnWarning.style.display = '';
@@ -131,9 +136,9 @@ function showInfoMessages() {
       // add warning messages
       let formWarning = document.getElementById('qv-form-warning');
       formWarning.innerHTML = answerMessages.join('<br />')
-    }      
+    }
   }
-  
+
   formInfo.textContent  = notes;
 
   setLoadingMessage(false);
@@ -165,7 +170,7 @@ export function toggleWarning() {
  */
 function loadQuestionnaire(urlQ, packageData) {
 
-  fetch(urlQ)  
+  fetch(urlQ)
     .then(res => {
       if (res.ok) {
         return res.json()
@@ -181,7 +186,7 @@ function loadQuestionnaire(urlQ, packageData) {
       }
       else {
         return Promise.reject("No Questionnaire (JSON) returned from " + urlQ)
-      }      
+      }
     })
     .catch(error => {
       console.error('Error:', error);
@@ -198,7 +203,7 @@ function loadQuestionnaire(urlQ, packageData) {
 
 
 /**
- * Construct a files info array with the same structure of 'files' in .index.json 
+ * Construct a files info array with the same structure of 'files' in .index.json
 *  where resourceType, url and version are used in LHC-Forms to identifier a resource.
 *  See https://confluence.hl7.org/display/FHIR/NPM+Package+Specification#NPMPackageSpecification-.index.json
  * @param {*} extractedFiles an array of file objects extracted from a tar file using js-untar-lhc npm package.
@@ -213,7 +218,7 @@ function constructResourcePackage(extractedFiles) {
 
     if (extractedFile.name.match(/^package.*\.json$/)) {
       let fileContent = extractedFile.readAsJSON();
-      if (fileContent && (fileContent.resourceType === 'ValueSet' || fileContent.resourceType === 'CodeSystem')) {      
+      if (fileContent && (fileContent.resourceType === 'ValueSet' || fileContent.resourceType === 'CodeSystem')) {
         packageData.push({
           filename: extractedFile.name.replace(/^package\//, ""),
           fileContent: fileContent,
@@ -221,22 +226,22 @@ function constructResourcePackage(extractedFiles) {
           version: fileContent.version,
           resourceType: fileContent.resourceType
         })
-      }  
+      }
     }
-  }              
+  }
 
   return packageData;
 }
 
 
 /**
- * Load a FHIR resource package file, which is a gzipped tar file. 
+ * Load a FHIR resource package file, which is a gzipped tar file.
  * See https://confluence.hl7.org/display/FHIR/NPM+Package+Specification
  * It then processes the file in memory and call loadQuestionnaire to add the questionnaire to the page.
  * See https://stackoverflow.com/questions/47443433/extracting-gzip-data-in-javascript-with-pako-encoding-issues
  * @param {*} urlPackage URL of a FHIR resource package
  * @param {*} urlQ URL of a FHIR Questionnaire resource
- */  
+ */
 function loadPackageAndQuestionnaire(urlPackage, urlQ) {
 
   let packageData = [];
@@ -267,16 +272,16 @@ function loadPackageAndQuestionnaire(urlPackage, urlQ) {
 
             // split it into an array rather than a "string"
             const charData = strData.split('').map(function(x){return x.charCodeAt(0); });
-    
+
             // convert to binary
             const binData = new Uint8Array(charData);
-    
+
             // inflate
             const unzippedData = pako.inflate(binData);
-                        
-            // unzippedData could be too long and result in an error: 
+
+            // unzippedData could be too long and result in an error:
             //  "Uncaught RangeError: Maximum call stack size exceeded"
-            // Use the following loop instead 
+            // Use the following loop instead
             const uint16Data = new Uint16Array(unzippedData);
             let strAsciiData ="";
             let len = uint16Data.length;
@@ -289,7 +294,7 @@ function loadPackageAndQuestionnaire(urlPackage, urlQ) {
 
             // process the tar file
             // Note:
-            //let fileJsonContent = extractedFile.readAsJSON(); 
+            //let fileJsonContent = extractedFile.readAsJSON();
             // readAsString (and readAsJSON) encountered two errors on on sample package.tgz file
             // 1) Uncaught RangeError: Maximum call stack size exceeded
             //    this is caused by the same reason above
@@ -301,7 +306,7 @@ function loadPackageAndQuestionnaire(urlPackage, urlQ) {
               // .progress(function(extractedFile) {
                 // do something with a single extracted file
                 //let fileStrContent = extractedFile.readAsString();
-                // if (extractedFile && extractedFile.name.match(/\.json$/)) {              
+                // if (extractedFile && extractedFile.name.match(/\.json$/)) {
                 //   packageFiles[extractedFile.name] = extractedFile.readAsJSON();
                 // }
               // })
@@ -326,15 +331,15 @@ function loadPackageAndQuestionnaire(urlPackage, urlQ) {
                       let fileInfo = resInIndex[extractedFile.name.replace(/^package\//, "")];
                       if (fileInfo && (fileInfo.resourceType === 'ValueSet' || fileInfo.resourceType === 'CodeSystem')) {
                         fileInfo.fileContent = extractedFile.readAsJSON();
-                        packageData.push(fileInfo);                  
-                      }  
-                    }              
+                        packageData.push(fileInfo);
+                      }
+                    }
                   }
                   // process all .json files in the /package directory if there is no .index.json
                   else {
                     packageData = constructResourcePackage(extractedFiles)
                   }
-                  
+
                   // packageData has the same structure of the .index.json file in the package file, with an extra fileContent
                   // that contains the data in each resource file.
                   // See https://confluence.hl7.org/display/FHIR/NPM+Package+Specification
@@ -370,13 +375,13 @@ function loadPackageAndQuestionnaire(urlPackage, urlQ) {
 
         reader.onerror = function (error) {
           console.error('FileReader Error', urlPackage, error);
-          results.gotP = false;            
+          results.gotP = false;
           esults.pErrorLocation = "reader";
           // try to load the questionnaire without the package
           loadQuestionnaire(urlQ)
         };
 
-        reader.readAsDataURL(response);          
+        reader.readAsDataURL(response);
       })
       .catch(error => {
         console.error('Fetch Error:', urlPackage, error);
@@ -385,7 +390,7 @@ function loadPackageAndQuestionnaire(urlPackage, urlQ) {
         // try to load the questionnaire without the package
         loadQuestionnaire(urlQ)
       });
-  }  
+  }
 }
 
 
@@ -427,9 +432,9 @@ function resetPage() {
     formContainer.removeChild(formContainer.lastChild);
   }
 
-  // reset FHIR context 
+  // reset FHIR context
   LForms.Util.setFHIRContext(null);
-  
+
   setLoadingMessage(false);
 
 }
@@ -447,14 +452,14 @@ function setupFHIRServerAndLoadQuestionnaire(urlFhirServer) {
     // Retrieve the fhir version
     LForms.Util.getServerFHIRReleaseID(function(releaseID) {
       if (releaseID !== undefined) {
-        results.gotS = true;    
+        results.gotS = true;
       }
       else {
         results.gotS = false;
         LForms.Util.setFHIRContext(null);
       }
       loadQuestionnaire(urlQSelected)
-    });  
+    });
   }
   catch (e) {
     results.gotS = false;
@@ -474,7 +479,7 @@ function showQuestionnaire() {
   if (urlQSelected) {
     results.hasUrlQ = true;
     setLoadingMessage(true);
-    // use a resource package 
+    // use a resource package
     if (usePackage) {
       // has a resource package URL
       if (urlPSelected) {
@@ -544,7 +549,7 @@ export function viewQuestionnaire() {
   // https://clinicaltables.nlm.nih.gov/loinc_form_definitions?loinc_num=34565-2
   // https://lforms-fhir.nlm.nih.gov/baseR4/Questionnaire/55418-8
   // https://lforms-fhir.nlm.nih.gov/baseR4/Questionnaire/24322-0
-  
+
   resetPage();
 
   let inputPanel = document.getElementById('qv-form-input');
