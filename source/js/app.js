@@ -30,10 +30,10 @@ function addQuestionnaire(dataQ, dataPackage) {
 
     // Run the updater in case it was created with an older version of
     // LHC-Forms.
-    dataQ = lformsUpdater.update(dataQ);
-    let lfData = dataQ;
+    let lfData;
     // Convert FHIR Questionnaire to LForms format
     try {
+      dataQ = lformsUpdater.update(dataQ);
       lfData = LForms.Util.convertFHIRQuestionnaireToLForms(dataQ);
     }
     catch(error) {
@@ -41,30 +41,32 @@ function addQuestionnaire(dataQ, dataPackage) {
       results.gotQ = false;
       showErrorMessages(message)
     }
-    // Add resource package if there is one
-    if (dataPackage) {
-      lfData._packageStore = dataPackage;
-    }
 
-    // Turn off the top-level questions and controls (optional)
-    lfData.templateOptions = {
-      showFormHeader: false,
-      hideFormControls: true
-    };
+    if (lfData) {
+      // Add resource package if there is one
+      if (dataPackage) {
+        lfData._packageStore = dataPackage;
+      }
 
-    // Add the form to the page
-    try {
-      LForms.Util.addFormToPage(lfData, "qv-lforms").then(function(){
-        showInfoMessages();
-      });
-    }
-    catch(error) {
-      console.error('Error:', error);
-      results.gotQ = false;
-      showErrorMessages(message)
+      // Turn off the top-level questions and controls (optional)
+      lfData.templateOptions = {
+        showFormHeader: false,
+        hideFormControls: true
+      };
+
+      // Add the form to the page
+      try {
+        LForms.Util.addFormToPage(lfData, "qv-lforms").then(function(){
+          showInfoMessages();
+        });
+      }
+      catch(error) {
+        console.error('Error:', error);
+        results.gotQ = false;
+        showErrorMessages(message)
+      }
     }
   }
-
 
 }
 
