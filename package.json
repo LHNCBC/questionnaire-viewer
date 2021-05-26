@@ -1,6 +1,6 @@
 {
   "name": "questionnaire-viewer",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "A website for rendering a FHIR Questionnaire using the LHC-Forms widget",
   "main": "app.js",
   "scripts": {
@@ -20,11 +20,11 @@
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.6.0",
-    "@babel/preset-env": "^7.6.0",
     "@babel/polyfill": "^7.12.1",
+    "@babel/preset-env": "^7.6.0",
     "babel-loader": "^8.0.6",
     "clean-webpack-plugin": "^3.0.0",
-    "css-loader": "^3.1.0",
+    "css-loader": "^5.2.4",
     "extract-loader": "^3.1.0",
     "file-loader": "^4.1.0",
     "file-saver": "^2.0.2",
@@ -33,7 +33,7 @@
     "jasmine-spec-reporter": "^4.2.1",
     "mini-css-extract-plugin": "^0.8.0",
     "moment": "^2.24.0",
-    "optimize-css-assets-webpack-plugin": "^5.0.3",
+    "optimize-css-assets-webpack-plugin": "^6.0.0",
     "protractor": "^7.0.0",
     "terser-webpack-plugin": "^1.3.0",
     "webpack": "^4.37.0",
@@ -44,9 +44,11 @@
   "dependencies": {
     "fhirclient": "^2.3.10",
     "js-untar-lhc": "^2.1.1",
+    "lforms": "^29.0.3",
+    "lforms-updater": "^29.0.1",
     "pako": "^1.0.11",
     "string-to-arraybuffer": "^1.0.2",
-    "url-parse": "^1.4.7",
+    "url-parse": "^1.5.1",
     "whatwg-fetch": "^3.0.0"
   }
 }

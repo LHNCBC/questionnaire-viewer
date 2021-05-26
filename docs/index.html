@@ -25,15 +25,15 @@
       }
     </script>
 
-    
+
 
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
     <link href="https://fonts.googleapis.com/css?family=Droid+Sans:400,700"
      rel="stylesheet" type="text/css">
-    <link href="https://clinicaltables.nlm.nih.gov/lforms-versions/28.1.4/styles/lforms.min.css"
+    <link href="https://clinicaltables.nlm.nih.gov/lforms-versions/29.0.3/styles/lforms.min.css"
     media="screen" rel="stylesheet" />
-  <link href="app.ae139512fbabe81e02d4.css" rel="stylesheet"></head>
+  <link href="app.389999af61f3c80b9bd4.css" rel="stylesheet"></head>
   <body onload="app.onPageLoad()">
 
     <!-- Google Tag Manager (noscript) -->
@@ -50,7 +50,8 @@
     <div id="header">
       <div id="siteNameBox">
         <h1 id="siteName">FHIR Questionnaire Viewer</h1><br>
-        <span id="tagLine">Using <a href="https://lhcforms.nlm.nih.gov/" target="_blank">LHC-Forms Widget</a></span>
+        <span id="tagLine">Using <a href="https://lhcforms.nlm.nih.gov/"
+        target="_blank" rel="noreferrer">LHC-Forms Widget</a></span>
       </div>
     </div>
     <!-- end page header -->
@@ -58,8 +59,10 @@
     <div id="qv-form-input" style="display:none">
 
       <div id="qv-form-input-intro">
-        <p>This is a tool that allows you to render a FHIR Questionnaire (JSON), with its needed resources from either a FHIR resource package file or a FHIR server.</p>
-        <p>See <a href="https://confluence.hl7.org/display/FHIR/NPM+Package+Specification" target="_blank">https://confluence.hl7.org/display/FHIR/NPM+Package+Specification</a></p>
+        <p>This is a tool that allows you to render a FHIR Questionnaire (JSON), with its needed resources from either a FHIR resource package file or a FHIR server.
+        (See the <a
+        href="https://confluence.hl7.org/display/FHIR/NPM+Package+Specification"
+        target="_blank" rel="noreferrer">FHIR NPM package specification</a>.)</p>
       </div>
 
       <div id="qv-form-input-settings">
@@ -67,14 +70,14 @@
           <div class='qv-url-name'><label for="urlQuestionnaire">URL of a FHIR Questionnaire:</label></div>
           <div class='qv-url-value'><input type="text" id="urlQuestionnaire"></div>
         </div>
-        <div class="qv-url-row">          
+        <div class="qv-url-row">
           <div class='qv-url-name'>
             <input type="radio" id="radioPackage" name="resourceURL" value="package" checked onclick="app.toggleInputFields('urlFhirServer', 'urlPackage')">
             <label for="radioPackage">URL of a FHIR resource package:</label>
           </div>
           <div class='qv-url-value'><input type="text" id="urlPackage"></div>
         </div>
-        <div class="qv-url-row">          
+        <div class="qv-url-row">
           <div class='qv-url-name'>
             <input type="radio" id="radioFhirServer" name="resourceURL" value="fhirServer" onclick="app.toggleInputFields('urlPackage', 'urlFhirServer')">
             <label for="radioFhirServer">URL of a FHIR server for resources:</label>
@@ -82,7 +85,7 @@
           <div class='qv-url-value'><input type="text" id="urlFhirServer" disabled></div>
         </div>
 
-        <div id="qv-param-notes">*Note: These field values can be specified in the URL. 
+        <div id="qv-param-notes">*Note: These field values can be specified in the URL.
           Use URL parameter "q" to provide the URL for a Questionnaire JSON, and
           optionally either parameter "p" to provide the URL for a FHIR resource package (package.tgz), or
           parameter "s" to provide the URL for a FHIR server.</div>
@@ -94,7 +97,7 @@
       <div id="qv-error-header">Errors</div>
       <div id='qv-error-message'></div>
     </div>
-    <div role="alert" id="qv-loading" style="display:none"> 
+    <div role="alert" id="qv-loading" style="display:none">
       Loading ...
     </div>
 
@@ -103,13 +106,13 @@
         <span role="alert" id="qv-form-info"></span>
         <span><button id="qv-btn-show-warning" style="display:none" onclick="app.toggleWarning()">Show Warning Messages</button></span>
         <div role="alert" id="qv-form-warning"></div>
-      </div>      
+      </div>
       <div id="qv-lforms"></div>
     </div>
 
-    <script src="https://clinicaltables.nlm.nih.gov/lforms-versions/28.1.4/lforms.min.js"></script>
-    <script src="https://clinicaltables.nlm.nih.gov/lforms-versions/28.1.4/fhir/R4/lformsFHIR.min.js"></script>
-    <script src="https://clinicaltables.nlm.nih.gov/lforms-versions/28.1.4/fhir/STU3/lformsFHIR.min.js"></script>
+    <script src="https://clinicaltables.nlm.nih.gov/lforms-versions/29.0.3/lforms.min.js"></script>
+    <script src="https://clinicaltables.nlm.nih.gov/lforms-versions/29.0.3/fhir/R4/lformsFHIR.min.js"></script>
+    <script src="https://clinicaltables.nlm.nih.gov/lforms-versions/29.0.3/fhir/STU3/lformsFHIR.min.js"></script>
 
-  <script type="text/javascript" src="app.d33acb10c89d1c3c7674.js"></script></body>
+  <script type="text/javascript" src="app.0c3f00efb15c8ec7f8ec.js"></script></body>
 </html>
