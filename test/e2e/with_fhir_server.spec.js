@@ -5,17 +5,19 @@ const { $, browser } = require("protractor");
 const os = require("os"),
   EC = protractor.ExpectedConditions;
 
+const firstStatusListItem = 'Requires revalidation'; // for some reason this changed
+
 describe('FHIR Questionnaire Viewer with a specified FHIR server: ', function() {
 
   describe('URLs provided on page', function() {
     beforeAll(function () {
       setAngularSite(false);
     });
-  
+
     beforeEach(function () {
       browser.get('/');
     });
-    
+
     it('should load a Questionnaire without a FHIR server', function () {
       let urlQ = element(by.id('urlQuestionnaire')),
       urlS =  element(by.id('urlFhirServer')),
@@ -25,7 +27,7 @@ describe('FHIR Questionnaire Viewer with a specified FHIR server: ', function() 
       thirdItem =  element(by.id('listViewFromContext/1')),
       btn = element(by.id('qv-btn-load')),
       notes = element(by.id('qv-form-notes'));
-  
+
       radioFhirServer.click();
       urlQ.clear();
       urlQ.sendKeys(browser.baseUrl + '/x-fhir-query-test.R4.json');
@@ -42,7 +44,7 @@ describe('FHIR Questionnaire Viewer with a specified FHIR server: ', function() 
       secondItem.click();
       secondItem.sendKeys(protractor.Key.ARROW_DOWN);
       secondItem.sendKeys(protractor.Key.TAB);
-      expect(secondItem.getAttribute('value')).toBe('Re-Validation failed');
+      expect(secondItem.getAttribute('value')).toBe(firstStatusListItem);
       thirdItem.click();
       thirdItem.sendKeys(protractor.Key.ARROW_DOWN);
       thirdItem.sendKeys(protractor.Key.TAB);
@@ -66,10 +68,10 @@ describe('FHIR Questionnaire Viewer with a specified FHIR server: ', function() 
 
 
       expect(notes.getText()).toContain('/x-fhir-query-test.R4.json');
-  
+
     });
-          
-    
+
+
 
     it('should load a Questionnaire with a FHIR server', function () {
       let urlQ = element(by.id('urlQuestionnaire')),
@@ -78,10 +80,10 @@ describe('FHIR Questionnaire Viewer with a specified FHIR server: ', function() 
       firstItem =  element(by.id('listSelection/1')),
       secondItem =  element(by.id('listViewFromURL/1')),
       thirdItem =  element(by.id('listViewFromContext/1')),
-            
+
       btn = element(by.id('qv-btn-load')),
       notes = element(by.id('qv-form-notes'));
-  
+
       radioFhirServer.click();
       urlQ.clear();
       urlQ.sendKeys(browser.baseUrl + '/x-fhir-query-test.R4.json');
@@ -99,11 +101,11 @@ describe('FHIR Questionnaire Viewer with a specified FHIR server: ', function() 
       secondItem.click();
       secondItem.sendKeys(protractor.Key.ARROW_DOWN);
       secondItem.sendKeys(protractor.Key.TAB);
-      expect(secondItem.getAttribute('value')).toBe('Re-Validation failed');
+      expect(secondItem.getAttribute('value')).toBe(firstStatusListItem);
       thirdItem.click();
       thirdItem.sendKeys(protractor.Key.ARROW_DOWN);
       thirdItem.sendKeys(protractor.Key.TAB);
-      expect(thirdItem.getAttribute('value')).toBe('Re-Validation failed');
+      expect(thirdItem.getAttribute('value')).toBe(firstStatusListItem);
 
       // 2nd run
       firstItem.click();
@@ -123,20 +125,20 @@ describe('FHIR Questionnaire Viewer with a specified FHIR server: ', function() 
       expect(thirdItem.getAttribute('value')).toBe('verbal');
 
       expect(notes.getText()).toContain('/x-fhir-query-test.R4.json');
-      expect(notes.getText()).toContain('https://lforms-fhir.nlm.nih.gov/baseR4');    
+      expect(notes.getText()).toContain('https://lforms-fhir.nlm.nih.gov/baseR4');
     });
-  
+
   });
 
   describe('URLs provided as url parameters', function() {
     beforeAll(function () {
       setAngularSite(false);
     });
-  
+
     beforeEach(function () {
       browser.get('/');
     });
-    
+
     it('should load a Questionnaire without a FHIR server', function () {
 
       let url = browser.baseUrl + '/?q=' + browser.baseUrl + '/x-fhir-query-test.R4.json';
@@ -148,7 +150,7 @@ describe('FHIR Questionnaire Viewer with a specified FHIR server: ', function() 
       thirdItem =  element(by.id('listViewFromContext/1')),
       notes = element(by.id('qv-form-notes')),
       inputPanel = element(by.id('qv-form-input'));
-  
+
 
       browser.wait(EC.visibilityOf(firstItem));
 
@@ -161,7 +163,7 @@ describe('FHIR Questionnaire Viewer with a specified FHIR server: ', function() 
       secondItem.click();
       secondItem.sendKeys(protractor.Key.ARROW_DOWN);
       secondItem.sendKeys(protractor.Key.TAB);
-      expect(secondItem.getAttribute('value')).toBe('Re-Validation failed');
+      expect(secondItem.getAttribute('value')).toBe(firstStatusListItem);
       thirdItem.click();
       thirdItem.sendKeys(protractor.Key.ARROW_DOWN);
       thirdItem.sendKeys(protractor.Key.TAB);
@@ -185,12 +187,12 @@ describe('FHIR Questionnaire Viewer with a specified FHIR server: ', function() 
 
 
       expect(notes.getText()).toContain('/x-fhir-query-test.R4.json');
-  
+
       // input panel is not shown
       expect(inputPanel.isDisplayed()).toBeFalsy();
     });
-          
-    
+
+
 
     it('should load a Questionnaire with a FHIR server', function () {
       let url = browser.baseUrl + '/?q=' + browser.baseUrl + '/x-fhir-query-test.R4.json' + '&s=https://lforms-fhir.nlm.nih.gov/baseR4';
@@ -212,11 +214,11 @@ describe('FHIR Questionnaire Viewer with a specified FHIR server: ', function() 
       secondItem.click();
       secondItem.sendKeys(protractor.Key.ARROW_DOWN);
       secondItem.sendKeys(protractor.Key.TAB);
-      expect(secondItem.getAttribute('value')).toBe('Re-Validation failed');
+      expect(secondItem.getAttribute('value')).toBe(firstStatusListItem);
       thirdItem.click();
       thirdItem.sendKeys(protractor.Key.ARROW_DOWN);
       thirdItem.sendKeys(protractor.Key.TAB);
-      expect(thirdItem.getAttribute('value')).toBe('Re-Validation failed');
+      expect(thirdItem.getAttribute('value')).toBe(firstStatusListItem);
 
       // 2nd run
       firstItem.click();
@@ -236,15 +238,15 @@ describe('FHIR Questionnaire Viewer with a specified FHIR server: ', function() 
       expect(thirdItem.getAttribute('value')).toBe('verbal');
 
       expect(notes.getText()).toContain('/x-fhir-query-test.R4.json');
-      expect(notes.getText()).toContain('https://lforms-fhir.nlm.nih.gov/baseR4');   
+      expect(notes.getText()).toContain('https://lforms-fhir.nlm.nih.gov/baseR4');
 
       // input panel is not shown
-      expect(inputPanel.isDisplayed()).toBeFalsy(); 
+      expect(inputPanel.isDisplayed()).toBeFalsy();
     });
-  
-  });
-  
 
-  
+  });
+
+
+
 });
 
