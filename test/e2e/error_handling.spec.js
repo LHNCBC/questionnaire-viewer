@@ -11,7 +11,7 @@ describe('FHIR Questionnaire Viewer', function() {
     beforeAll(function () {
       setAngularSite(false);
     });
-  
+
     beforeEach(function () {
       browser.get('/');
 
@@ -27,7 +27,7 @@ describe('FHIR Questionnaire Viewer', function() {
       urlP =  element(by.id('urlPackage')),
       firstItem =  element(by.id('/q1/1')),
       btn = element(by.id('qv-btn-load'));
-  
+
       urlQ.clear();
       urlQ.sendKeys(browser.baseUrl + '/' + qFileName);
 
@@ -38,8 +38,8 @@ describe('FHIR Questionnaire Viewer', function() {
       btn.click();
 
     }
-    
-    it('should show no errors initially', function () {      
+
+    it('should show no errors initially', function () {
       expect(error.isDisplayed()).toBeFalsy();
       expect(info.isDisplayed()).toBeFalsy();
     });
@@ -48,7 +48,7 @@ describe('FHIR Questionnaire Viewer', function() {
       loadQuestionnaire("questionnaire-use-package.json")
       expect(info.getText()).toContain("questionnaire-use-package.json")
       expect(error.isDisplayed()).toBeFalsy();
-      
+
     });
 
     it('should show no errors when a Questionnaire and a package file are loaded', function () {
@@ -91,7 +91,7 @@ describe('FHIR Questionnaire Viewer', function() {
     it('should show related errors when a url for Questionnaire returns a resource that cannot be converted or displayed by LHC-Forms', function () {
       loadQuestionnaire("questionnaire-use-package-invalid-cannot-be-imported.json")
       expect(error.isDisplayed()).toBe(true);
-      expect(error.getText()).toContain("cannot be prcoessed by LHC-Forms, please check if the Questionnaire is valid or if it has features that LHC-Forms does not support yet")
+      expect(error.getText()).toContain("cannot be processed by LHC-Forms. Please check if the Questionnaire is valid or if it has features that LHC-Forms does not support yet")
       expect(error.getText()).toContain("questionnaire-use-package-invalid-cannot-be-imported.json")
 
     });
@@ -161,7 +161,7 @@ describe('FHIR Questionnaire Viewer', function() {
       expect(btnWarning.isDisplayed()).toBeFalsy();
       expect(warning.isDisplayed()).toBeFalsy();
       expect(info.getText()).toContain("questionnaire-use-package.json")
-      
+
     });
   });
 
@@ -169,7 +169,7 @@ describe('FHIR Questionnaire Viewer', function() {
     beforeAll(function () {
       setAngularSite(false);
     });
-  
+
     beforeEach(function () {
       browser.get('/');
 
@@ -183,7 +183,7 @@ describe('FHIR Questionnaire Viewer', function() {
 
     function loadQuestionnaire(qFileName, pFileName) {
 
-    
+
       let url = browser.baseUrl + '/?q=' + browser.baseUrl + '/' + qFileName;
       if (pFileName) {
         url += '&p=' + browser.baseUrl + '/' + pFileName;
@@ -198,7 +198,7 @@ describe('FHIR Questionnaire Viewer', function() {
       expect(info.getText()).toContain("questionnaire-use-package.json")
       expect(error.isDisplayed()).toBeFalsy();
       expect(inputs.isDisplayed()).toBeFalsy();
-      
+
     });
 
     it('should show no errors when a Questionnaire and a package file are loaded', function () {
@@ -233,7 +233,7 @@ describe('FHIR Questionnaire Viewer', function() {
     it('should show related errors when a url for Questionnaire returns a resource that cannot be converted or displayed by LHC-Forms', function () {
       loadQuestionnaire("questionnaire-use-package-invalid-cannot-be-imported.json")
       expect(error.isDisplayed()).toBe(true);
-      expect(error.getText()).toContain("cannot be prcoessed by LHC-Forms, please check if the Questionnaire is valid or if it has features that LHC-Forms does not support yet")
+      expect(error.getText()).toContain("cannot be processed by LHC-Forms. Please check if the Questionnaire is valid or if it has features that LHC-Forms does not support yet")
       expect(error.getText()).toContain("questionnaire-use-package-invalid-cannot-be-imported.json")
       expect(inputs.isDisplayed()).toBeFalsy();
 
@@ -328,10 +328,10 @@ describe('FHIR Questionnaire Viewer', function() {
       expect(error.isDisplayed()).toBeFalsy();
       expect(btnWarning.isDisplayed()).toBeFalsy();
       expect(warning.isDisplayed()).toBeFalsy();
-      expect(info.getText()).toContain("questionnaire-use-package.json")      
+      expect(info.getText()).toContain("questionnaire-use-package.json")
     });
 
   });
-  
+
 });
 
