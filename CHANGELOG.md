@@ -3,6 +3,10 @@
 This log documents the significant changes for each release.
 This project follows [Semantic Versioning](http://semver.org/).
 
+## [0.4.3] - 2021-08-11
+### Fixed
+- Added a link to the demo from the README, and updated lforms.
+
 ## [0.4.2] - 2021-06-14
 ### Fixed
 - Corrected typos in an error message and added the exception text to it.
