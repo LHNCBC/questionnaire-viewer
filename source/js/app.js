@@ -25,7 +25,7 @@ function addQuestionnaire(dataQ, dataPackage) {
   if (dataQ && dataQ.resourceType === "Questionnaire") {
 
     let message = "The Questionnaire loaded from " + urlQSelected +
-    " cannot be prcoessed by LHC-Forms, please check if the Questionnaire is valid" +
+    " cannot be processed by LHC-Forms.  Please check if the Questionnaire is valid" +
     " or if it has features that LHC-Forms does not support yet.";
 
     // Run the updater in case it was created with an older version of
@@ -39,7 +39,7 @@ function addQuestionnaire(dataQ, dataPackage) {
     catch(error) {
       console.error('Error:', error);
       results.gotQ = false;
-      showErrorMessages(message)
+      showErrorMessages(message + " (Details: "+error+")");
     }
 
     if (lfData) {
