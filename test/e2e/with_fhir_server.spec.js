@@ -42,6 +42,7 @@ describe('FHIR Questionnaire Viewer with a specified FHIR server: ', function() 
       firstItem.sendKeys(protractor.Key.TAB);
       expect(firstItem.getAttribute('value')).toBe('verificationresult-status');
       secondItem.click();
+      secondItem.sendKeys("Requires")
       secondItem.sendKeys(protractor.Key.ARROW_DOWN);
       secondItem.sendKeys(protractor.Key.TAB);
       expect(secondItem.getAttribute('value')).toBe(firstStatusListItem);
@@ -99,10 +100,12 @@ describe('FHIR Questionnaire Viewer with a specified FHIR server: ', function() 
       firstItem.sendKeys(protractor.Key.TAB);
       expect(firstItem.getAttribute('value')).toBe('verificationresult-status');
       secondItem.click();
+      secondItem.sendKeys("Requires")
       secondItem.sendKeys(protractor.Key.ARROW_DOWN);
       secondItem.sendKeys(protractor.Key.TAB);
       expect(secondItem.getAttribute('value')).toBe(firstStatusListItem);
       thirdItem.click();
+      thirdItem.sendKeys("Requires")
       thirdItem.sendKeys(protractor.Key.ARROW_DOWN);
       thirdItem.sendKeys(protractor.Key.TAB);
       expect(thirdItem.getAttribute('value')).toBe(firstStatusListItem);
@@ -161,6 +164,7 @@ describe('FHIR Questionnaire Viewer with a specified FHIR server: ', function() 
       firstItem.sendKeys(protractor.Key.TAB);
       expect(firstItem.getAttribute('value')).toBe('verificationresult-status');
       secondItem.click();
+      secondItem.sendKeys("Requires")
       secondItem.sendKeys(protractor.Key.ARROW_DOWN);
       secondItem.sendKeys(protractor.Key.TAB);
       expect(secondItem.getAttribute('value')).toBe(firstStatusListItem);
@@ -212,10 +216,12 @@ describe('FHIR Questionnaire Viewer with a specified FHIR server: ', function() 
       firstItem.sendKeys(protractor.Key.TAB);
       expect(firstItem.getAttribute('value')).toBe('verificationresult-status');
       secondItem.click();
+      secondItem.sendKeys("Requires")
       secondItem.sendKeys(protractor.Key.ARROW_DOWN);
       secondItem.sendKeys(protractor.Key.TAB);
       expect(secondItem.getAttribute('value')).toBe(firstStatusListItem);
       thirdItem.click();
+      thirdItem.sendKeys("Requires")
       thirdItem.sendKeys(protractor.Key.ARROW_DOWN);
       thirdItem.sendKeys(protractor.Key.TAB);
       expect(thirdItem.getAttribute('value')).toBe(firstStatusListItem);
