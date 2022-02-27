@@ -44,7 +44,7 @@
     "js-untar-lhc": "^2.1.1",
     "pako": "^1.0.11",
     "string-to-arraybuffer": "^1.0.2",
-    "url-parse": "^1.4.7",
+    "url-parse": "^1.5.8",
     "whatwg-fetch": "^3.0.0"
   }
 }
