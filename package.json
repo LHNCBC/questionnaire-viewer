@@ -7,7 +7,8 @@
     "update-webdriver": "node node_modules/protractor/bin/webdriver-manager update --versions.chrome $(google-chrome --version |awk '{print $NF}')",
     "test": "webpack-dev-server --config webpack.development.js & sleep 1; protractor test/e2e/protractor.conf.js; s=$?; kill %1; exit $s",
     "build": "webpack --config webpack.production.js",
-    "start": "webpack-dev-server --open --config webpack.development.js"
+    "start": "webpack-dev-server --open --config webpack.development.js",
+    "cy:open": "cypress open --project test"
   },
   "repository": {
     "type": "git",
@@ -25,6 +26,7 @@
     "babel-loader": "^8.0.6",
     "clean-webpack-plugin": "^3.0.0",
     "css-loader": "^5.2.4",
+    "cypress": "^10.10.0",
     "extract-loader": "^3.1.0",
     "file-loader": "^4.1.0",
     "file-saver": "^2.0.2",
