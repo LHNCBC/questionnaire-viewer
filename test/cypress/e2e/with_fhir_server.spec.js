@@ -1,258 +1,301 @@
-'use strict';
-
-const { $, browser } = require("protractor");
-
-const os = require("os"),
-  EC = protractor.ExpectedConditions;
-
 const firstStatusListItem = 'Requires revalidation'; // for some reason this changed
 
-describe('FHIR Questionnaire Viewer with a specified FHIR server: ', function() {
+/**
+ * Wait for the Prefetch autocomplete filtered results to update,
+ * so the first result contains text typed in the autocomplete.
+ * @param text text typed in the autocomplete
+ */
+function waitForFirstResultToContain(text) {
+  cy.get('#searchResults li:first-child, #searchResults tr:first-child')
+      .should('contain.text', text);
+}
 
-  describe('URLs provided on page', function() {
-    beforeAll(function () {
-      setAngularSite(false);
+describe('FHIR Questionnaire Viewer with a specified FHIR server: ', () => {
+  describe('URLs provided on page', () => {
+    beforeEach(() => {
+      cy.visit('/');
     });
 
-    beforeEach(function () {
-      browser.get('/');
-    });
+    it('should load a Questionnaire without a FHIR server', () => {
+      const urlQ = 'urlQuestionnaire',
+          urlS =  'urlFhirServer',
+          radioFhirServer = 'radioFhirServer',
+          firstItem =  'listSelection/1',
+          secondItem =  'listViewFromURL/1',
+          thirdItem =  'listViewFromContext/1',
+          btn = 'qv-btn-load',
+          notes = 'qv-form-notes';
 
-    it('should load a Questionnaire without a FHIR server', function () {
-      let urlQ = element(by.id('urlQuestionnaire')),
-      urlS =  element(by.id('urlFhirServer')),
-      radioFhirServer = element(by.id('radioFhirServer')),
-      firstItem =  element(by.id('listSelection/1')),
-      secondItem =  element(by.id('listViewFromURL/1')),
-      thirdItem =  element(by.id('listViewFromContext/1')),
-      btn = element(by.id('qv-btn-load')),
-      notes = element(by.id('qv-form-notes'));
-
-      radioFhirServer.click();
-      urlQ.clear();
-      urlQ.sendKeys(browser.baseUrl + '/x-fhir-query-test.R4.json');
-      btn.click();
-
-      browser.wait(EC.visibilityOf(firstItem));
+      cy.byId(radioFhirServer)
+          .click();
+      cy.byId(urlQ)
+          .clear()
+          .type(Cypress.config().baseUrl + '/x-fhir-query-test.R4.json');
+      cy.byId(btn)
+          .click();
 
       // 1st run
-      firstItem.click();
-      // expect(firstItem.searchResults.isPresent()).toBeFalsy();
-      firstItem.sendKeys(protractor.Key.ARROW_DOWN);
-      firstItem.sendKeys(protractor.Key.TAB);
-      expect(firstItem.getAttribute('value')).toBe('verificationresult-status');
-      secondItem.click();
-      secondItem.sendKeys("Requires")
-      secondItem.sendKeys(protractor.Key.ARROW_DOWN);
-      secondItem.sendKeys(protractor.Key.TAB);
-      expect(secondItem.getAttribute('value')).toBe(firstStatusListItem);
-      thirdItem.click();
-      thirdItem.sendKeys(protractor.Key.ARROW_DOWN);
-      thirdItem.sendKeys(protractor.Key.TAB);
-      expect(thirdItem.getAttribute('value')).toBe('');
+      cy.byId(firstItem)
+          .should('be.visible')
+          .type('{downArrow}')
+          .type('{enter}');
+      cy.byId(firstItem)
+          .should('have.value', 'verificationresult-status');
+      cy.byId(secondItem)
+          .click();
+      // Wait for the autocomplete results to settle down before typing "Requires".
+      // Otherwise, there were intermittent failures where the autocomplete ends up
+      // with the full list displayed AFTER "Requires" is typed in the field.
+      waitForFirstResultToContain('Attested');
+      cy.byId(secondItem)
+          .type('Requires');
+      waitForFirstResultToContain('Requires');
+      cy.byId(secondItem)
+          .type('{downArrow}')
+          .type('{enter}');
+      cy.byId(secondItem)
+          .should('have.value', firstStatusListItem);
+      cy.byId(thirdItem)
+          .type('{downArrow}')
+          .type('{enter}');
+      cy.byId(thirdItem)
+          .should('have.value', '');
 
       // 2nd run
-      firstItem.click();
-      firstItem.sendKeys(protractor.Key.ARROW_DOWN);
-      firstItem.sendKeys(protractor.Key.ARROW_DOWN);
-      firstItem.sendKeys(protractor.Key.TAB);
-      expect(firstItem.getAttribute('value')).toBe('language-preference-type');
-      secondItem.click();
-      secondItem.sendKeys(protractor.Key.ARROW_DOWN);
-      secondItem.sendKeys(protractor.Key.ARROW_DOWN);
-      secondItem.sendKeys(protractor.Key.TAB);
-      expect(secondItem.getAttribute('value')).toBe('verbal');
-      thirdItem.click();
-      thirdItem.sendKeys(protractor.Key.ARROW_DOWN);
-      thirdItem.sendKeys(protractor.Key.TAB);
-      expect(thirdItem.getAttribute('value')).toBe('');
+      cy.byId(firstItem)
+          .type('{downArrow}')
+          .type('{downArrow}')
+          .type('{enter}');
+      cy.byId(firstItem)
+          .should('have.value', 'language-preference-type');
+      cy.byId(secondItem)
+          .type('{downArrow}')
+          .type('{downArrow}')
+          .type('{enter}');
+      cy.byId(secondItem)
+          .should('have.value', 'verbal');
+      cy.byId(thirdItem)
+          .type('{downArrow}')
+          .type('{enter}');
+      cy.byId(thirdItem)
+          .should('have.value', '');
 
-
-      expect(notes.getText()).toContain('/x-fhir-query-test.R4.json');
-
+      cy.byId(notes)
+          .should('contain.text', '/x-fhir-query-test.R4.json');
     });
 
+    it('should load a Questionnaire with a FHIR server', () => {
+      const urlQ = 'urlQuestionnaire',
+          urlS =  'urlFhirServer',
+          radioFhirServer = 'radioFhirServer',
+          firstItem =  'listSelection/1',
+          secondItem =  'listViewFromURL/1',
+          thirdItem =  'listViewFromContext/1',
+          btn = 'qv-btn-load',
+          notes = 'qv-form-notes';
 
+      cy.byId(radioFhirServer)
+          .click();
+      cy.byId(urlQ)
+          .clear()
+          .type(Cypress.config().baseUrl + '/x-fhir-query-test.R4.json');
+      cy.byId(urlS)
+          .clear()
+          .type('https://lforms-fhir.nlm.nih.gov/baseR4');
+      cy.byId(btn)
+          .click();
 
-    it('should load a Questionnaire with a FHIR server', function () {
-      let urlQ = element(by.id('urlQuestionnaire')),
-      urlS =  element(by.id('urlFhirServer')),
-      radioFhirServer = element(by.id('radioFhirServer')),
-      firstItem =  element(by.id('listSelection/1')),
-      secondItem =  element(by.id('listViewFromURL/1')),
-      thirdItem =  element(by.id('listViewFromContext/1')),
-
-      btn = element(by.id('qv-btn-load')),
-      notes = element(by.id('qv-form-notes'));
-
-      radioFhirServer.click();
-      urlQ.clear();
-      urlQ.sendKeys(browser.baseUrl + '/x-fhir-query-test.R4.json');
-      urlS.clear();
-      urlS.sendKeys('https://lforms-fhir.nlm.nih.gov/baseR4');
-      btn.click();
-
-//      browser.sleep(1000000)
-      browser.wait(EC.visibilityOf(firstItem));
       // 1st run
-      firstItem.click();
-      firstItem.sendKeys(protractor.Key.ARROW_DOWN);
-      firstItem.sendKeys(protractor.Key.TAB);
-      expect(firstItem.getAttribute('value')).toBe('verificationresult-status');
-      secondItem.click();
-      secondItem.sendKeys("Requires")
-      secondItem.sendKeys(protractor.Key.ARROW_DOWN);
-      secondItem.sendKeys(protractor.Key.TAB);
-      expect(secondItem.getAttribute('value')).toBe(firstStatusListItem);
-      thirdItem.click();
-      thirdItem.sendKeys("Requires")
-      thirdItem.sendKeys(protractor.Key.ARROW_DOWN);
-      thirdItem.sendKeys(protractor.Key.TAB);
-      expect(thirdItem.getAttribute('value')).toBe(firstStatusListItem);
+      cy.byId(firstItem)
+          .should('be.visible')
+          .type('{downArrow}')
+          .type('{enter}');
+      cy.byId(firstItem)
+          .should('have.value', 'verificationresult-status');
+      cy.byId(secondItem)
+          .click();
+      waitForFirstResultToContain('Attested');
+      cy.byId(secondItem)
+          .type('Requires');
+      waitForFirstResultToContain('Requires');
+      cy.byId(secondItem)
+          .type('{downArrow}')
+          .type('{enter}');
+      cy.byId(secondItem)
+          .should('have.value', firstStatusListItem);
+      cy.byId(thirdItem)
+          .click();
+      waitForFirstResultToContain('Attested');
+      cy.byId(thirdItem)
+          .type('Requires');
+      waitForFirstResultToContain('Requires');
+      cy.byId(thirdItem)
+          .type('{downArrow}')
+          .type('{enter}');
+      cy.byId(thirdItem)
+          .should('have.value', firstStatusListItem);
 
       // 2nd run
-      firstItem.click();
-      firstItem.sendKeys(protractor.Key.ARROW_DOWN);
-      firstItem.sendKeys(protractor.Key.ARROW_DOWN);
-      firstItem.sendKeys(protractor.Key.TAB);
-      expect(firstItem.getAttribute('value')).toBe('language-preference-type');
-      secondItem.click();
-      secondItem.sendKeys(protractor.Key.ARROW_DOWN);
-      secondItem.sendKeys(protractor.Key.ARROW_DOWN);
-      secondItem.sendKeys(protractor.Key.TAB);
-      expect(secondItem.getAttribute('value')).toBe('verbal');
-      thirdItem.click();
-      thirdItem.sendKeys(protractor.Key.ARROW_DOWN);
-      thirdItem.sendKeys(protractor.Key.ARROW_DOWN);
-      thirdItem.sendKeys(protractor.Key.TAB);
-      expect(thirdItem.getAttribute('value')).toBe('verbal');
+      cy.byId(firstItem)
+          .type('{downArrow}')
+          .type('{downArrow}')
+          .type('{enter}');
+      cy.byId(firstItem)
+          .should('have.value', 'language-preference-type');
+      cy.byId(secondItem)
+          .type('{downArrow}')
+          .type('{downArrow}')
+          .type('{enter}');
+      cy.byId(secondItem)
+          .should('have.value', 'verbal');
+      cy.byId(thirdItem)
+          .type('{downArrow}')
+          .type('{downArrow}')
+          .type('{enter}');
+      cy.byId(thirdItem)
+          .should('have.value', 'verbal');
 
-      expect(notes.getText()).toContain('/x-fhir-query-test.R4.json');
-      expect(notes.getText()).toContain('https://lforms-fhir.nlm.nih.gov/baseR4');
+      cy.byId(notes)
+          .should('contain.text', '/x-fhir-query-test.R4.json')
+          .should('contain.text', 'https://lforms-fhir.nlm.nih.gov/baseR4');
     });
-
   });
 
-  describe('URLs provided as url parameters', function() {
-    beforeAll(function () {
-      setAngularSite(false);
+  describe('URLs provided as url parameters', () => {
+    Cypress.on('uncaught:exception', (err, runnable) => {
+      // Returning false here prevents Cypress from
+      // failing the test from console errors of the app.
+      return false;
     });
 
-    beforeEach(function () {
-      browser.get('/');
-    });
+    it('should load a Questionnaire without a FHIR server', () => {
+      const url = Cypress.config().baseUrl + '/?q=' + Cypress.config().baseUrl + '/x-fhir-query-test.R4.json';
+      cy.visit(url);
 
-    it('should load a Questionnaire without a FHIR server', function () {
-
-      let url = browser.baseUrl + '/?q=' + browser.baseUrl + '/x-fhir-query-test.R4.json';
-      console.log(url);
-      browser.get(url);
-
-      let firstItem =  element(by.id('listSelection/1')),
-      secondItem =  element(by.id('listViewFromURL/1')),
-      thirdItem =  element(by.id('listViewFromContext/1')),
-      notes = element(by.id('qv-form-notes')),
-      inputPanel = element(by.id('qv-form-input'));
-
-
-      browser.wait(EC.visibilityOf(firstItem));
+      const firstItem =  'listSelection/1',
+          secondItem =  'listViewFromURL/1',
+          thirdItem =  'listViewFromContext/1',
+          notes = 'qv-form-notes',
+          inputPanel = 'qv-form-input';
 
       // 1st run
-      firstItem.click();
-      // expect(firstItem.searchResults.isPresent()).toBeFalsy();
-      firstItem.sendKeys(protractor.Key.ARROW_DOWN);
-      firstItem.sendKeys(protractor.Key.TAB);
-      expect(firstItem.getAttribute('value')).toBe('verificationresult-status');
-      secondItem.click();
-      secondItem.sendKeys("Requires")
-      secondItem.sendKeys(protractor.Key.ARROW_DOWN);
-      secondItem.sendKeys(protractor.Key.TAB);
-      expect(secondItem.getAttribute('value')).toBe(firstStatusListItem);
-      thirdItem.click();
-      thirdItem.sendKeys(protractor.Key.ARROW_DOWN);
-      thirdItem.sendKeys(protractor.Key.TAB);
-      expect(thirdItem.getAttribute('value')).toBe('');
+      cy.byId(firstItem)
+          .should('be.visible')
+          .type('{downArrow}')
+          .type('{enter}');
+      cy.byId(firstItem)
+          .should('have.value', 'verificationresult-status');
+      cy.byId(secondItem)
+          .click();
+      waitForFirstResultToContain('Attested');
+      cy.byId(secondItem)
+          .type('Requires');
+      waitForFirstResultToContain('Requires');
+      cy.byId(secondItem)
+          .type('{downArrow}')
+          .type('{enter}');
+      cy.byId(secondItem)
+          .should('have.value', firstStatusListItem);
+      cy.byId(thirdItem)
+          .type('{downArrow}')
+          .type('{enter}');
+      cy.byId(thirdItem)
+          .should('have.value', '');
 
       // 2nd run
-      firstItem.click();
-      firstItem.sendKeys(protractor.Key.ARROW_DOWN);
-      firstItem.sendKeys(protractor.Key.ARROW_DOWN);
-      firstItem.sendKeys(protractor.Key.TAB);
-      expect(firstItem.getAttribute('value')).toBe('language-preference-type');
-      secondItem.click();
-      secondItem.sendKeys(protractor.Key.ARROW_DOWN);
-      secondItem.sendKeys(protractor.Key.ARROW_DOWN);
-      secondItem.sendKeys(protractor.Key.TAB);
-      expect(secondItem.getAttribute('value')).toBe('verbal');
-      thirdItem.click();
-      thirdItem.sendKeys(protractor.Key.ARROW_DOWN);
-      thirdItem.sendKeys(protractor.Key.TAB);
-      expect(thirdItem.getAttribute('value')).toBe('');
+      cy.byId(firstItem)
+          .type('{downArrow}')
+          .type('{downArrow}')
+          .type('{enter}');
+      cy.byId(firstItem)
+          .should('have.value', 'language-preference-type');
+      cy.byId(secondItem)
+          .type('{downArrow}')
+          .type('{downArrow}')
+          .type('{enter}');
+      cy.byId(secondItem)
+          .should('have.value', 'verbal');
+      cy.byId(thirdItem)
+          .type('{downArrow}')
+          .type('{enter}');
+      cy.byId(thirdItem)
+          .should('have.value', '');
 
-
-      expect(notes.getText()).toContain('/x-fhir-query-test.R4.json');
+      cy.byId(notes)
+          .should('contain.text', '/x-fhir-query-test.R4.json');
 
       // input panel is not shown
-      expect(inputPanel.isDisplayed()).toBeFalsy();
+      cy.byId(inputPanel)
+          .should('not.be.visible');
     });
 
+    it('should load a Questionnaire with a FHIR server', () => {
+      const url = Cypress.config().baseUrl + '/?q=' + Cypress.config().baseUrl + '/x-fhir-query-test.R4.json' + '&s=https://lforms-fhir.nlm.nih.gov/baseR4';
+      cy.visit(url);
 
+      const firstItem =  'listSelection/1',
+          secondItem =  'listViewFromURL/1',
+          thirdItem =  'listViewFromContext/1',
+          inputPanel = 'qv-form-input',
+          notes = 'qv-form-notes';
 
-    it('should load a Questionnaire with a FHIR server', function () {
-      let url = browser.baseUrl + '/?q=' + browser.baseUrl + '/x-fhir-query-test.R4.json' + '&s=https://lforms-fhir.nlm.nih.gov/baseR4';
-      console.log(url);
-      browser.get(url);
-
-      let firstItem =  element(by.id('listSelection/1')),
-      secondItem =  element(by.id('listViewFromURL/1')),
-      thirdItem =  element(by.id('listViewFromContext/1')),
-      inputPanel = element(by.id('qv-form-input')),
-      notes = element(by.id('qv-form-notes'));
-
-      browser.wait(EC.visibilityOf(firstItem));
       // 1st run
-      firstItem.click();
-      firstItem.sendKeys(protractor.Key.ARROW_DOWN);
-      firstItem.sendKeys(protractor.Key.TAB);
-      expect(firstItem.getAttribute('value')).toBe('verificationresult-status');
-      secondItem.click();
-      secondItem.sendKeys("Requires")
-      secondItem.sendKeys(protractor.Key.ARROW_DOWN);
-      secondItem.sendKeys(protractor.Key.TAB);
-      expect(secondItem.getAttribute('value')).toBe(firstStatusListItem);
-      thirdItem.click();
-      thirdItem.sendKeys("Requires")
-      thirdItem.sendKeys(protractor.Key.ARROW_DOWN);
-      thirdItem.sendKeys(protractor.Key.TAB);
-      expect(thirdItem.getAttribute('value')).toBe(firstStatusListItem);
+      cy.byId(firstItem)
+          .should('be.visible')
+          .type('{downArrow}')
+          .type('{enter}');
+      cy.byId(firstItem)
+          .should('have.value', 'verificationresult-status');
+      cy.byId(secondItem)
+          .click();
+      waitForFirstResultToContain('Attested');
+      cy.byId(secondItem)
+          .type('Requires');
+      waitForFirstResultToContain('Requires');
+      cy.byId(secondItem)
+          .type('{downArrow}')
+          .type('{enter}');
+      cy.byId(secondItem)
+          .should('have.value', firstStatusListItem);
+      cy.byId(thirdItem)
+          .click();
+      waitForFirstResultToContain('Attested');
+      cy.byId(thirdItem)
+          .type('Requires');
+      waitForFirstResultToContain('Requires');
+      cy.byId(thirdItem)
+          .type('{downArrow}')
+          .type('{enter}');
+      cy.byId(thirdItem)
+          .should('have.value', firstStatusListItem);
 
       // 2nd run
-      firstItem.click();
-      firstItem.sendKeys(protractor.Key.ARROW_DOWN);
-      firstItem.sendKeys(protractor.Key.ARROW_DOWN);
-      firstItem.sendKeys(protractor.Key.TAB);
-      expect(firstItem.getAttribute('value')).toBe('language-preference-type');
-      secondItem.click();
-      secondItem.sendKeys(protractor.Key.ARROW_DOWN);
-      secondItem.sendKeys(protractor.Key.ARROW_DOWN);
-      secondItem.sendKeys(protractor.Key.TAB);
-      expect(secondItem.getAttribute('value')).toBe('verbal');
-      thirdItem.click();
-      thirdItem.sendKeys(protractor.Key.ARROW_DOWN);
-      thirdItem.sendKeys(protractor.Key.ARROW_DOWN);
-      thirdItem.sendKeys(protractor.Key.TAB);
-      expect(thirdItem.getAttribute('value')).toBe('verbal');
+      cy.byId(firstItem)
+          .type('{downArrow}')
+          .type('{downArrow}')
+          .type('{enter}');
+      cy.byId(firstItem)
+          .should('have.value', 'language-preference-type');
+      cy.byId(secondItem)
+          .type('{downArrow}')
+          .type('{downArrow}')
+          .type('{enter}');
+      cy.byId(secondItem)
+          .should('have.value', 'verbal');
+      cy.byId(thirdItem)
+          .type('{downArrow}')
+          .type('{downArrow}')
+          .type('{enter}');
+      cy.byId(thirdItem)
+          .should('have.value', 'verbal');
 
-      expect(notes.getText()).toContain('/x-fhir-query-test.R4.json');
-      expect(notes.getText()).toContain('https://lforms-fhir.nlm.nih.gov/baseR4');
+      cy.byId(notes)
+          .should('contain.text', '/x-fhir-query-test.R4.json')
+          .should('contain.text', 'https://lforms-fhir.nlm.nih.gov/baseR4');
 
       // input panel is not shown
-      expect(inputPanel.isDisplayed()).toBeFalsy();
+      cy.byId(inputPanel)
+          .should('not.be.visible');
     });
-
   });
-
-
-
 });
-

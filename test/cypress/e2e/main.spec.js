@@ -1,263 +1,285 @@
-'use strict';
-
-const { $, browser } = require("protractor");
-
-const os = require("os"),
-  EC = protractor.ExpectedConditions;
-
-describe('FHIR Questionnaire Viewer', function() {
-
-  describe('URLs provided on page', function() {
-    beforeAll(function () {
-      setAngularSite(false);
+describe('FHIR Questionnaire Viewer', () => {
+  describe('URLs provided on page', () => {
+    beforeEach(() => {
+      cy.visit('/');
     });
-  
-    beforeEach(function () {
-      browser.get('/');
-    });
-    
-    it('should load a Questionnaire without resource package', function () {
-      let urlQ = element(by.id('urlQuestionnaire')),
-      urlP =  element(by.id('urlPackage')),
-      firstItem =  element(by.id('/q1/1')),
-      btn = element(by.id('qv-btn-load')),
-      notes = element(by.id('qv-form-notes'));
-  
-      urlQ.clear();
-      urlQ.sendKeys(browser.baseUrl + '/questionnaire-use-package.json');
-      btn.click();
-      browser.wait(EC.visibilityOf(firstItem));
-      firstItem.click();
-      // expect(firstItem.searchResults.isPresent()).toBeFalsy();
-      firstItem.sendKeys(protractor.Key.ARROW_DOWN);
-      firstItem.sendKeys(protractor.Key.TAB);
-      expect(firstItem.getAttribute('value')).toBe('');
 
-      expect(notes.getText()).toContain('/questionnaire-use-package.json');
-  
+    it('should load a Questionnaire without resource package', () => {
+      const urlQ = 'urlQuestionnaire',
+          urlP =  'urlPackage',
+          firstItem =  '/q1/1',
+          btn = 'qv-btn-load',
+          notes = 'qv-form-notes';
+
+      cy.byId(urlQ)
+          .clear()
+          .type(Cypress.config().baseUrl + '/questionnaire-use-package.json');
+      cy.byId(btn)
+          .click();
+      cy.byId(firstItem)
+          .should('be.visible')
+          .click()
+          .type('{downArrow}')
+          .blur();
+      cy.byId(firstItem)
+          .should('have.value', '');
+      cy.byId(notes)
+          .should('contain.text', '/questionnaire-use-package.json');
     });
-          
-    it('should load both R4 and STU3 versions of Questionnaire', function () {
-      let urlQ = element(by.id('urlQuestionnaire')),
-      urlP =  element(by.id('urlPackage')),
-      dropdown =  element(by.id('/8352-7/1')),
-      btn = element(by.id('qv-btn-load')),
-      notes = element(by.id('qv-form-notes'));
-  
+
+    it('should load both R4 and STU3 versions of Questionnaire', () => {
+      const urlQ = 'urlQuestionnaire',
+          urlP =  'urlPackage',
+          dropdown =  '/8352-7/1',
+          btn = 'qv-btn-load',
+          notes = 'qv-form-notes';
+
       // r4
-      urlQ.clear();
-      urlQ.sendKeys(browser.baseUrl + '/weightHeightQuestionnaire_r4.json');
-      btn.click();
-      browser.wait(EC.visibilityOf(dropdown));
-      dropdown.click();
-      dropdown.sendKeys(protractor.Key.ARROW_DOWN);
-      dropdown.sendKeys(protractor.Key.TAB);
-      expect(dropdown.getAttribute('value')).toBe('Underwear or less');
-      expect(notes.getText()).toContain('/weightHeightQuestionnaire_r4.json');
-  
+      cy.byId(urlQ)
+          .clear()
+          .type(Cypress.config().baseUrl + '/weightHeightQuestionnaire_r4.json');
+      cy.byId(btn)
+          .click();
+      cy.byId(dropdown)
+          .should('be.visible')
+          .click()
+          .type('{downArrow}')
+          .blur();
+      cy.byId(dropdown)
+          .should('have.value', 'Underwear or less');
+      cy.byId(notes)
+          .should('contain.text', '/weightHeightQuestionnaire_r4.json');
+
       // stu3
-      urlQ.clear();
-      urlQ.sendKeys(browser.baseUrl + '/weightHeightQuestionnaire_stu3.json');
-      btn.click();
-      browser.wait(EC.visibilityOf(dropdown));
-      dropdown.click();
-      dropdown.sendKeys(protractor.Key.ARROW_DOWN);
-      dropdown.sendKeys(protractor.Key.TAB);
-      expect(dropdown.getAttribute('value')).toBe('Underwear or less');
-      expect(notes.getText()).toContain('/weightHeightQuestionnaire_stu3.json');
+      cy.byId(urlQ)
+          .clear()
+          .type(Cypress.config().baseUrl + '/weightHeightQuestionnaire_stu3.json');
+      cy.byId(btn)
+          .click();
+      cy.byId(dropdown)
+          .should('be.visible')
+          .click()
+          .type('{downArrow}')
+          .blur();
+      cy.byId(dropdown)
+          .should('have.value', 'Underwear or less');
+      cy.byId(notes)
+          .should('contain.text', '/weightHeightQuestionnaire_stu3.json');
     });
 
+    it('should load a Questionnaire with a resource package', () => {
+      const urlQ = 'urlQuestionnaire',
+          urlP =  'urlPackage',
+          firstItem =  '/q1/1',
+          secondItem =  '/q2/1',
+          thirdItem =  '/q3/1',
+          btn = 'qv-btn-load',
+          notes = 'qv-form-notes';
 
-    it('should load a Questionnaire with a resource package', function () {
-      let urlQ = element(by.id('urlQuestionnaire')),
-      urlP =  element(by.id('urlPackage')),
-      firstItem =  element(by.id('/q1/1')),
-      secondItem =  element(by.id('/q2/1')),
-      thirdItem =  element(by.id('/q3/1')),
-      btn = element(by.id('qv-btn-load')),
-      notes = element(by.id('qv-form-notes'));
+      cy.byId(urlQ)
+          .clear()
+          .type(Cypress.config().baseUrl + '/questionnaire-use-package.json');
+      cy.byId(urlP)
+          .clear()
+          .type(Cypress.config().baseUrl + '/package.json.tgz');
+      cy.byId(btn)
+          .click();
 
-      urlQ.clear();
-      urlQ.sendKeys(browser.baseUrl + '/questionnaire-use-package.json');
-      urlP.clear();
-      urlP.sendKeys(browser.baseUrl + '/package.json.tgz');
-      btn.click();
-      browser.wait(EC.visibilityOf(firstItem));
-  
-      firstItem.click();
-      firstItem.sendKeys(protractor.Key.ARROW_DOWN);
-      firstItem.sendKeys(protractor.Key.TAB);
-      expect(firstItem.getAttribute('value')).toBe("Cholesterol [Moles/volume] in Serum or Plasma");
-  
-      secondItem.click();
-      secondItem.sendKeys(protractor.Key.ARROW_DOWN);
-      secondItem.sendKeys(protractor.Key.ARROW_DOWN);
-      secondItem.sendKeys(protractor.Key.TAB);
-      expect(secondItem.getAttribute('value')).toBe("Cholesterol/Triglyceride [Mass Ratio] in Serum or Plasma");
+      cy.byId(firstItem)
+          .should('be.visible')
+          .click()
+          .type('{downArrow}')
+          .blur();
+      cy.byId(firstItem)
+          .should('have.value', 'Cholesterol [Moles/volume] in Serum or Plasma');
 
-      expect(notes.getText()).toContain('/questionnaire-use-package.json');
-      expect(notes.getText()).toContain('/package.json.tgz');    
+      cy.byId(secondItem)
+          .click()
+          .type('{downArrow}')
+          .type('{downArrow}')
+          .blur();
+      cy.byId(secondItem)
+          .should('have.value', 'Cholesterol/Triglyceride [Mass Ratio] in Serum or Plasma');
+
+      cy.byId(notes)
+          .should('contain.text', '/questionnaire-use-package.json')
+          .should('contain.text', '/package.json.tgz');
     });
-  
-    it('should load a Questionnaire with a resource package that contains no .index.json', function () {
-      let urlQ = element(by.id('urlQuestionnaire')),
-      urlP =  element(by.id('urlPackage')),
-      firstItem =  element(by.id('/q1/1')),
-      secondItem =  element(by.id('/q2/1')),
-      thirdItem =  element(by.id('/q3/1')),
-      btn = element(by.id('qv-btn-load')),
-      notes = element(by.id('qv-form-notes'));
 
-      urlQ.clear();
-      urlQ.sendKeys(browser.baseUrl + '/questionnaire-use-package.json');
-      urlP.clear();
-      urlP.sendKeys(browser.baseUrl + '/package-no-index.json.tgz');
-      btn.click();
-      browser.wait(EC.visibilityOf(firstItem));
-  
-      firstItem.click();
-      firstItem.sendKeys(protractor.Key.ARROW_DOWN);
-      firstItem.sendKeys(protractor.Key.TAB);
-      expect(firstItem.getAttribute('value')).toBe("Cholesterol [Moles/volume] in Serum or Plasma");
-  
-      secondItem.click();
-      secondItem.sendKeys(protractor.Key.ARROW_DOWN);
-      secondItem.sendKeys(protractor.Key.ARROW_DOWN);
-      secondItem.sendKeys(protractor.Key.TAB);
-      expect(secondItem.getAttribute('value')).toBe("Cholesterol/Triglyceride [Mass Ratio] in Serum or Plasma");
+    it('should load a Questionnaire with a resource package that contains no .index.json', () => {
+      const urlQ = 'urlQuestionnaire',
+          urlP =  'urlPackage',
+          firstItem =  '/q1/1',
+          secondItem =  '/q2/1',
+          thirdItem =  '/q3/1',
+          btn = 'qv-btn-load',
+          notes = 'qv-form-notes';
 
-      expect(notes.getText()).toContain('/questionnaire-use-package.json');
-      expect(notes.getText()).toContain('/package-no-index.json.tgz');    
+      cy.byId(urlQ)
+          .clear()
+          .type(Cypress.config().baseUrl + '/questionnaire-use-package.json');
+      cy.byId(urlP)
+          .clear()
+          .type(Cypress.config().baseUrl + '/package-no-index.json.tgz');
+      cy.byId(btn)
+          .click();
+
+      cy.byId(firstItem)
+          .should('be.visible')
+          .click()
+          .type('{downArrow}')
+          .blur();
+      cy.byId(firstItem)
+          .should('have.value', 'Cholesterol [Moles/volume] in Serum or Plasma');
+
+      cy.byId(secondItem)
+          .should('be.visible')
+          .click()
+          .type('{downArrow}')
+          .type('{downArrow}')
+          .blur();
+      cy.byId(secondItem)
+          .should('have.value', 'Cholesterol/Triglyceride [Mass Ratio] in Serum or Plasma');
+
+      cy.byId(notes)
+          .should('contain.text', '/questionnaire-use-package.json')
+          .should('contain.text', '/package-no-index.json.tgz');
     });
   });
 
-  
-  describe('URLs provided as url parameters', function() {
-    beforeAll(function () {
-      setAngularSite(false);
+  describe('URLs provided as url parameters', () => {
+    Cypress.on('uncaught:exception', (err, runnable) => {
+      // Returning false here prevents Cypress from
+      // failing the test from console errors of the app.
+      return false;
     });
-  
-    beforeEach(function () {
-      browser.get('/');
-    });
-  
-  
-    it('should load a Questionnaire without resource package', function () {
 
-      let notes = element(by.id('qv-form-notes'));
-    
-      let url = browser.baseUrl + '/?q=' + browser.baseUrl + '/questionnaire-use-package.json';
-      console.log(url);
-      browser.get(url);
+    it('should load a Questionnaire without resource package', () => {
+      const notes = 'qv-form-notes';
+      const url = Cypress.config().baseUrl + '/?q=' + Cypress.config().baseUrl + '/questionnaire-use-package.json';
+      cy.visit(url);
 
-      let firstItem =  element(by.id('/q1/1')),
-      inputPanel = element(by.id('qv-form-input'));
-  
-      browser.wait(EC.visibilityOf(firstItem));
-      firstItem.click();
-      // expect(firstItem.searchResults.isPresent()).toBeFalsy();
-      firstItem.sendKeys(protractor.Key.ARROW_DOWN);
-      firstItem.sendKeys(protractor.Key.TAB);
-      expect(firstItem.getAttribute('value')).toBe('');
-  
+      const firstItem =  '/q1/1',
+          inputPanel = 'qv-form-input';
+
+      cy.byId(firstItem)
+          .should('be.visible')
+          .click()
+          .type('{downArrow}')
+          .blur();
+      cy.byId(firstItem)
+          .should('have.value', '');
+
       // input panel is not shown
-      expect(inputPanel.isDisplayed()).toBeFalsy();
+      cy.byId(inputPanel)
+          .should('not.be.visible');
 
-      expect(notes.getText()).toContain('/questionnaire-use-package.json');
-
+      cy.byId(notes)
+          .should('contain.text', '/questionnaire-use-package.json');
     });
-  
-    it('should load both R4 and STU3 versions of Questionnaire', function () {
-      let dropdown =  element(by.id('/8352-7/1')),
-      notes = element(by.id('qv-form-notes'));
 
-      let url = browser.baseUrl + '/?q=' + browser.baseUrl + '/weightHeightQuestionnaire_r4.json';
-      browser.get(url);
+    it('should load both R4 and STU3 versions of Questionnaire', () => {
+      const dropdown =  '/8352-7/1',
+          notes = 'qv-form-notes';
+
+      let url = Cypress.config().baseUrl + '/?q=' + Cypress.config().baseUrl + '/weightHeightQuestionnaire_r4.json';
+      cy.visit(url);
 
       // r4
-      browser.wait(EC.visibilityOf(dropdown));
-      dropdown.click();
-      dropdown.sendKeys(protractor.Key.ARROW_DOWN);
-      dropdown.sendKeys(protractor.Key.TAB);
-      expect(dropdown.getAttribute('value')).toBe('Underwear or less');
-      expect(notes.getText()).toContain('/weightHeightQuestionnaire_r4.json');
-  
+      cy.byId(dropdown)
+          .should('be.visible')
+          .click()
+          .type('{downArrow}')
+          .blur();
+      cy.byId(dropdown)
+          .should('have.value', 'Underwear or less');
+      cy.byId(notes)
+          .should('contain.text', '/weightHeightQuestionnaire_r4.json');
+
       // stu3
-      url = browser.baseUrl + '/?q=' + browser.baseUrl + '/weightHeightQuestionnaire_stu3.json';
-      browser.get(url);
-
-      browser.wait(EC.visibilityOf(dropdown));
-      dropdown.click();
-      dropdown.sendKeys(protractor.Key.ARROW_DOWN);
-      dropdown.sendKeys(protractor.Key.TAB);
-      expect(dropdown.getAttribute('value')).toBe('Underwear or less');
-      expect(notes.getText()).toContain('/weightHeightQuestionnaire_stu3.json');
+      url = Cypress.config().baseUrl + '/?q=' + Cypress.config().baseUrl + '/weightHeightQuestionnaire_stu3.json';
+      cy.visit(url);
+      cy.byId(dropdown)
+          .should('be.visible')
+          .click()
+          .type('{downArrow}')
+          .blur();
+      cy.byId(dropdown)
+          .should('have.value', 'Underwear or less');
+      cy.byId(notes)
+          .should('contain.text', '/weightHeightQuestionnaire_stu3.json');
     });
 
+    it('should load a Questionnaire with a resource package', () => {
+      const baseUrl = Cypress.config().baseUrl;
+      const url = baseUrl + '/?q=' + baseUrl + '/questionnaire-use-package.json' + '&p=' + baseUrl + '/package.json.tgz';
+      cy.visit(url);
 
-  
-    it('should load a Questionnaire with a resource package', function () {
-      let url = browser.baseUrl + '/?q=' + browser.baseUrl + '/questionnaire-use-package.json' + '&p=' + browser.baseUrl + '/package.json.tgz';
-      console.log(url);
-      browser.get(url);
+      const firstItem =  '/q1/1',
+          secondItem =  '/q2/1',
+          thirdItem =  '/q3/1',
+          inputPanel = 'qv-form-input',
+          notes = 'qv-form-notes';
 
-      let firstItem =  element(by.id('/q1/1')),
-      secondItem =  element(by.id('/q2/1')),
-      thirdItem =  element(by.id('/q3/1')),
-      inputPanel = element(by.id('qv-form-input')),
-      notes = element(by.id('qv-form-notes'));
-      
-      browser.wait(EC.visibilityOf(firstItem));
-  
-      firstItem.click();
-      firstItem.sendKeys(protractor.Key.ARROW_DOWN);
-      firstItem.sendKeys(protractor.Key.TAB);
-      expect(firstItem.getAttribute('value')).toBe("Cholesterol [Moles/volume] in Serum or Plasma");
-  
-      secondItem.click();
-      secondItem.sendKeys(protractor.Key.ARROW_DOWN);
-      secondItem.sendKeys(protractor.Key.ARROW_DOWN);
-      secondItem.sendKeys(protractor.Key.TAB);
-      expect(secondItem.getAttribute('value')).toBe("Cholesterol/Triglyceride [Mass Ratio] in Serum or Plasma");
-  
+      cy.byId(firstItem)
+          .should('be.visible')
+          .click()
+          .type('{downArrow}')
+          .blur();
+      cy.byId(firstItem)
+          .should('have.value', 'Cholesterol [Moles/volume] in Serum or Plasma');
+
+      cy.byId(secondItem)
+          .click()
+          .type('{downArrow}')
+          .type('{downArrow}')
+          .blur();
+      cy.byId(secondItem)
+          .should('have.value', 'Cholesterol/Triglyceride [Mass Ratio] in Serum or Plasma');
+
       // input panel is not shown
-      expect(inputPanel.isDisplayed()).toBeFalsy();
+      cy.byId(inputPanel)
+          .should('not.be.visible');
 
-      expect(notes.getText()).toContain('/questionnaire-use-package.json');
-      expect(notes.getText()).toContain('/package.json.tgz');
+      cy.byId(notes)
+          .should('contain.text', '/questionnaire-use-package.json')
+          .should('contain.text', '/package.json.tgz');
     });
-  
-    it('should load a Questionnaire with a resource package that contains no .index.json', function () {
-      let url = browser.baseUrl + '/?q=' + browser.baseUrl + '/questionnaire-use-package.json' + '&p=' + browser.baseUrl + '/package-no-index.json.tgz';
-      console.log(url);
-      browser.get(url);
 
-      let firstItem =  element(by.id('/q1/1')),
-      secondItem =  element(by.id('/q2/1')),
-      thirdItem =  element(by.id('/q3/1')),
-      inputPanel = element(by.id('qv-form-input')),
-      notes = element(by.id('qv-form-notes'));
-      
-      browser.wait(EC.visibilityOf(firstItem));
-  
-      firstItem.click();
-      firstItem.sendKeys(protractor.Key.ARROW_DOWN);
-      firstItem.sendKeys(protractor.Key.TAB);
-      expect(firstItem.getAttribute('value')).toBe("Cholesterol [Moles/volume] in Serum or Plasma");
-  
-      secondItem.click();
-      secondItem.sendKeys(protractor.Key.ARROW_DOWN);
-      secondItem.sendKeys(protractor.Key.ARROW_DOWN);
-      secondItem.sendKeys(protractor.Key.TAB);
-      expect(secondItem.getAttribute('value')).toBe("Cholesterol/Triglyceride [Mass Ratio] in Serum or Plasma");
-  
+    it('should load a Questionnaire with a resource package that contains no .index.json', () => {
+      const baseUrl = Cypress.config().baseUrl;
+      const url = baseUrl + '/?q=' + baseUrl + '/questionnaire-use-package.json' + '&p=' + baseUrl + '/package-no-index.json.tgz';
+      cy.visit(url);
+
+      const firstItem =  '/q1/1',
+          secondItem =  '/q2/1',
+          thirdItem =  '/q3/1',
+          inputPanel = 'qv-form-input',
+          notes = 'qv-form-notes';
+
+      cy.byId(firstItem)
+          .should('be.visible')
+          .click()
+          .type('{downArrow}')
+          .blur();
+      cy.byId(firstItem)
+          .should('have.value', 'Cholesterol [Moles/volume] in Serum or Plasma');
+
+      cy.byId(secondItem)
+          .click()
+          .type('{downArrow}')
+          .type('{downArrow}')
+          .blur();
+      cy.byId(secondItem)
+          .should('have.value', 'Cholesterol/Triglyceride [Mass Ratio] in Serum or Plasma');
+
       // input panel is not shown
-      expect(inputPanel.isDisplayed()).toBeFalsy();
+      cy.byId(inputPanel)
+          .should('not.be.visible');
 
-      expect(notes.getText()).toContain('/questionnaire-use-package.json');
-      expect(notes.getText()).toContain('/package-no-index.json.tgz');
+      cy.byId(notes)
+          .should('contain.text', '/questionnaire-use-package.json')
+          .should('contain.text', '/package-no-index.json.tgz');
     });
   });
-  
 });
-
