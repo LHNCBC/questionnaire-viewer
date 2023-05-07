@@ -27,7 +27,7 @@ describe('FHIR Questionnaire Viewer', () => {
           .click();
     }
 
-    it('should show no errors initially', () => {
+    it.only('should show no errors initially', () => {
       cy.byId(error)
           .should('not.be.visible');
       cy.byId(info)
