@@ -3,7 +3,13 @@
 This log documents the significant changes for each release.
 This project follows [Semantic Versioning](http://semver.org/).
 
-## [0.4.4] - 2023-05-07
+## [0.4.5] - 2023-05-08
+### Fixed
+- Changed the parcel build so that the generated asset paths are relative.  On
+  GitHub Pages the app is deployed to subdirectory, and parcel by default starts
+  the generated asset paths with /.
+
+## [0.4.4] - 2023-05-07 [broke on GitHub pages]
 ### Changed
 - Changed the build system from webpack to parcel
 - Updated Node.js to version 18.

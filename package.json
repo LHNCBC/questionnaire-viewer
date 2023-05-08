@@ -1,6 +1,6 @@
 {
   "name": "questionnaire-viewer",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "A website for rendering a FHIR Questionnaire using the LHC-Forms widget",
   "config": {
     "testServerPort": 4029,
@@ -9,7 +9,7 @@
   "scripts": {
     "************** Intended for CLI use": "**************************************************************",
     "test": "start-server-and-test start-dist http://localhost:$npm_package_config_testServerPort cy:run",
-    "build": "rimraf docs && PARCEL_WORKER_BACKEND=process parcel build --dist-dir docs source/index.html",
+    "build": "rimraf docs && PARCEL_WORKER_BACKEND=process parcel build --dist-dir docs --public-url '.' source/index.html",
     "start": "npm run start:note; start-server-and-test start:app http://localhost:$npm_package_config_testAppPort start:data",
     "start-dist": "start-server-and-test start-dist:app http://localhost:$npm_package_config_testAppPort start:data",
     "cy:open": "cypress open --project test",
