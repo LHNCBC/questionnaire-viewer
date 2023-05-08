@@ -3,6 +3,11 @@
 This log documents the significant changes for each release.
 This project follows [Semantic Versioning](http://semver.org/).
 
+## [0.4.4] - 2023-05-07
+### Changed
+- Changed the build system from webpack to parcel
+- Updated Node.js to version 18.
+
 ## [0.4.3] - 2021-08-11
 ### Fixed
 - Added a link to the demo from the README, and updated lforms.
