@@ -1,5 +1,118 @@
-<!doctype html><!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]--><!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]--><!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]--><!--[if gt IE 8]><!--><html class="no-js"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><title>FHIR Questionnaire Viewer</title><script>!function(e,t,a,n,g){e[n]=e[n]||[],e[n].push({"gtm.start":(new Date).getTime(),event:"gtm.js"});var m=t.getElementsByTagName(a)[0],r=t.createElement(a);r.async=!0,r.src="https://www.googletagmanager.com/gtm.js?id=GTM-59GQ6JK",m.parentNode.insertBefore(r,m)}(window,document,"script","dataLayer");</script><style id="antiClickjack">body{display:none!important}</style><script type="text/javascript">if(self===top){var antiClickjack=document.getElementById("antiClickjack");antiClickjack.parentNode.removeChild(antiClickjack)}else top.location=self.location;</script><meta name="description" content><meta name="viewport" content="width=device-width"><link href="https://fonts.googleapis.com/css?family=Droid+Sans:400,700" rel="stylesheet" type="text/css"><link href="https://clinicaltables.nlm.nih.gov/lforms-versions/29.2.3/styles/lforms.min.css" media="screen" rel="stylesheet"><link href="/index.7708f936.css" media="screen" rel="stylesheet"></head><body onload="app.onPageLoad()">  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-59GQ6JK" height="0" width="0" style="visibility:hidden;display:none" title="googletagmanager" sandbox></iframe></noscript>  <!--[if lt IE 9]>
+<!doctype html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>FHIR Questionnaire Viewer</title>
+
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0], j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-59GQ6JK');</script>
+    <!-- End Google Tag Manager -->
+
+
+    <style id="antiClickjack">
+      body{display:none !important;}
+    </style>
+    <script type="text/javascript">
+      if (self === top) {
+        var antiClickjack = document.getElementById("antiClickjack");
+        antiClickjack.parentNode.removeChild(antiClickjack);
+      } else {
+        top.location = self.location;
+      }
+    </script>
+
+
+
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+    <link href="https://fonts.googleapis.com/css?family=Droid+Sans:400,700"
+     rel="stylesheet" type="text/css">
+    <link href="https://clinicaltables.nlm.nih.gov/lforms-versions/29.2.3/styles/lforms.min.css"
+    media="screen" rel="stylesheet" />
+  <link href="app.389999af61f3c80b9bd4.css" rel="stylesheet"></head>
+  <body onload="app.onPageLoad()">
+
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-59GQ6JK" height="0" width="0" style="display:none;visibility:hidden" title="googletagmanager" sandbox></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <!--[if lt IE 9]>
     <p class=alert><b>Note:</b> It appears you are using an unsupported
      version of the IE browser. This website will not work properly with
      IE 8 or below.</p>
-    <![endif]-->  <div id="header"> <div id="siteNameBox"> <h1 id="siteName">FHIR Questionnaire Viewer</h1><br> <span id="tagLine">Using <a href="https://lhcforms.nlm.nih.gov/" target="_blank" rel="noreferrer">LHC-Forms Widget</a></span> </div> </div>  <div id="qv-form-input" style="display:none"> <div id="qv-form-input-intro"> <p>This is a tool that allows you to render a FHIR Questionnaire (JSON), with its needed resources from either a FHIR resource package file or a FHIR server. (See the <a href="https://confluence.hl7.org/display/FHIR/NPM+Package+Specification" target="_blank" rel="noreferrer">FHIR NPM package specification</a>.)</p> </div> <div id="qv-form-input-settings"> <div class="qv-url-row"> <div class="qv-url-name"><label for="urlQuestionnaire">URL of a FHIR Questionnaire:</label></div> <div class="qv-url-value"><input type="text" id="urlQuestionnaire"></div> </div> <div class="qv-url-row"> <div class="qv-url-name"> <input type="radio" id="radioPackage" name="resourceURL" value="package" checked onclick="app.toggleInputFields('urlFhirServer', 'urlPackage')"> <label for="radioPackage">URL of a FHIR resource package:</label> </div> <div class="qv-url-value"><input type="text" id="urlPackage"></div> </div> <div class="qv-url-row"> <div class="qv-url-name"> <input type="radio" id="radioFhirServer" name="resourceURL" value="fhirServer" onclick="app.toggleInputFields('urlPackage', 'urlFhirServer')"> <label for="radioFhirServer">URL of a FHIR server for resources:</label> </div> <div class="qv-url-value"><input type="text" id="urlFhirServer" disabled></div> </div> <div id="qv-param-notes">*Note: These field values can be specified in the URL. Use URL parameter "q" to provide the URL for a Questionnaire JSON, and optionally either parameter "p" to provide the URL for a FHIR resource package (package.tgz), or parameter "s" to provide the URL for a FHIR server.</div> </div> <button id="qv-btn-load" onclick="app.viewQuestionnaire()">Load Data</button> </div> <div role="alert" id="qv-error" style="display:none"> <div id="qv-error-header">Errors</div> <div id="qv-error-message"></div> </div> <div role="alert" id="qv-loading" style="display:none"> Loading ... </div> <div id="qv-form-view"> <div id="qv-form-notes"> <span role="alert" id="qv-form-info"></span> <span><button id="qv-btn-show-warning" style="display:none" onclick="app.toggleWarning()">Show Warning Messages</button></span> <div role="alert" id="qv-form-warning"></div> </div> <div id="qv-lforms"></div> </div> <script src="https://clinicaltables.nlm.nih.gov/lforms-versions/29.2.3/lforms.min.js"></script> <script src="https://clinicaltables.nlm.nih.gov/lforms-versions/29.2.3/fhir/R4/lformsFHIR.min.js"></script> <script src="https://clinicaltables.nlm.nih.gov/lforms-versions/29.2.3/fhir/STU3/lformsFHIR.min.js"></script> <script src="/index.2c7b572f.js" type="module"></script> </body></html>
+    <![endif]-->
+
+    <!-- page header -->
+    <div id="header">
+      <div id="siteNameBox">
+        <h1 id="siteName">FHIR Questionnaire Viewer</h1><br>
+        <span id="tagLine">Using <a href="https://lhcforms.nlm.nih.gov/"
+        target="_blank" rel="noreferrer">LHC-Forms Widget</a></span>
+      </div>
+    </div>
+    <!-- end page header -->
+
+    <div id="qv-form-input" style="display:none">
+
+      <div id="qv-form-input-intro">
+        <p>This is a tool that allows you to render a FHIR Questionnaire (JSON), with its needed resources from either a FHIR resource package file or a FHIR server.
+        (See the <a
+        href="https://confluence.hl7.org/display/FHIR/NPM+Package+Specification"
+        target="_blank" rel="noreferrer">FHIR NPM package specification</a>.)</p>
+      </div>
+
+      <div id="qv-form-input-settings">
+        <div class="qv-url-row">
+          <div class='qv-url-name'><label for="urlQuestionnaire">URL of a FHIR Questionnaire:</label></div>
+          <div class='qv-url-value'><input type="text" id="urlQuestionnaire"></div>
+        </div>
+        <div class="qv-url-row">
+          <div class='qv-url-name'>
+            <input type="radio" id="radioPackage" name="resourceURL" value="package" checked onclick="app.toggleInputFields('urlFhirServer', 'urlPackage')">
+            <label for="radioPackage">URL of a FHIR resource package:</label>
+          </div>
+          <div class='qv-url-value'><input type="text" id="urlPackage"></div>
+        </div>
+        <div class="qv-url-row">
+          <div class='qv-url-name'>
+            <input type="radio" id="radioFhirServer" name="resourceURL" value="fhirServer" onclick="app.toggleInputFields('urlPackage', 'urlFhirServer')">
+            <label for="radioFhirServer">URL of a FHIR server for resources:</label>
+          </div>
+          <div class='qv-url-value'><input type="text" id="urlFhirServer" disabled></div>
+        </div>
+
+        <div id="qv-param-notes">*Note: These field values can be specified in the URL.
+          Use URL parameter "q" to provide the URL for a Questionnaire JSON, and
+          optionally either parameter "p" to provide the URL for a FHIR resource package (package.tgz), or
+          parameter "s" to provide the URL for a FHIR server.</div>
+      </div>
+      <button id="qv-btn-load" onclick="app.viewQuestionnaire()">Load Data</button>
+
+    </div>
+    <div role="alert" id="qv-error" style="display:none">
+      <div id="qv-error-header">Errors</div>
+      <div id='qv-error-message'></div>
+    </div>
+    <div role="alert" id="qv-loading" style="display:none">
+      Loading ...
+    </div>
+
+    <div id="qv-form-view">
+      <div id="qv-form-notes">
+        <span role="alert" id="qv-form-info"></span>
+        <span><button id="qv-btn-show-warning" style="display:none" onclick="app.toggleWarning()">Show Warning Messages</button></span>
+        <div role="alert" id="qv-form-warning"></div>
+      </div>
+      <div id="qv-lforms"></div>
+    </div>
+
+    <script src="https://clinicaltables.nlm.nih.gov/lforms-versions/29.2.3/lforms.min.js"></script>
+    <script src="https://clinicaltables.nlm.nih.gov/lforms-versions/29.2.3/fhir/R4/lformsFHIR.min.js"></script>
+    <script src="https://clinicaltables.nlm.nih.gov/lforms-versions/29.2.3/fhir/STU3/lformsFHIR.min.js"></script>
+
+  <script type="text/javascript" src="app.cdab808d55246effe311.js"></script></body>
+</html>

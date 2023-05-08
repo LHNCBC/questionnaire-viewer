@@ -1,5 +1,2 @@
-.parcel-cache
 node_modules
 test/cypress/videos
-test/cypress/screenshots
-debugging

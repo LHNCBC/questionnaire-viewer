@@ -582,7 +582,3 @@ export function toggleInputFields(eleId2Disable, eleId2Enable) {
   }
 
 }
-
-// Parcel does not by default provide these exported functions on a global
-// object, so create one here.
-window.app = {toggleWarning, onPageLoad, viewQuestionnaire, toggleInputFields};
