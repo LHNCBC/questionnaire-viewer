@@ -9,14 +9,14 @@
   "scripts": {
     "************** Intended for CLI use": "**************************************************************",
     "test": "start-server-and-test start-dist http://localhost:$npm_package_config_testServerPort cy:run",
-    "build": "rimraf docs && PARCEL_WORKER_BACKEND=process parcel build --dist-dir docs --public-url '.' source/index.html",
+    "build": "rimraf docs && PARCEL_WORKER_BACKEND=process parcel build --dist-dir docs --public-url '.' source/index.html source/viewer.html",
     "start": "npm run start:note; start-server-and-test start:app http://localhost:$npm_package_config_testAppPort start:data",
     "start-dist": "start-server-and-test start-dist:app http://localhost:$npm_package_config_testAppPort start:data",
     "cy:open": "cypress open --project test",
     "cy:run": "cypress run --project test",
     "************** Not intended for CLI use (supporting scripts)": "*************************************",
     "start:data": "http-server -d false -s -p $npm_package_config_testServerPort -c-1 test/data -P http://localhost:$npm_package_config_testAppPort",
-    "start:app": "parcel serve --dist-dir debugging source/index.html -p $npm_package_config_testAppPort",
+    "start:app": "parcel serve --dist-dir debugging source/index.html source/viewer.html -p $npm_package_config_testAppPort",
     "start:note": "echo Warning:  Parcel serves the app on any URL, so some tests will fail if run against that server.  Use start-dist for tests.",
     "start-dist:app": "http-server -s -p $npm_package_config_testAppPort -c-1 docs"
   },
