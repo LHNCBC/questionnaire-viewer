@@ -43,6 +43,7 @@
     "js-untar-lhc": "^2.1.1",
     "lforms-updater": "^29.0.1",
     "pako": "^1.0.11",
+    "semver": "^7.5.2",
     "string-to-arraybuffer": "^1.0.2",
     "url-parse": "^1.5.3",
     "whatwg-fetch": "^3.0.0"

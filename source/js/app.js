@@ -7,7 +7,7 @@ import untar from "js-untar-lhc";
 import str2ab from "string-to-arraybuffer";
 import FHIR from 'fhirclient';
 import lformsUpdater from 'lforms-updater';
-
+import semverSort from 'semver/functions/rsort';
 
 let urlQSelected = null;
 let urlPSelected = null;
@@ -413,7 +413,7 @@ function showErrorMessages(message) {
 
 
 /**
- * Clear up messgaes and previously loaded form before next Questionnaire is loaded
+ * Clear up messages and previously loaded form before next Questionnaire is loaded
  */
 function resetPage() {
   let divError = document.getElementById('qv-error');
@@ -510,10 +510,52 @@ function showQuestionnaire() {
   else {
     showErrorMessages("Please provide the URL of a FHIR Questionnaire.")
   }
-
 }
+
+
 /**
- * Page's onLoad event hanlder. Check URL parameters to load FHIR Questionnarie and resource package
+ *  Fetches and initializes the menu of LForms versions.
+ */
+function initLFormsVersionMenu() {
+  // Get the list of lforms versions
+  fetch('https://clinicaltables.nlm.nih.gov/lforms-versions').then(response=>{
+    // https://clinicaltables.nlm.nih.gov/lforms-versions contains output like:
+    // <span class="name">lforms-9.0.2.zip</span>
+    if (response.ok) { // otherwise, don't show the menu
+      response.text().then(pageText=>{
+        const versions  =
+          [...pageText.matchAll(/<span class="name">lforms-(.*)\.zip<\/span>/g)].map(
+            m=>m[1]);
+        semverSort(versions);
+        const ac = new LForms.Def.Autocompleter.Prefetch('lformsVersion', versions,
+          {defaultValue: LForms.lformsVersion, matchListValue: true});
+        ac.setFieldToListValue(LForms.lformsVersion);
+        $('#lformsVersionMenu')[0].style.display='inline';
+        LForms.Def.Autocompleter.Event.observeListSelections('lformsVersion', (data)=>{
+          if (data.final_val && data.on_list && data.final_val != LForms.lformsVersion)
+            changeLFormsVersion(data.final_val);
+        });
+      });
+    }
+  });
+}
+
+/**
+ *  Handles a selection of a new LForms version.
+ * @param newLFormsVersion the new version to switch to (assumed valid)
+ */
+function changeLFormsVersion(newLFormsVersion) {
+  // We need to reload the page.
+  // The menu only shows if parameters were not set for the questionnaire, so
+  // we can't preserve any field values the user might have filled in for the
+  // questionnaire.
+  let pageURL = window.location.origin + window.location.pathname;
+  window.location = pageURL + '?lfv='+newLFormsVersion;
+}
+
+
+/**
+ * Page's onLoad event handler. Check URL parameters to load FHIR Questionnarie and resource package
  */
 export function onPageLoad() {
 
@@ -537,6 +579,11 @@ export function onPageLoad() {
       usePackage = true;
     }
     showQuestionnaire();
+  }
+
+  // If this is the viewer.html page, do additional initialization.
+  if (parsedUrl.pathname.indexOf('viewer.html')) {
+    initLFormsVersionMenu();
   }
 }
 
