@@ -400,7 +400,7 @@ function loadPackageAndQuestionnaire(urlPackage, urlQ) {
  * Show error messages
  * @param {} message an error message
  */
-function showErrorMessages(message) {
+export function showErrorMessages(message) {
   if (message) {
     let divError = document.getElementById('qv-error');
     divError.style.display = '';
@@ -632,4 +632,5 @@ export function toggleInputFields(eleId2Disable, eleId2Enable) {
 
 // Parcel does not by default provide these exported functions on a global
 // object, so create one here.
-window.app = {toggleWarning, onPageLoad, viewQuestionnaire, toggleInputFields};
+window.app = {toggleWarning, onPageLoad, viewQuestionnaire, toggleInputFields, showErrorMessages,
+  initLFormsVersionMenu};
