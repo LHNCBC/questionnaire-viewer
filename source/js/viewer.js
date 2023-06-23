@@ -2,7 +2,7 @@ import {loadLForms} from './lformsLoader.js'
 
 let params = new URL(document.location).searchParams;
 let lformsVersion = params.get('lfv') || '33.3.3';
-loadLForms(lformsVersion).then(()=>waitForFHIRSupportAndApp(),
+loadLForms(lformsVersion).then(()=>initApp(),
   (e)=>{ // promise rejection
     console.log(e); // in case some exception was thrown
     showError('Unable to load the LHC-Forms software.  Try reloading the page.');
@@ -16,10 +16,14 @@ function waitFor(condition, action) {
   else
     action();
 }
-function waitForFHIRSupportAndApp() {
-  waitFor(()=>typeof LForms.FHIR != 'undefined' && typeof app != 'undefined',
-    ()=>app.onPageLoad());
+
+/**
+ *  Initializes the app after it has loaded.
+ */
+function initApp() {
+  waitFor(()=>typeof app != 'undefined', ()=>app.onPageLoad());
 }
+
 
 /**
  *  Waits for the application code to load, and then shows the given error
