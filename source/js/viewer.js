@@ -1,9 +1,10 @@
 import {loadLForms} from './lformsLoader.js'
 import semverSort from 'semver/functions/rsort';
-
+import * as app from './app.js';
 
 let params = new URL(document.location).searchParams;
 let lformsVersion = params.get('lfv') || '29.2.3';
+
 loadLForms(lformsVersion).then(()=>initApp(),
   (e)=>{ // promise rejection
     console.log(e); // in case some exception was thrown
@@ -63,11 +64,11 @@ function waitFor(condition, action) {
 }
 
 /**
- *  Initializes the app after it has loaded.
+ *  Initializes the app after everything has loaded.
  */
 function initApp() {
   initLFormsVersionMenu();
-  waitFor(()=>typeof app != 'undefined', ()=>app.onPageLoad());
+  app.onPageLoad()
 }
 
 
@@ -76,6 +77,6 @@ function initApp() {
  *  message.
  */
 function showError(msg) {
-  waitFor(()=>typeof app != 'undefined', ()=>app.showErrorMessages(msg));
+  app.showErrorMessages(msg);
 }
 
