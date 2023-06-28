@@ -14,12 +14,18 @@ export function loadLForms(version) {
       'polyfills.js', 'main.js'].map(f=>'/webcomponent/'+f);
     fhirScript = "/fhir/lformsFHIRAll.min.js";
   }
-  else {
+  else if (majorVersion >= 30) {
     cssFile = '/webcomponent/styles.css';
     lformsScripts = ['assets/lib/zone.min.js', 'scripts.js', 'runtime-es5.js',
       'polyfills-es5.js', 'main-es5.js'].map(f=>'/webcomponent/'+f);
     fhirScript = "/fhir/lformsFHIRAll.min.js";
   }
+  else {
+    cssFile = '/styles/lforms.min.css';
+    lformsScripts = ['/lforms.min.js'];
+    fhirScript = "/fhir/lformsFHIRAll.min.js";
+  }
+
   const cssTag = document.createElement('link');
   cssTag.setAttribute('href', lformsDir+cssFile);
   cssTag.setAttribute('media', 'screen');
@@ -38,7 +44,7 @@ export function loadLForms(version) {
   return Promise.all(loadPromises).then(()=>{
     const scriptTag = document.createElement('script');
     scriptTag.setAttribute('src', lformsDir+fhirScript);
-    return loadTag(scriptTag);
+    return loadTag(scriptTag).then(()=>console.log('Loaded LHC-Forms'));
   });
 }
 
