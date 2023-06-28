@@ -33,19 +33,18 @@ export function loadLForms(version) {
   let loadPromises = [];
   loadPromises.push(loadTag(cssTag));
 
+  lformsScripts.push(fhirScript);
   for (let filename of lformsScripts) {
     const scriptTag = document.createElement('script');
     scriptTag.setAttribute('src', lformsDir+filename);
+    scriptTag.setAttribute('async', false); // has no effect; set again below
+    scriptTag.setAttribute('defer', true);
     loadPromises.push(loadTag(scriptTag));
   }
 
   // We need to wait for the LForms script to load before loading the FHIR
   // support.
-  return Promise.all(loadPromises).then(()=>{
-    const scriptTag = document.createElement('script');
-    scriptTag.setAttribute('src', lformsDir+fhirScript);
-    return loadTag(scriptTag).then(()=>console.log('Loaded LHC-Forms'));
-  });
+  return Promise.all(loadPromises).then(()=>console.log('Loaded LHC-Forms'));
 }
 
 
@@ -64,7 +63,9 @@ function loadTag(tag) {
     });
     if (tag.tagName == 'LINK')
       document.head.appendChild(tag);
-    else
+    else {
+      tag.async=false;
       document.body.appendChild(tag);
+    }
   });
 }
