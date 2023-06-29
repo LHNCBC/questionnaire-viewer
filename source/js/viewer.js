@@ -1,3 +1,8 @@
+// This file is the main script for the application.  When this was written,
+// there were originally two pages, index.html and viewer.html which both used app.js, and
+// this file contained the code only used by viewer.html.  The code here is
+// mostly for the lforms version menu, and it includes app.js.
+
 import {loadLForms} from './lformsLoader.js'
 import semverSort from 'semver/functions/rsort';
 import * as app from './app.js';
