@@ -5,12 +5,29 @@ import * as app from './app.js';
 let params = new URL(document.location).searchParams;
 let lformsVersion = params.get('lfv') || '29.2.3';
 
-loadLForms(lformsVersion).then(()=>initApp(),
-  (e)=>{ // promise rejection
-    console.log(e); // in case some exception was thrown
-    showError('Unable to load the LHC-Forms software.  Try reloading the page.');
-  }
-);
+if (/^\d+\.\d+\.\d+(-beta\.d+)?$/.test(lformsVersion)) {
+  loadLForms(lformsVersion, showHeader).then(()=>initApp(),
+    (e)=>{ // promise rejection
+      console.log(e); // in case some exception was thrown
+      showHeader();
+      showError('Unable to load version "'+lformsVersion+'" of the LHC-Forms software.');
+    }
+  );
+}
+else {
+  showHeader();
+  showError('An invalid version "'+lformsVersion+'" of the LHC-Forms software was requested.');
+}
+
+
+/**
+ *  Shows the header, which is initially hidden under after the LForms CSS
+ *  loads.
+ */
+function showHeader() {
+  document.getElementById('header').style.display = 'block';
+}
+
 
 /**
  *  Fetches and initializes the menu of LForms versions.

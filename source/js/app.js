@@ -57,6 +57,7 @@ function addQuestionnaire(dataQ, dataPackage) {
       try {
         LForms.Util.addFormToPage(lfData, "qv-lforms").then(function(){
           showInfoMessages();
+          LForms.Def.ScreenReaderLog.add('A questionnaire has been displayed on the page');
         });
       }
       catch(error) {

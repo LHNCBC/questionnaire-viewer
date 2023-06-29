@@ -2,8 +2,9 @@
  *  Loads LForms into the page, returning a promise that resolves when it is
  *  ready.
  * @param version the version to be loaded
+ * @param styleCallback (optional) a function to call as soon as the styles are loaded
  */
-export function loadLForms(version) {
+export function loadLForms(version, styleCallback) {
   const lformsDir = "https://clinicaltables.nlm.nih.gov/lforms-versions/"+version;
   // TBD Add support for versions < 33
   let cssFile, lformsScripts, fhirScript;
@@ -31,7 +32,7 @@ export function loadLForms(version) {
   cssTag.setAttribute('media', 'screen');
   cssTag.setAttribute('rel', 'stylesheet');
   let loadPromises = [];
-  loadPromises.push(loadTag(cssTag));
+  loadPromises.push(loadTag(cssTag).then(()=>styleCallback && styleCallback()));
 
   lformsScripts.push(fhirScript);
   for (let filename of lformsScripts) {
