@@ -3,6 +3,13 @@
 This log documents the significant changes for each release.
 This project follows [Semantic Versioning](http://semver.org/).
 
+## [0.5.0] - 2023-06-29
+### Added
+- The viewer now has the ability to specify, via an 'lfv' parameter, the version
+  of LHC-Forms to use.  By default, the version is 29.2.3, which was the
+  version of LHC-Forms used in 0.4.5 of the questionnaire-viewer, so this should
+  be a backwards-compatible change.
+
 ## [0.4.5] - 2023-05-08
 ### Fixed
 - Changed the parcel build so that the generated asset paths are relative.  On
