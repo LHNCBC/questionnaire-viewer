@@ -72,14 +72,6 @@ function changeLFormsVersion(newLFormsVersion) {
 }
 
 
-// Wait for LForms to be defined, then append the FHIR library
-function waitFor(condition, action) {
-  if (!condition())
-    setTimeout(()=>waitFor(condition, action), 10);
-  else
-    action();
-}
-
 /**
  *  Initializes the app after everything has loaded.
  */

@@ -31,11 +31,9 @@
     <meta name="viewport" content="width=device-width">
     <link href="https://fonts.googleapis.com/css?family=Droid+Sans:400,700"
      rel="stylesheet" type="text/css">
-    <link href="https://clinicaltables.nlm.nih.gov/lforms-versions/29.2.3/styles/lforms.min.css"
-    media="screen" rel="stylesheet" />
     <link href="./css/app.css" media="screen" rel="stylesheet" />
   </head>
-  <body onload="app.onPageLoad()">
+  <body>
 
     <!-- Google Tag Manager (noscript) -->
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-59GQ6JK" height="0" width="0" style="display:none;visibility:hidden" title="googletagmanager" sandbox></iframe></noscript>
@@ -52,7 +50,10 @@
       <div id="siteNameBox">
         <h1 id="siteName">FHIR Questionnaire Viewer</h1><br>
         <span id="tagLine">Using <a href="https://lhcforms.nlm.nih.gov/"
-        target="_blank" rel="noreferrer">LHC-Forms Widget</a></span>
+         target="_blank" rel="noreferrer">LHC-Forms Widget</a>
+          <span id="lformsVersionMenu"> version <input id=lformsVersion
+           type=text size=16>
+        </span>
       </div>
     </div>
     <!-- end page header -->
@@ -89,7 +90,9 @@
         <div id="qv-param-notes">*Note: These field values can be specified in the URL.
           Use URL parameter "q" to provide the URL for a Questionnaire JSON, and
           optionally either parameter "p" to provide the URL for a FHIR resource package (package.tgz), or
-          parameter "s" to provide the URL for a FHIR server.</div>
+          parameter "s" to provide the URL for a FHIR server.  The parameter "lfv"
+          can be used to set the version of LHC-Forms being used to render the
+          form.</div>
       </div>
       <button id="qv-btn-load" onclick="app.viewQuestionnaire()">Load Data</button>
 
@@ -106,14 +109,11 @@
       <div id="qv-form-notes">
         <span role="alert" id="qv-form-info"></span>
         <span><button id="qv-btn-show-warning" style="display:none" onclick="app.toggleWarning()">Show Warning Messages</button></span>
-        <div role="alert" id="qv-form-warning"></div>
+        <div role="alert" style="display:none" id="qv-form-warning"></div>
       </div>
       <div id="qv-lforms"></div>
     </div>
 
-    <script src="https://clinicaltables.nlm.nih.gov/lforms-versions/29.2.3/lforms.min.js"></script>
-    <script src="https://clinicaltables.nlm.nih.gov/lforms-versions/29.2.3/fhir/R4/lformsFHIR.min.js"></script>
-    <script src="https://clinicaltables.nlm.nih.gov/lforms-versions/29.2.3/fhir/STU3/lformsFHIR.min.js"></script>
-    <script src="./js/app.js" type="module"></script>
+    <script src="./js/viewer.js" type="module"></script>
   </body>
 </html>

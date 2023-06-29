@@ -93,6 +93,9 @@ body {
 }
 
 
+#qv-error {
+  font-family: Arial,Helvetica,sans-serif;
+}
 #qv-error-header {
   font-size: 120%;
   color: red;
