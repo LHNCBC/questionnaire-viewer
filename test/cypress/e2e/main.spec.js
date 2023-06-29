@@ -1,4 +1,64 @@
 describe('FHIR Questionnaire Viewer', () => {
+  describe('LForms Version menu', ()=>{
+    it('should reload the page with a different LForms version', ()=>{
+      cy.visit('/');
+      cy.byId('lformsVersion').click().clear().type('33.3.7{enter}');
+      cy.location('search').should('equal', '?lfv=33.3.7');
+    });
+
+    it('should not change the path or other parameters', ()=>{
+      const qURL = Cypress.config().baseUrl + '/weightHeightQuestionnaire_r4.json';
+      cy.visit('/index.html?q='+qURL+'&lfv=33.3.4');
+      cy.byId('lformsVersion').click().clear().type('33.3.7{enter}');
+      cy.location('search').should('equal', '?q='+encodeURIComponent(qURL)+'&lfv=33.3.7');
+      cy.location('pathname').should('equal', '/index.html');
+    });
+  });
+
+  describe('lfv parameter', ()=>{
+    const qURL = Cypress.config().baseUrl + '/weightHeightQuestionnaire_r4.json';
+
+    it('should default to 29.2.3 when not set', ()=>{
+      // One of the FHIR implementation guides has published links to the
+      // questionnaire viewer, and expects version 29.2.3, and might not work
+      // with newer LForms versions.
+      // https://build.fhir.org/ig/HL7/fhir-sirb/
+      // One of the links for the Questionnaires:
+      // https://lhncbc.github.io/questionnaire-viewer/?q=https://build.fhir.org/ig/HL7/fhir-sirb/Questionnaire-sirb-initiate-study-questionnaire-populate.json
+      // but there are others in that IG.
+      const defaultVersion = '29.2.3'
+      cy.visit('/?q='+encodeURIComponent(qURL));
+      cy.byId('lformsVersion').should('have.value', defaultVersion);
+      cy.window().then(win=>{
+        expect(win.LForms.lformsVersion).to.equal(defaultVersion);
+      });
+      cy.byId('qv-lforms').should('contain.text', 'Weight'); // confirm the questionnaire is loaded
+    });
+
+    it('should work to load the specified version of LForms', ()=>{
+      const lfv = '33.3.7';
+      cy.visit('/?q='+encodeURIComponent(qURL)+'&lfv='+lfv);
+      cy.byId('lformsVersion').should('have.value', lfv);
+      cy.window().then(win=>{
+        expect(win.LForms.lformsVersion).to.equal(lfv);
+      });
+      cy.byId('qv-lforms').should('contain.text', 'Weight'); // confirm the questionnaire is loaded
+    });
+
+    it('should not accept invalid LForms version strings', ()=>{
+      // This is so we don't create a means for hackers to pass in an arbitrary
+      // string
+      const lfv = 'shadow';
+      cy.visit('/?q='+encodeURIComponent(qURL)+'&lfv='+lfv);
+      cy.byId('qv-error').should('be.visible');
+      cy.byId('lformsVersion').should('not.be.visible');
+      cy.window().then(win=>{
+        expect(win.LForms).to.be.undefined;
+      });
+      cy.byId('qv-lforms').should('not.be.visible');
+    });
+  });
+
   describe('URLs provided on page', () => {
     beforeEach(() => {
       cy.visit('/');
