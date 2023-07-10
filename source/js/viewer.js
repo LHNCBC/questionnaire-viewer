@@ -10,7 +10,7 @@ import * as app from './app.js';
 let params = new URL(document.location).searchParams;
 let lformsVersion = params.get('lfv') || '29.2.3';
 
-if (/^\d+\.\d+\.\d+(-beta\.d+)?$/.test(lformsVersion)) {
+if (/^\d+\.\d+\.\d+(-beta\.\d+)?$/.test(lformsVersion)) {
   loadLForms(lformsVersion, showHeader).then(()=>initApp(),
     (e)=>{ // promise rejection
       console.log(e); // in case some exception was thrown

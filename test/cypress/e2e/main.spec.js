@@ -13,7 +13,16 @@ describe('FHIR Questionnaire Viewer', () => {
       cy.location('search').should('equal', '?q='+encodeURIComponent(qURL)+'&lfv=33.3.7');
       cy.location('pathname').should('equal', '/index.html');
     });
+
+    it('should also work with lfv is the first parameter', ()=>{
+      const qURL = Cypress.config().baseUrl + '/weightHeightQuestionnaire_r4.json';
+      cy.visit('/index.html?lfv=33.3.4&q='+qURL);
+      cy.byId('lformsVersion').click().clear().type('33.3.7{enter}');
+      cy.location('search').should('equal', '?lfv=33.3.7&q='+encodeURIComponent(qURL));
+      cy.location('pathname').should('equal', '/index.html');
+    });
   });
+
 
   describe('lfv parameter', ()=>{
     const qURL = Cypress.config().baseUrl + '/weightHeightQuestionnaire_r4.json';
@@ -37,6 +46,16 @@ describe('FHIR Questionnaire Viewer', () => {
 
     it('should work to load the specified version of LForms', ()=>{
       const lfv = '33.3.7';
+      cy.visit('/?q='+encodeURIComponent(qURL)+'&lfv='+lfv);
+      cy.byId('lformsVersion').should('have.value', lfv);
+      cy.window().then(win=>{
+        expect(win.LForms.lformsVersion).to.equal(lfv);
+      });
+      cy.byId('qv-lforms').should('contain.text', 'Weight'); // confirm the questionnaire is loaded
+    });
+
+    it('should work to load a specified beta version of LForms', ()=>{
+      const lfv = '30.0.0-beta.9';
       cy.visit('/?q='+encodeURIComponent(qURL)+'&lfv='+lfv);
       cy.byId('lformsVersion').should('have.value', lfv);
       cy.window().then(win=>{

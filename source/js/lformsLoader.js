@@ -45,7 +45,8 @@ export function loadLForms(version, styleCallback) {
 
   // We need to wait for the LForms script to load before loading the FHIR
   // support.
-  return Promise.all(loadPromises).then(()=>console.log('Loaded LHC-Forms'));
+  return Promise.all(loadPromises).then(()=>console.log(
+    'Loaded LHC-Forms version '+version));
 }
 
 
