@@ -4,6 +4,7 @@
 
 body {
   padding: 15px;
+  margin: 0;
 }
 
 /* Styles for the header */
@@ -16,19 +17,24 @@ body {
   line-height: normal;
   padding-bottom: 10px;
   margin: 5px;
+  display: none; /* until lforms CSS is loaded */
 }
 #siteNameBox {
   margin-top: 15px;
   margin-bottom: 5px;
 }
 #siteName {
-  font-size: 160%;
+  font-size: 1.6em;
+  font-weight: 500;
   margin-top: 5px;
   margin-bottom: 0;
 }
 #tagLine {
   padding: 0;
   font-size: 80%;
+}
+#lformsVersionMenu {
+  display: none;
 }
 /* End of styles for the header */
 
@@ -39,7 +45,7 @@ body {
 #qv-form-input-settings {
   display: flex;
   flex-direction: column;
-  margin: 5px;  
+  margin: 5px;
   border: 1px solid #17b4e3;
   border-radius: 4px;
 
@@ -60,9 +66,9 @@ body {
 }
 #qv-form-input-settings .qv-url-value {
   flex-grow: 1;
-  flex-shrink: 1;  
+  flex-shrink: 1;
 }
-#qv-form-input-settings .qv-url-value input{ 
+#qv-form-input-settings .qv-url-value input{
   width: 100%;
   border-radius: 4px;
   border: 2px solid #17b4e3;
@@ -87,6 +93,9 @@ body {
 }
 
 
+#qv-error {
+  font-family: Arial,Helvetica,sans-serif;
+}
 #qv-error-header {
   font-size: 120%;
   color: red;

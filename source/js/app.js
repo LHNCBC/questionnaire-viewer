@@ -8,7 +8,6 @@ import str2ab from "string-to-arraybuffer";
 import FHIR from 'fhirclient';
 import lformsUpdater from 'lforms-updater';
 
-
 let urlQSelected = null;
 let urlPSelected = null;
 let urlSSelected = null;
@@ -58,6 +57,7 @@ function addQuestionnaire(dataQ, dataPackage) {
       try {
         LForms.Util.addFormToPage(lfData, "qv-lforms").then(function(){
           showInfoMessages();
+          LForms.Def.ScreenReaderLog.add('A questionnaire has been displayed on the page');
         });
       }
       catch(error) {
@@ -400,7 +400,7 @@ function loadPackageAndQuestionnaire(urlPackage, urlQ) {
  * Show error messages
  * @param {} message an error message
  */
-function showErrorMessages(message) {
+export function showErrorMessages(message) {
   if (message) {
     let divError = document.getElementById('qv-error');
     divError.style.display = '';
@@ -413,7 +413,7 @@ function showErrorMessages(message) {
 
 
 /**
- * Clear up messgaes and previously loaded form before next Questionnaire is loaded
+ * Clear up messages and previously loaded form before next Questionnaire is loaded
  */
 function resetPage() {
   let divError = document.getElementById('qv-error');
@@ -510,10 +510,11 @@ function showQuestionnaire() {
   else {
     showErrorMessages("Please provide the URL of a FHIR Questionnaire.")
   }
-
 }
+
+
 /**
- * Page's onLoad event hanlder. Check URL parameters to load FHIR Questionnarie and resource package
+ * Page's onLoad event handler. Check URL parameters to load FHIR Questionnarie and resource package
  */
 export function onPageLoad() {
 
@@ -585,4 +586,4 @@ export function toggleInputFields(eleId2Disable, eleId2Enable) {
 
 // Parcel does not by default provide these exported functions on a global
 // object, so create one here.
-window.app = {toggleWarning, onPageLoad, viewQuestionnaire, toggleInputFields};
+window.app = {toggleWarning, onPageLoad, viewQuestionnaire, toggleInputFields, showErrorMessages};
