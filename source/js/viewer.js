@@ -42,7 +42,7 @@ function initLFormsVersionMenu() {
     const ac = new LForms.Def.Autocompleter.Prefetch('lformsVersion', versions,
       {defaultValue: LForms.lformsVersion, matchListValue: true, addSeqNum: false});
     ac.setFieldToListValue(LForms.lformsVersion);
-    $('#lformsVersionMenu')[0].style.display='inline';
+    document.getElementById('lformsVersionMenu').style.display='inline';
     LForms.Def.Autocompleter.Event.observeListSelections('lformsVersion', (data)=>{
       if (data.final_val && data.on_list && data.final_val != LForms.lformsVersion)
         changeLFormsVersion(data.final_val);
