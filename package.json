@@ -1,6 +1,6 @@
 {
   "name": "questionnaire-viewer",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "A website for rendering a FHIR Questionnaire using the LHC-Forms widget",
   "config": {
     "testServerPort": 4029,

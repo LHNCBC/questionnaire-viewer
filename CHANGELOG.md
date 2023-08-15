@@ -3,6 +3,13 @@
 This log documents the significant changes for each release.
 This project follows [Semantic Versioning](http://semver.org/).
 
+## [0.5.1] - 2023-08-15
+### Changed
+- Extracted the code for automatically loading lforms into an "lforms-loader"
+  package which can be used by other apps as well as this one.
+- No longer uses jQuery (in preparation for the soon to be released version of
+  lforms which does not leak its version of jQuery to the window object).
+
 ## [0.5.0] - 2023-06-29
 ### Added
 - The viewer now has the ability to specify, via an 'lfv' parameter, the version
