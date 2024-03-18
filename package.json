@@ -9,7 +9,8 @@
   "scripts": {
     "************** Intended for CLI use": "**************************************************************",
     "test": "start-server-and-test start-dist http://localhost:$npm_package_config_testServerPort cy:run",
-    "build": "rimraf docs && PARCEL_WORKER_BACKEND=process parcel build --dist-dir docs --public-url '.' source/index.html",
+    "build": "rimraf docs && PARCEL_WORKER_BACKEND=process parcel build --dist-dir docs --public-url '.' source/index.html && npm run build:copy-google-site-verification",
+    "build:copy-google-site-verification": "cp source/googleecb8763e4897dca6.html docs",
     "start": "npm run start:note; start-server-and-test start:app http://localhost:$npm_package_config_testAppPort start:data",
     "start-dist": "start-server-and-test start-dist:app http://localhost:$npm_package_config_testAppPort start:data",
     "cy:open": "cypress open --project test",
