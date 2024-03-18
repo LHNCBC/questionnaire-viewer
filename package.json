@@ -1,6 +1,6 @@
 {
   "name": "questionnaire-viewer",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "A website for rendering a FHIR Questionnaire using the LHC-Forms widget",
   "config": {
     "testServerPort": 4029,
@@ -9,7 +9,8 @@
   "scripts": {
     "************** Intended for CLI use": "**************************************************************",
     "test": "start-server-and-test start-dist http://localhost:$npm_package_config_testServerPort cy:run",
-    "build": "rimraf docs && PARCEL_WORKER_BACKEND=process parcel build --dist-dir docs --public-url '.' source/index.html",
+    "build": "rimraf docs && PARCEL_WORKER_BACKEND=process parcel build --dist-dir docs --public-url '.' source/index.html && npm run build:copy-google-site-verification",
+    "build:copy-google-site-verification": "cp source/googleecb8763e4897dca6.html docs",
     "start": "npm run start:note; start-server-and-test start:app http://localhost:$npm_package_config_testAppPort start:data",
     "start-dist": "start-server-and-test start-dist:app http://localhost:$npm_package_config_testAppPort start:data",
     "cy:open": "cypress open --project test",
@@ -34,7 +35,7 @@
     "process": false
   },
   "devDependencies": {
-    "cypress": "^10.10.0",
+    "cypress": "^13.6.6",
     "http-server": "^14.1.1",
     "jasmine-spec-reporter": "^4.2.1",
     "parcel": "^2.8.3",
@@ -45,8 +46,8 @@
   "dependencies": {
     "fhirclient": "^2.3.10",
     "js-untar-lhc": "^2.1.1",
-    "lforms-loader": "^1.0.0",
-    "lforms-updater": "^29.0.1",
+    "lforms-loader": "^3.0.0",
+    "lforms-updater": "^30.0.0",
     "pako": "^1.0.11",
     "string-to-arraybuffer": "^1.0.2",
     "url-parse": "^1.5.3",
