@@ -1,12 +1,10 @@
-const firstStatusListItem = 'Requires revalidation'; // for some reason this changed
-
 /**
  * Wait for the Prefetch autocomplete filtered results to update,
  * so the first result contains text typed in the autocomplete.
  * @param text text typed in the autocomplete
  */
 function waitForFirstResultToContain(text) {
-  cy.get('#searchResults li:first-child, #searchResults tr:first-child')
+  cy.get('#searchResults li:first-child, #searchResults')
       .should('contain.text', text);
 }
 
@@ -54,7 +52,7 @@ describe('FHIR Questionnaire Viewer with a specified FHIR server: ', () => {
           .type('{downArrow}')
           .type('{enter}');
       cy.byId(secondItem)
-          .should('have.value', firstStatusListItem);
+          .should('have.value', 'Requires revalidation');
       cy.byId(thirdItem)
           .type('{downArrow}')
           .type('{enter}');
@@ -69,7 +67,7 @@ describe('FHIR Questionnaire Viewer with a specified FHIR server: ', () => {
       cy.byId(firstItem)
           .should('have.value', 'language-preference-type');
       cy.byId(secondItem)
-          .type('{downArrow}')
+          .type('v')
           .type('{downArrow}')
           .type('{enter}');
       cy.byId(secondItem)
@@ -122,7 +120,7 @@ describe('FHIR Questionnaire Viewer with a specified FHIR server: ', () => {
           .type('{downArrow}')
           .type('{enter}');
       cy.byId(secondItem)
-          .should('have.value', firstStatusListItem);
+          .should('have.value', 'Requires revalidation');
       cy.byId(thirdItem)
           .click();
       waitForFirstResultToContain('Attested');
@@ -133,7 +131,7 @@ describe('FHIR Questionnaire Viewer with a specified FHIR server: ', () => {
           .type('{downArrow}')
           .type('{enter}');
       cy.byId(thirdItem)
-          .should('have.value', firstStatusListItem);
+          .should('have.value', 'Requires revalidation');
 
       // 2nd run
       cy.byId(firstItem)
@@ -143,13 +141,13 @@ describe('FHIR Questionnaire Viewer with a specified FHIR server: ', () => {
       cy.byId(firstItem)
           .should('have.value', 'language-preference-type');
       cy.byId(secondItem)
-          .type('{downArrow}')
+          .type('v')
           .type('{downArrow}')
           .type('{enter}');
       cy.byId(secondItem)
           .should('have.value', 'verbal');
       cy.byId(thirdItem)
-          .type('{downArrow}')
+          .type('v')
           .type('{downArrow}')
           .type('{enter}');
       cy.byId(thirdItem)
@@ -195,7 +193,7 @@ describe('FHIR Questionnaire Viewer with a specified FHIR server: ', () => {
           .type('{downArrow}')
           .type('{enter}');
       cy.byId(secondItem)
-          .should('have.value', firstStatusListItem);
+          .should('have.value', 'Requires revalidation');
       cy.byId(thirdItem)
           .type('{downArrow}')
           .type('{enter}');
@@ -256,7 +254,7 @@ describe('FHIR Questionnaire Viewer with a specified FHIR server: ', () => {
           .type('{downArrow}')
           .type('{enter}');
       cy.byId(secondItem)
-          .should('have.value', firstStatusListItem);
+          .should('have.value', 'Requires revalidation');
       cy.byId(thirdItem)
           .click();
       waitForFirstResultToContain('Attested');
@@ -267,7 +265,7 @@ describe('FHIR Questionnaire Viewer with a specified FHIR server: ', () => {
           .type('{downArrow}')
           .type('{enter}');
       cy.byId(thirdItem)
-          .should('have.value', firstStatusListItem);
+          .should('have.value', 'Requires revalidation');
 
       // 2nd run
       cy.byId(firstItem)
