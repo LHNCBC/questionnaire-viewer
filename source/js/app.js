@@ -92,7 +92,7 @@ function setLoadingMessage(show) {
  */
 function showInfoMessages() {
   let formInfo = document.getElementById('qv-form-info');
-  let formRendered = document.querySelector('lforms');
+  let formRendered = document.querySelector('wc-lhc-form,lforms');
   let notes = "";
   if (results.hasUrlQ && results.gotQ && formRendered) {
     notes = "The following Questionnaire was loaded from " + urlQSelected;
