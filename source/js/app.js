@@ -14,6 +14,7 @@ let urlSSelected = null;
 let usePackage = null;
 let results = {hasUrlQ: false, gotQ: false, hasUrlP: false, gotP: false}
 
+
 /**
  * Add a FHIR Questionnaire to page and display it
  * @param {*} dataQ FHIR Questionnaire data (LForms format also supported)
@@ -58,6 +59,12 @@ function addQuestionnaire(dataQ, dataPackage) {
         LForms.Util.addFormToPage(lfData, "qv-lforms").then(function(){
           showInfoMessages();
           LForms.Def.ScreenReaderLog.add('A questionnaire has been displayed on the page');
+        })
+        .catch(error=>{
+          console.error('Error:', error);
+          results.gotQ = true; // not sure if we did, but probably
+          showInfoMessages();
+          showErrorMessages(error);
         });
       }
       catch(error) {
@@ -405,7 +412,24 @@ export function showErrorMessages(message) {
     let divError = document.getElementById('qv-error');
     divError.style.display = '';
     let divMessage = document.getElementById('qv-error-message');
-    divMessage.textContent = message;
+    if (message.message) // was this actually an Error instance?
+      message = message.message;
+    else if (Array.isArray(message)) {
+      if (message.length == 1)
+        divMessage.textContent = message[0];
+      else {
+        divMessage.textContent = 'The following issues were encountered:'
+        const ul = document.createElement('ul');
+        for (let i=0, len=message.length; i<len; ++i) {
+          const li = document.createElement('li');
+          li.textContent = message[i];
+          ul.appendChild(li);
+        }
+        divMessage.appendChild(ul);
+      }
+    }
+    else
+      divMessage.textContent = message;
   }
 
   setLoadingMessage(false);
@@ -435,7 +459,7 @@ function resetPage() {
   }
 
   // reset FHIR context
-  LForms.Util.setFHIRContext(null);
+  LForms.fhirContext = null;
 
   setLoadingMessage(false);
 
@@ -458,7 +482,7 @@ function setupFHIRServerAndLoadQuestionnaire(urlFhirServer) {
       }
       else {
         results.gotS = false;
-        LForms.Util.setFHIRContext(null);
+        LForms.fhirContext = null;
       }
       loadQuestionnaire(urlQSelected)
     });

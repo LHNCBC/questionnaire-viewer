@@ -9,11 +9,14 @@ describe('FHIR Questionnaire Viewer', () => {
     let warning = 'qv-form-warning';
     let btnWarning = 'qv-btn-show-warning';
 
-    function loadQuestionnaire(qFileName, pFileName) {
+    function loadQuestionnaire(qFileName, pFileName, lformsVersion) {
       const urlQ = 'urlQuestionnaire',
           urlP = 'urlPackage',
           firstItem = '/q1/1',
           btn = 'qv-btn-load';
+
+      if (lformsVersion)
+        cy.visit('/?lfv='+lformsVersion);
 
       cy.byId(urlQ)
           .clear()
@@ -66,7 +69,7 @@ describe('FHIR Questionnaire Viewer', () => {
     });
 
     it('should show related errors when a Questionnaire failed to load', () => {
-      loadQuestionnaire("invalid_url.json");
+      loadQuestionnaire("invalid_url.json", null, '29.2.3');
       cy.byId(error)
           .should('be.visible')
           .should('contain.text', 'No data returned from')
@@ -292,7 +295,7 @@ describe('FHIR Questionnaire Viewer', () => {
       // no tests yet
     });
 
-    it('should show warings when a R4 Questionnaire is loaded but answer list are not loaded from urls', () => {
+    it('should show warnings when a R4 Questionnaire is loaded but answer list are not loaded from urls', () => {
       loadQuestionnaire("questionnaire-use-package.json");
       cy.byId(info)
           .should('contain.text', 'questionnaire-use-package.json');

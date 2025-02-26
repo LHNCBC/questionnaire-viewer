@@ -6,11 +6,33 @@
 import {loadLForms, getSupportedLFormsVersions, changeLFormsVersion} from 'lforms-loader'
 import * as app from './app.js';
 
-let params = new URL(document.location).searchParams;
-let lformsVersion = params.get('lfv') || '29.2.3';
+const params = new URL(document.location).searchParams;
+const lfv = params.get('lfv');
+let lformsVersion = lfv || '29.2.3';
 
 if (/^\d+\.\d+\.\d+(-beta\.\d+)?$/.test(lformsVersion)) {
-  loadLForms(lformsVersion, showHeader).then(()=>initApp(),
+  // For testing new releases of lforms, we would like to run as many tests as
+  // possible with the new version.  However:
+  // 1) We have a test that makes sure the default remains as 29.2.3, for
+  //    backward-compatibility.
+  // 2) Some tests comfirm that the lfv parameter loads the requested version of
+  //    lhc-forms
+  // 3) We want to make sure that changes to the questionnaire-viewer do not
+  //    break things for version 29.2.3, so we don't want to change the tests to
+  //    always us the latest version.
+  // Therefore, we have a variable here which can override the location for
+  // loading the default version of lforms.   When testing a new version of
+  // lforms, this can be set to a localhost webserver serving the new version--
+  // and the only test that will fail will be the one that checks that the
+  // default is version 29.2.3.  Also, when we change the default, we need to
+  // change the loaded version to something greater than 33, since earlier
+  // versions have a different file structure.
+
+  //let defaultLFormsURL = undefined; // Set to override the default URL for loading LHC-Forms when the lfv parameter is not used
+  let defaultLFormsURL = 'http://localhost:8080'; // Set to override the default URL for loading LHC-Forms if lfv was not used
+  if (defaultLFormsURL && !lfv)
+    lformsVersion = '33.0.0';
+  loadLForms(lformsVersion, showHeader, defaultLFormsURL).then(()=>initApp(),
     (e)=>{ // promise rejection
       console.log(e); // in case some exception was thrown
       showHeader();
