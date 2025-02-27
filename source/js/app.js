@@ -37,6 +37,8 @@ function addQuestionnaire(dataQ, dataPackage) {
       lfData = LForms.Util.convertFHIRQuestionnaireToLForms(dataQ);
     }
     catch(error) {
+      if (error.message)
+        error = error.message;
       console.error('Error:', error);
       results.gotQ = false;
       showErrorMessages(message + " (Details: "+error+")");
@@ -63,8 +65,8 @@ function addQuestionnaire(dataQ, dataPackage) {
         .catch(error=>{
           console.error('Error:', error);
           results.gotQ = true; // not sure if we did, but probably
-          showInfoMessages();
           showErrorMessages(error);
+          showInfoMessages();
         });
       }
       catch(error) {
@@ -134,40 +136,14 @@ function showInfoMessages() {
     }
 
     notes += ".";
-    // check answer resource loading message
-    let answerMessages = LForms.Util.getAnswersResourceStatus();
-    if (answerMessages && answerMessages.length > 0) {
-      notes += ' Some FHIR ValueSet Resource(s) failed to load.'
-      // show the button
-      let btnWarning = document.getElementById('qv-btn-show-warning');
-      if (btnWarning) btnWarning.style.display = '';
-
-      // add warning messages
-      let formWarning = document.getElementById('qv-form-warning');
-      formWarning.innerHTML = answerMessages.join('<br />')
+    if (document.getElementById('qv-error').style.display == '') {
+      notes += '  Please note the error messages above.';
     }
   }
 
   formInfo.textContent  = notes;
 
   setLoadingMessage(false);
-}
-
-
-/**
- * Show/Hide the warning messages and change button label accordingly
- */
-export function toggleWarning() {
-  let formWarning = document.getElementById('qv-form-warning');
-  let btnWarning = document.getElementById('qv-btn-show-warning');
-  if (formWarning.style.display === 'none') {
-    formWarning.style.display = "";
-    btnWarning.textContent = "Hide Warning Messages";
-  }
-  else {
-    formWarning.style.display = "none";
-    btnWarning.textContent = "Show Warning Messages";
-  }
 }
 
 
@@ -405,31 +381,26 @@ function loadPackageAndQuestionnaire(urlPackage, urlQ) {
 
 /**
  * Show error messages
- * @param {} message an error message
+ * @param {} messages an error message, or an array of messsages
  */
-export function showErrorMessages(message) {
-  if (message) {
+export function showErrorMessages(messages) {
+  if (messages) {
     let divError = document.getElementById('qv-error');
     divError.style.display = '';
     let divMessage = document.getElementById('qv-error-message');
-    if (message.message) // was this actually an Error instance?
-      message = message.message;
-    else if (Array.isArray(message)) {
-      if (message.length == 1)
-        divMessage.textContent = message[0];
-      else {
-        divMessage.textContent = 'The following issues were encountered:'
-        const ul = document.createElement('ul');
-        for (let i=0, len=message.length; i<len; ++i) {
-          const li = document.createElement('li');
-          li.textContent = message[i];
-          ul.appendChild(li);
-        }
-        divMessage.appendChild(ul);
-      }
+    if (!Array.isArray(messages))
+      messages = [messages];
+    divMessage.textContent = 'The following issues were encountered:'
+    const ul = document.createElement('ul');
+    for (let i=0, len=messages.length; i<len; ++i) {
+      const li = document.createElement('li');
+      let m = messages[i];
+      if (m.message) // was this actually an Error instance?
+        m = m.message;
+      li.textContent = m;
+      ul.appendChild(li);
     }
-    else
-      divMessage.textContent = message;
+    divMessage.appendChild(ul);
   }
 
   setLoadingMessage(false);
@@ -446,11 +417,6 @@ function resetPage() {
   if (divMessage) divMessage.textContent ='';
   let formInfo = document.getElementById('qv-form-info');
   if (formInfo) formInfo.textContent = ''
-  let formWarning = document.getElementById('qv-form-warning');
-  if (formWarning) formWarning.textContent = '';
-  if (formWarning) formWarning.style.display = 'none';
-  let btnWarning = document.getElementById('qv-btn-show-warning');
-  if (btnWarning) btnWarning.style.display = 'none';
 
   // remove previously added form if any
   let formContainer = document.getElementById('qv-lforms');
@@ -610,4 +576,4 @@ export function toggleInputFields(eleId2Disable, eleId2Enable) {
 
 // Parcel does not by default provide these exported functions on a global
 // object, so create one here.
-window.app = {toggleWarning, onPageLoad, viewQuestionnaire, toggleInputFields, showErrorMessages};
+window.app = {onPageLoad, viewQuestionnaire, toggleInputFields, showErrorMessages};
