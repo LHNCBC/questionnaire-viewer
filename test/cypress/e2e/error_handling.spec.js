@@ -38,9 +38,10 @@ describe('FHIR Questionnaire Viewer', () => {
     });
 
     it('should show no errors when a Questionnaire is loaded', () => {
-      loadQuestionnaire("questionnaire-use-package.json");
+      const qFile = 'weightHeightQuestionnaire_r4.json'
+      loadQuestionnaire(qFile);
       cy.byId(info)
-          .should('contain.text', 'questionnaire-use-package.json');
+          .should('contain.text', qFile);
       cy.byId(error)
           .should('not.be.visible');
     });
@@ -97,7 +98,7 @@ describe('FHIR Questionnaire Viewer', () => {
     it('should show related info message when Questionaire is fine, but the package cannot be fetched', () => {
       loadQuestionnaire("questionnaire-use-package.json", "invalid-package-url");
       cy.byId(error)
-          .should('not.be.visible');
+          .should('be.visible'); // to show the resources that could not be loaded
       cy.byId(info)
           .should('contain.text', 'The following Questionnaire was loaded from')
           .should('contain.text', 'questionnaire-use-package.json')
@@ -112,7 +113,7 @@ describe('FHIR Questionnaire Viewer', () => {
     it('should show related info message when Questionaire is fine, but the package file is a corrupted gzip file', () => {
       loadQuestionnaire("questionnaire-use-package.json", "package.json.corrupted_gzip.tgz");
       cy.byId(error)
-          .should('not.be.visible');
+          .should('be.visible'); // to show the resources that could not be loaded
       cy.byId(info)
           .should('contain.text', 'The following Questionnaire was loaded from')
           .should('contain.text', 'questionnaire-use-package.json')
@@ -123,7 +124,7 @@ describe('FHIR Questionnaire Viewer', () => {
     it('should show related info message when Questionaire is fine, but the package file contains a corrupted tar file', () => {
       loadQuestionnaire("questionnaire-use-package.json", "package.json.corrupted_tar.tgz");
       cy.byId(error)
-          .should('not.be.visible');
+          .should('be.visible'); // to show the resources that could not be loaded
       cy.byId(info)
           .should('contain.text', 'The following Questionnaire was loaded from')
           .should('contain.text', 'questionnaire-use-package.json')
@@ -137,40 +138,16 @@ describe('FHIR Questionnaire Viewer', () => {
 
     it('should show warings when a Questionnaire is loaded but answer list are not loaded from urls', () => {
       loadQuestionnaire("questionnaire-use-package.json");
-      cy.byId(info)
-          .should('contain.text', 'questionnaire-use-package.json');
       cy.byId(error)
-          .should('not.be.visible');
-      cy.byId(btnWarning)
-          .should('be.visible');
-      cy.byId(warning)
-          .should('not.be.visible');
-      cy.byId(btnWarning)
-          .should('contain.text', 'Show Warning Messages');
-      // show messages
-      cy.byId(btnWarning)
-          .click()
-          .should('contain.text', 'Hide Warning Messages');
-      cy.byId(warning)
           .should('be.visible')
           .should('contain.text', 'http://hl7.org/fhir/ValueSet/example-expansion|20150622')
           .should('contain.text', 'http://hl7.org/fhir/ValueSet/example-expansion');
 
-      // hide messages
-      cy.byId(btnWarning)
-          .click()
-          .should('contain.text', 'Show Warning Messages');
-      cy.byId(warning)
-          .should('not.be.visible');
     });
 
     it('should not show warings when a Questionnaire is loaded with all answer lists', () => {
       loadQuestionnaire("questionnaire-use-package.json", "package.json.tgz");
       cy.byId(error)
-          .should('not.be.visible');
-      cy.byId(btnWarning)
-          .should('not.be.visible');
-      cy.byId(warning)
           .should('not.be.visible');
       cy.byId(info)
           .should('contain.text', 'questionnaire-use-package.json');
@@ -181,8 +158,6 @@ describe('FHIR Questionnaire Viewer', () => {
     let error = 'qv-error';
     let info = 'qv-form-info';
     let inputs = 'qv-form-input-settings';
-    let warning = 'qv-form-warning';
-    let btnWarning = 'qv-btn-show-warning';
 
     function loadQuestionnaire(qFileName, pFileName) {
       const baseUrl = Cypress.config().baseUrl;
@@ -194,9 +169,10 @@ describe('FHIR Questionnaire Viewer', () => {
     }
 
     it('should show no errors and no inputs when a Questionnaire is loaded', () => {
-      loadQuestionnaire("questionnaire-use-package.json");
+      const qFile = 'weightHeightQuestionnaire_r4.json'
+      loadQuestionnaire(qFile);
       cy.byId(info)
-          .should('contain.text', 'questionnaire-use-package.json');
+          .should('contain.text', qFile);
       cy.byId(error)
           .should('not.be.visible');
       cy.byId(inputs)
@@ -295,73 +271,31 @@ describe('FHIR Questionnaire Viewer', () => {
       // no tests yet
     });
 
-    it('should show warnings when a R4 Questionnaire is loaded but answer list are not loaded from urls', () => {
+    it('should show errors when a R4 Questionnaire is loaded but answer list are not loaded from urls', () => {
       loadQuestionnaire("questionnaire-use-package.json");
       cy.byId(info)
           .should('contain.text', 'questionnaire-use-package.json');
       cy.byId(error)
-          .should('not.be.visible');
-      cy.byId(btnWarning)
-          .should('be.visible');
-      cy.byId(warning)
-          .should('not.be.visible');
-      cy.byId(btnWarning)
-          .should('contain.text', 'Show Warning Messages');
-      // show messages
-      cy.byId(btnWarning)
-          .click()
-          .should('contain.text', 'Hide Warning Messages');
-      cy.byId(warning)
           .should('be.visible')
           .should('contain.text', 'http://hl7.org/fhir/ValueSet/example-expansion|20150622')
           .should('contain.text', 'http://hl7.org/fhir/ValueSet/example-expansion');
-
-      // hide messages
-      cy.byId(btnWarning)
-          .click()
-          .should('contain.text', 'Show Warning Messages');
-      cy.byId(warning)
-          .should('not.be.visible');
     });
 
-    it('should show warings when a STU3 Questionnaire is loaded but answer list are not loaded from urls', () => {
+    it('should show errors when a STU3 Questionnaire is loaded but answer list are not loaded from urls', () => {
       loadQuestionnaire("4712701.json");
       cy.byId(info)
           .should('contain.text', '4712701.json');
       cy.byId(error)
-          .should('not.be.visible');
-      cy.byId(btnWarning)
-          .should('be.visible');
-      cy.byId(warning)
-          .should('not.be.visible');
-      cy.byId(btnWarning)
-          .should('contain.text', 'Show Warning Messages');
-      // show messages
-      cy.byId(btnWarning)
-          .click()
-          .should('contain.text', 'Hide Warning Messages');
-      cy.byId(warning)
           .should('be.visible')
           .should('contain.text', 'http://hl7.org/fhir/ValueSet/v3-ActEncounterCode') // 1st message
           .should('contain.text', 'http://uni-koeln.de/fhir/ValueSet/ecog')   // 2nd message
           .should('contain.text', 'http://uni-koeln.de/fhir/ValueSet/icd-o-3-m-lunge')    // 3rd message
           .should('contain.text', 'http://uni-koeln.de/fhir/ValueSet/uicc-lunge');    // 11th message
-
-      // hide messages
-      cy.byId(btnWarning)
-          .click()
-          .should('contain.text', 'Show Warning Messages');
-      cy.byId(warning)
-          .should('not.be.visible');
     });
 
-    it('should not show warings when a Questionnaire is loaded with all answer lists', () => {
+    it('should not show errors when a Questionnaire is loaded with all answer lists', () => {
       loadQuestionnaire("questionnaire-use-package.json", "package.json.tgz");
       cy.byId(error)
-          .should('not.be.visible');
-      cy.byId(btnWarning)
-          .should('not.be.visible');
-      cy.byId(warning)
           .should('not.be.visible');
       cy.byId(info)
           .should('contain.text', 'questionnaire-use-package.json');

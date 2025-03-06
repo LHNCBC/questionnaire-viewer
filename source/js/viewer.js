@@ -29,10 +29,15 @@ if (/^\d+\.\d+\.\d+(-beta\.\d+)?$/.test(lformsVersion)) {
   // versions have a different file structure.
 
   //let defaultLFormsURL = undefined; // Set to override the default URL for loading LHC-Forms when the lfv parameter is not used
-  let defaultLFormsURL = 'http://localhost:8080'; // Set to override the default URL for loading LHC-Forms if lfv was not used
-  if (defaultLFormsURL && !lfv)
+  //let urlForTestingLForms = undefined; // Set to override the default URL for loading LHC-Forms when the lfv parameter is not used
+  let urlForTestingLForms = 'http://localhost:8080'; // Set to override the default URL for loading LHC-Forms when the lfv parameter is not used
+
+  let lformsLoadURL = undefined;
+  if (urlForTestingLForms && !lfv) {
     lformsVersion = '33.0.0';
-  loadLForms(lformsVersion, showHeader, defaultLFormsURL).then(()=>initApp(),
+    lformsLoadURL = urlForTestingLForms;
+  }
+  loadLForms(lformsVersion, showHeader, lformsLoadURL).then(()=>initApp(),
     (e)=>{ // promise rejection
       console.log(e); // in case some exception was thrown
       showHeader();
