@@ -28,9 +28,7 @@ if (/^\d+\.\d+\.\d+(-beta\.\d+)?$/.test(lformsVersion)) {
   // change the loaded version to something greater than 33, since earlier
   // versions have a different file structure.
 
-  //let defaultLFormsURL = undefined; // Set to override the default URL for loading LHC-Forms when the lfv parameter is not used
-  //let urlForTestingLForms = undefined; // Set to override the default URL for loading LHC-Forms when the lfv parameter is not used
-  let urlForTestingLForms = 'http://localhost:8080'; // Set to override the default URL for loading LHC-Forms when the lfv parameter is not used
+  window.urlForTestingLForms = undefined; // Set to override the default URL for loading LHC-Forms when the lfv parameter is not used
 
   let lformsLoadURL = undefined;
   if (urlForTestingLForms && !lfv) {
