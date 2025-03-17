@@ -19,7 +19,7 @@ if (/^\d+\.\d+\.\d+(-beta\.\d+)?$/.test(lformsVersion)) {
   //    lhc-forms
   // 3) We want to make sure that changes to the questionnaire-viewer do not
   //    break things for version 29.2.3, so we don't want to change the tests to
-  //    always us the latest version.
+  //    always use the latest version.
   // Therefore, we have a variable here which can override the location for
   // loading the default version of lforms.   When testing a new version of
   // lforms, this can be set to a localhost webserver serving the new version--
