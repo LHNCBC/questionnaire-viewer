@@ -1,8 +1,7 @@
-describe('FHIR Questionnaire Viewer', () => {
+describe('FHIR Questionnaire Viewer', {testIsolation: true}, () => {
+  const formTitleCSS = '.lhc-form-title';
+
   describe('Error handling when URLs are provided on page', () => {
-    beforeEach(() => {
-      cy.visit('/');
-    });
 
     let error = 'qv-error';
     let info = 'qv-form-info';
@@ -15,8 +14,14 @@ describe('FHIR Questionnaire Viewer', () => {
           firstItem = '/q1/1',
           btn = 'qv-btn-load';
 
+      cy.waitUntil(() => cy.window().then(win => win.LForms?.FHIR === undefined));
+
       if (lformsVersion)
         cy.visit('/?lfv='+lformsVersion);
+      else
+        cy.visit('/');
+
+      cy.waitUntil(() => cy.window().then(win => win.LForms?.FHIR !== undefined));
 
       cy.byId(urlQ)
           .clear()
@@ -30,7 +35,13 @@ describe('FHIR Questionnaire Viewer', () => {
           .click();
     }
 
+    function loadPageAndWaitForLForms() {
+      cy.visit('/');
+      cy.waitUntil(() => cy.window().then(win => win.LForms?.FHIR !== undefined));
+    }
+
     it('should show no errors initially', () => {
+      loadPageAndWaitForLForms();
       cy.byId(error)
           .should('not.be.visible');
       cy.byId(info)
@@ -40,6 +51,7 @@ describe('FHIR Questionnaire Viewer', () => {
     it('should show no errors when a Questionnaire is loaded', () => {
       const qFile = 'weightHeightQuestionnaire_r4.json'
       loadQuestionnaire(qFile);
+      cy.get(formTitleCSS).should('be.visible');
       cy.byId(info)
           .should('contain.text', qFile);
       cy.byId(error)
@@ -48,6 +60,7 @@ describe('FHIR Questionnaire Viewer', () => {
 
     it('should show no errors when a Questionnaire and a package file are loaded', () => {
       loadQuestionnaire("questionnaire-use-package.json", "package.json.tgz");
+      cy.get(formTitleCSS).should('be.visible');
       cy.byId(error)
           .should('not.be.visible');
       cy.byId(info)
@@ -58,6 +71,7 @@ describe('FHIR Questionnaire Viewer', () => {
     });
 
     it('should show related errors when a Questionnaire URL is empty', () => {
+      loadPageAndWaitForLForms();
       const urlQ = 'urlQuestionnaire';
       const btn = 'qv-btn-load';
       cy.byId(urlQ)
@@ -147,6 +161,7 @@ describe('FHIR Questionnaire Viewer', () => {
 
     it('should not show warings when a Questionnaire is loaded with all answer lists', () => {
       loadQuestionnaire("questionnaire-use-package.json", "package.json.tgz");
+      cy.get(formTitleCSS).should('be.visible');
       cy.byId(error)
           .should('not.be.visible');
       cy.byId(info)
@@ -166,11 +181,13 @@ describe('FHIR Questionnaire Viewer', () => {
         url += '&p=' + baseUrl + '/' + pFileName;
       }
       cy.visit(url);
+      cy.waitUntil(() => cy.window().then(win => win.LForms?.FHIR !== undefined));
     }
 
     it('should show no errors and no inputs when a Questionnaire is loaded', () => {
       const qFile = 'weightHeightQuestionnaire_r4.json'
       loadQuestionnaire(qFile);
+      cy.get(formTitleCSS).should('be.visible');
       cy.byId(info)
           .should('contain.text', qFile);
       cy.byId(error)
@@ -181,6 +198,7 @@ describe('FHIR Questionnaire Viewer', () => {
 
     it('should show no errors when a Questionnaire and a package file are loaded', () => {
       loadQuestionnaire("questionnaire-use-package.json", "package.json.tgz");
+      cy.get(formTitleCSS).should('be.visible');
       cy.byId(error)
           .should('not.be.visible');
       cy.byId(info)
@@ -295,6 +313,7 @@ describe('FHIR Questionnaire Viewer', () => {
 
     it('should not show errors when a Questionnaire is loaded with all answer lists', () => {
       loadQuestionnaire("questionnaire-use-package.json", "package.json.tgz");
+      cy.get(formTitleCSS).should('be.visible');
       cy.byId(error)
           .should('not.be.visible');
       cy.byId(info)

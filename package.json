@@ -44,6 +44,7 @@
     "start-server-and-test": "^2.0.0"
   },
   "dependencies": {
+    "cypress-wait-until": "^3.0.2",
     "fhirclient": "^2.3.10",
     "js-untar-lhc": "^2.1.1",
     "lforms-loader": "^3.1.2",
