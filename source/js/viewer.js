@@ -15,7 +15,7 @@ if (/^\d+\.\d+\.\d+(-beta\.\d+)?$/.test(lformsVersion)) {
   // possible with the new version.  However:
   // 1) We have a test that makes sure the default remains as 29.2.3, for
   //    backward-compatibility.
-  // 2) Some tests comfirm that the lfv parameter loads the requested version of
+  // 2) Some tests confirm that the lfv parameter loads the requested version of
   //    lhc-forms
   // 3) We want to make sure that changes to the questionnaire-viewer do not
   //    break things for version 29.2.3, so we don't want to change the tests to
@@ -32,7 +32,7 @@ if (/^\d+\.\d+\.\d+(-beta\.\d+)?$/.test(lformsVersion)) {
 
   let lformsLoadURL = undefined;
   if (urlForTestingLForms && !lfv) {
-    lformsVersion = '33.0.0';
+    lformsVersion = '33.0.0'; // not the version actually loaded, but affects the paths for the script & style tags
     lformsLoadURL = urlForTestingLForms;
   }
   loadLForms(lformsVersion, showHeader, lformsLoadURL).then(()=>initApp(),
