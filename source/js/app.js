@@ -19,6 +19,8 @@ let results = {hasUrlQ: false, gotQ: false, hasUrlP: false, gotP: false}
  * Add a FHIR Questionnaire to page and display it
  * @param {*} dataQ FHIR Questionnaire data (LForms format also supported)
  * @param {*} dataPackage FHIR resource package data, optional
+ * @returns a Promise that resolves after the Questionnaire load attempt is
+ *  complete.  Errors will have been handled and messages displayed.
  */
 function addQuestionnaire(dataQ, dataPackage) {
 
@@ -58,7 +60,7 @@ function addQuestionnaire(dataQ, dataPackage) {
 
       // Add the form to the page
       try {
-        LForms.Util.addFormToPage(lfData, "qv-lforms").then(function(){
+        return LForms.Util.addFormToPage(lfData, "qv-lforms").then(function(){
           showInfoMessages();
           LForms.Def.ScreenReaderLog.add('A questionnaire has been displayed on the page');
         })
@@ -75,6 +77,7 @@ function addQuestionnaire(dataQ, dataPackage) {
         showErrorMessages(message)
       }
     }
+    return Promise.reject();
   }
 
 }
@@ -103,6 +106,7 @@ function showInfoMessages() {
   let formInfo = document.getElementById('qv-form-info');
   let formRendered = document.querySelector('wc-lhc-form,lforms');
   let notes = "";
+  let errorMsg;
   if (results.hasUrlQ && results.gotQ && formRendered) {
     notes = "The following Questionnaire was loaded from " + urlQSelected;
     if (results.hasUrlP) {
@@ -112,24 +116,26 @@ function showInfoMessages() {
       else {
         switch (results.pErrorLocation) {
           case "untar":
-            notes += ", but failed to untar the package file from " + urlPSelected;
+            errorMsg = "to untar the package file from " + urlPSelected;
             break;
           case "unzip":
-            notes += ", but failed to unzip the package file from " + urlPSelected;
+            errorMsg = "to unzip the package file from " + urlPSelected;
             break;
           case "reader":
-            notes += ", but failed to read the package file from " + urlPSelected;
+            errorMsg = "to read the package file from " + urlPSelected;
             break;
           case "fetch":
-            notes += ", but failed to fetch the package file from " + urlPSelected;
+            errorMsg = "to fetch the package file from " + urlPSelected;
             break;
           default:
-            notes += ", but failed to fetch/process the package file from " + urlPSelected;
+            errorMsg = "to fetch/process the package file from " + urlPSelected;
         }
+        notes += ', but failed ' + errorMsg;
       }
     }
     else if (results.hasUrlS && !results.gotS) {
-      notes += ", but failed to access to the FHIR Server at " + urlSSelected;
+      const errorMsg = "to access to the FHIR Server at " + urlSSelected"
+      notes += ", but failed "+errorMsg;
     }
     else if (results.hasUrlS && results.gotS) {
       notes += ", with resources loaded from the FHIR Server at " + urlSSelected;
@@ -138,6 +144,18 @@ function showInfoMessages() {
     notes += ".";
     if (document.getElementById('qv-error').style.display == '') {
       notes += '  Please note the error messages above.';
+    }
+    else if (errorMsg) {
+      showErrorMessages('Failed ' + errorMsg);
+    }
+    else if (!LForms.lformsVersion || LForms.lformsVersion < '36.15.0') {
+      // Check for messages about ValueSets that couldn't be loaded, which in
+      // earlier versions of LForms did not get thrown as exceptions.
+      let answerMessages = LForms.Util.getAnswersResourceStatus();
+      if (answerMessages && answerMessages.length > 0) {
+        showErrorMessages(answerMessages);
+        notes += '  Please note the error messages above.';
+      }
     }
   }
 
@@ -152,10 +170,12 @@ function showInfoMessages() {
  * and add it to pageLoad a FHIR resource package.
  * @param {*} urlQ URL of a FHIR Questionnaire resource
  * @param {*} packageData a FHIR resource package, optional
+ * @returns a Promise that resolves after the Questionnaire load attempt is
+ *  complete.  Errors will have been handled and messages displayed.
  */
 function loadQuestionnaire(urlQ, packageData) {
 
-  fetch(urlQ)
+  return fetch(urlQ)
     .then(res => {
       if (res.ok) {
         return res.json()
@@ -167,7 +187,7 @@ function loadQuestionnaire(urlQ, packageData) {
     .then(json => {
       if (json && json.resourceType === "Questionnaire") {
         results.gotQ = true;
-        addQuestionnaire(json, packageData)
+        return addQuestionnaire(json, packageData)
       }
       else {
         return Promise.reject("No Questionnaire (JSON) returned from " + urlQ)
@@ -181,9 +201,7 @@ function loadQuestionnaire(urlQ, packageData) {
       else {
         showErrorMessages("Failed to load Questionnaire from " + urlQ);
       }
-
     });
-
 }
 
 
@@ -232,7 +250,7 @@ function loadPackageAndQuestionnaire(urlPackage, urlQ) {
   let packageData = [];
 
   if (urlPackage) {
-    fetch(urlPackage)
+    return fetch(urlPackage)
       .then(response => {
         if(!response.ok) {
           throw response.ok // let catch handle it
@@ -331,12 +349,12 @@ function loadPackageAndQuestionnaire(urlPackage, urlQ) {
 
                   // load questionnaire with the pakcage data
                   results.gotP = true;
-                  loadQuestionnaire(urlQ, packageData)
+                  return loadQuestionnaire(urlQ, packageData)
                 }
                 else {
                   results.gotP = false;
                   results.pErrorLocation = "untar";
-                  loadQuestionnaire(urlQ, packageData)
+                  return loadQuestionnaire(urlQ, packageData)
                 }
               })
               .catch(function (error) {
@@ -344,7 +362,7 @@ function loadPackageAndQuestionnaire(urlPackage, urlQ) {
                 results.gotP = false;
                 results.pErrorLocation = "untar";
                 // try to load the questionnaire without the package
-                loadQuestionnaire(urlQ)
+                return loadQuestionnaire(urlQ)
               });
 
           }
@@ -353,7 +371,7 @@ function loadPackageAndQuestionnaire(urlPackage, urlQ) {
             results.gotP = false;
             results.pErrorLocation = "unzip";
             // try to load the questionnaire without the package
-            loadQuestionnaire(urlQ)
+            return loadQuestionnaire(urlQ)
           }
 
         };
@@ -363,7 +381,7 @@ function loadPackageAndQuestionnaire(urlPackage, urlQ) {
           results.gotP = false;
           esults.pErrorLocation = "reader";
           // try to load the questionnaire without the package
-          loadQuestionnaire(urlQ)
+          return loadQuestionnaire(urlQ)
         };
 
         reader.readAsDataURL(response);
@@ -373,25 +391,32 @@ function loadPackageAndQuestionnaire(urlPackage, urlQ) {
         results.gotP = false;
         results.pErrorLocation = "fetch"
         // try to load the questionnaire without the package
-        loadQuestionnaire(urlQ)
+        return loadQuestionnaire(urlQ)
       });
   }
 }
 
 
 /**
- * Show error messages
+ * Show error messages.  Appends messages if other messages are already shown.
  * @param {} messages an error message, or an array of messsages
  */
 export function showErrorMessages(messages) {
   if (messages) {
     let divError = document.getElementById('qv-error');
+    const otherMessagesPresent = divError.style.display == '';
     divError.style.display = '';
     let divMessage = document.getElementById('qv-error-message');
     if (!Array.isArray(messages))
       messages = [messages];
-    divMessage.textContent = 'The following issues were encountered:'
-    const ul = document.createElement('ul');
+    let ul;
+    if (!otherMessagesPresent) {
+      divMessage.textContent = 'The following issues were encountered:'
+      ul = document.createElement('ul');
+    }
+    else
+      ul = document.querySelector('#qv-error-message ul');
+
     for (let i=0, len=messages.length; i<len; ++i) {
       const li = document.createElement('li');
       let m = messages[i];

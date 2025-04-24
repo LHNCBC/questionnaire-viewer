@@ -1,5 +1,14 @@
+/**
+ *  Asserts that a form is showing on the screen.
+ */
+function assertFormRendered() {
+  cy.window().then(win=> {
+    const formTitleCSS = win.LForms.lformsVersion.startsWith('29.') ?  '.lf-form-title' : '.lhc-form-title';
+    cy.get(formTitleCSS).should('be.visible');
+  });
+}
+
 describe('FHIR Questionnaire Viewer', {testIsolation: true}, () => {
-  const formTitleCSS = '.lhc-form-title';
 
   describe('Error handling when URLs are provided on page', () => {
 
@@ -14,7 +23,7 @@ describe('FHIR Questionnaire Viewer', {testIsolation: true}, () => {
           firstItem = '/q1/1',
           btn = 'qv-btn-load';
 
-      cy.waitUntil(() => cy.window().then(win => win.LForms?.FHIR === undefined));
+      cy.waitUntil(() => cy.window().then(win => win?.LForms?.FHIR === undefined));
 
       if (lformsVersion)
         cy.visit('/?lfv='+lformsVersion);
@@ -37,7 +46,7 @@ describe('FHIR Questionnaire Viewer', {testIsolation: true}, () => {
 
     function loadPageAndWaitForLForms() {
       cy.visit('/');
-      cy.waitUntil(() => cy.window().then(win => win.LForms?.FHIR !== undefined));
+      cy.waitUntil(() => cy.window().then(win => {win.LForms?.FHIR !== undefined}));
     }
 
     it('should show no errors initially', () => {
@@ -51,7 +60,7 @@ describe('FHIR Questionnaire Viewer', {testIsolation: true}, () => {
     it('should show no errors when a Questionnaire is loaded', () => {
       const qFile = 'weightHeightQuestionnaire_r4.json'
       loadQuestionnaire(qFile);
-      cy.get(formTitleCSS).should('be.visible');
+      assertFormRendered();
       cy.byId(info)
           .should('contain.text', qFile);
       cy.byId(error)
@@ -60,9 +69,9 @@ describe('FHIR Questionnaire Viewer', {testIsolation: true}, () => {
 
     it('should show no errors when a Questionnaire and a package file are loaded', () => {
       loadQuestionnaire("questionnaire-use-package.json", "package.json.tgz");
-      cy.get(formTitleCSS).should('be.visible');
       cy.byId(error)
           .should('not.be.visible');
+      assertFormRendered();
       cy.byId(info)
           .should('contain.text', 'The following Questionnaire was loaded from')
           .should('contain.text', 'questionnaire-use-package.json')
@@ -84,6 +93,8 @@ describe('FHIR Questionnaire Viewer', {testIsolation: true}, () => {
     });
 
     it('should show related errors when a Questionnaire failed to load', () => {
+      // Note:  This test fails if the server is started with "npm run start".
+      // Use "npm run start-dist" for the tests.
       loadQuestionnaire("invalid_url.json", null, '29.2.3');
       cy.byId(error)
           .should('be.visible')
@@ -99,7 +110,8 @@ describe('FHIR Questionnaire Viewer', {testIsolation: true}, () => {
           .should('contain.text', 'questionnaire-use-package-invalid-not-questionnaire.json');
     });
 
-    it('should show related errors when a url for Questionnaire returns a resource that cannot be converted or displayed by LHC-Forms', () => {
+    it('should show related errors when a url for Questionnaire returns a '+
+       'resource that cannot be converted or displayed by LHC-Forms', () => {
       loadQuestionnaire("questionnaire-use-package-invalid-cannot-be-imported.json");
       cy.byId(error)
           .should('be.visible')
@@ -109,7 +121,8 @@ describe('FHIR Questionnaire Viewer', {testIsolation: true}, () => {
           .should('contain.text', 'questionnaire-use-package-invalid-cannot-be-imported.json');
     });
 
-    it('should show related info message when Questionaire is fine, but the package cannot be fetched', () => {
+    it('should show related info message when Questionaire is fine, but the '+
+       'package cannot be fetched', () => {
       loadQuestionnaire("questionnaire-use-package.json", "invalid-package-url");
       cy.byId(error)
           .should('be.visible'); // to show the resources that could not be loaded
@@ -124,7 +137,8 @@ describe('FHIR Questionnaire Viewer', {testIsolation: true}, () => {
       // don't know how to test it yet
     });
 
-    it('should show related info message when Questionaire is fine, but the package file is a corrupted gzip file', () => {
+    it('should show related info message when Questionaire is fine, but the '+
+       'package file is a corrupted gzip file', () => {
       loadQuestionnaire("questionnaire-use-package.json", "package.json.corrupted_gzip.tgz");
       cy.byId(error)
           .should('be.visible'); // to show the resources that could not be loaded
@@ -135,7 +149,8 @@ describe('FHIR Questionnaire Viewer', {testIsolation: true}, () => {
           .should('contain.text', 'package.json.corrupted_gzip.tgz');
     });
 
-    it('should show related info message when Questionaire is fine, but the package file contains a corrupted tar file', () => {
+    it('should show related info message when Questionaire is fine, but the ' +
+       'package file contains a corrupted tar file', () => {
       loadQuestionnaire("questionnaire-use-package.json", "package.json.corrupted_tar.tgz");
       cy.byId(error)
           .should('be.visible'); // to show the resources that could not be loaded
@@ -150,7 +165,7 @@ describe('FHIR Questionnaire Viewer', {testIsolation: true}, () => {
       // no tests yet
     });
 
-    it('should show warings when a Questionnaire is loaded but answer list are not loaded from urls', () => {
+    it('should show warnings when a Questionnaire is loaded but answer list are not loaded from urls', () => {
       loadQuestionnaire("questionnaire-use-package.json");
       cy.byId(error)
           .should('be.visible')
@@ -159,13 +174,14 @@ describe('FHIR Questionnaire Viewer', {testIsolation: true}, () => {
 
     });
 
-    it('should not show warings when a Questionnaire is loaded with all answer lists', () => {
+    it('should not show warnings when a Questionnaire is loaded with all answer lists', () => {
       loadQuestionnaire("questionnaire-use-package.json", "package.json.tgz");
-      cy.get(formTitleCSS).should('be.visible');
+      assertFormRendered();
       cy.byId(error)
           .should('not.be.visible');
       cy.byId(info)
-          .should('contain.text', 'questionnaire-use-package.json');
+          .should('contain.text', 'questionnaire-use-package.json')
+          .should('not.contain.text', 'Please note the error messages above');
     });
   });
 
@@ -187,7 +203,7 @@ describe('FHIR Questionnaire Viewer', {testIsolation: true}, () => {
     it('should show no errors and no inputs when a Questionnaire is loaded', () => {
       const qFile = 'weightHeightQuestionnaire_r4.json'
       loadQuestionnaire(qFile);
-      cy.get(formTitleCSS).should('be.visible');
+      assertFormRendered();
       cy.byId(info)
           .should('contain.text', qFile);
       cy.byId(error)
@@ -198,7 +214,7 @@ describe('FHIR Questionnaire Viewer', {testIsolation: true}, () => {
 
     it('should show no errors when a Questionnaire and a package file are loaded', () => {
       loadQuestionnaire("questionnaire-use-package.json", "package.json.tgz");
-      cy.get(formTitleCSS).should('be.visible');
+      assertFormRendered();
       cy.byId(error)
           .should('not.be.visible');
       cy.byId(info)
@@ -220,7 +236,8 @@ describe('FHIR Questionnaire Viewer', {testIsolation: true}, () => {
           .should('not.be.visible');
     });
 
-    it('should show related errors when a url for Questionnaire returns a resource that is not a Questionnaire', () => {
+    it('should show related errors when a url for Questionnaire returns a '+
+       'resource that is not a Questionnaire', () => {
       loadQuestionnaire("questionnaire-use-package-invalid-not-questionnaire.json");
       cy.byId(error)
           .should('be.visible')
@@ -230,7 +247,8 @@ describe('FHIR Questionnaire Viewer', {testIsolation: true}, () => {
           .should('not.be.visible');
     });
 
-    it('should show related errors when a url for Questionnaire returns a resource that cannot be converted or displayed by LHC-Forms', () => {
+    it('should show related errors when a url for Questionnaire returns a '+
+       'resource that cannot be converted or displayed by LHC-Forms', () => {
       loadQuestionnaire("questionnaire-use-package-invalid-cannot-be-imported.json");
       cy.byId(error)
           .should('be.visible')
@@ -245,7 +263,7 @@ describe('FHIR Questionnaire Viewer', {testIsolation: true}, () => {
     it('should show related info message when Questionaire is fine, but the package cannot be fetched', () => {
       loadQuestionnaire("questionnaire-use-package.json", "invalid-package-url");
       cy.byId(error)
-          .should('not.be.visible');
+          .should('be.visible');
       cy.byId(info)
           .should('contain.text', 'The following Questionnaire was loaded from')
           .should('contain.text', 'questionnaire-use-package.json')
@@ -259,7 +277,8 @@ describe('FHIR Questionnaire Viewer', {testIsolation: true}, () => {
       // don't know how to test it yet
     });
 
-    it('should show related info message when Questionaire is fine, but the package file is a corrupted gzip file', () => {
+    it('should show related info message when Questionaire is fine, but the '+
+       'package file is a corrupted gzip file', () => {
       loadQuestionnaire("questionnaire-use-package.json", "package.json.corrupted_gzip.tgz");
       cy.byId(error)
           .should('not.be.visible');
@@ -272,7 +291,8 @@ describe('FHIR Questionnaire Viewer', {testIsolation: true}, () => {
           .should('not.be.visible');
     });
 
-    it('should show related info message when Questionaire is fine, but the package file contains a corrupted tar file', () => {
+    it('should show related info message when Questionaire is fine, but the '+
+       'package file contains a corrupted tar file', () => {
       loadQuestionnaire("questionnaire-use-package.json", "package.json.corrupted_tar.tgz");
       cy.byId(error)
           .should('not.be.visible');
@@ -289,7 +309,8 @@ describe('FHIR Questionnaire Viewer', {testIsolation: true}, () => {
       // no tests yet
     });
 
-    it('should show errors when a R4 Questionnaire is loaded but answer list are not loaded from urls', () => {
+    it('should show errors when a R4 Questionnaire is loaded but answer list are '+
+       'not loaded from urls', () => {
       loadQuestionnaire("questionnaire-use-package.json");
       cy.byId(info)
           .should('contain.text', 'questionnaire-use-package.json');
@@ -313,7 +334,7 @@ describe('FHIR Questionnaire Viewer', {testIsolation: true}, () => {
 
     it('should not show errors when a Questionnaire is loaded with all answer lists', () => {
       loadQuestionnaire("questionnaire-use-package.json", "package.json.tgz");
-      cy.get(formTitleCSS).should('be.visible');
+      assertFormRendered();
       cy.byId(error)
           .should('not.be.visible');
       cy.byId(info)

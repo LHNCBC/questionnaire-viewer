@@ -7,6 +7,10 @@ body {
   margin: 0;
 }
 
+#header a, #qv-form-input-intro a {
+  color: #337ab7;
+}
+
 /* Styles for the header */
 #header {
   position: relative;
