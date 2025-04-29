@@ -125,12 +125,12 @@ describe('FHIR Questionnaire Viewer', {testIsolation: true}, () => {
        'package cannot be fetched', () => {
       loadQuestionnaire("questionnaire-use-package.json", "invalid-package-url");
       cy.byId(error)
-          .should('be.visible'); // to show the resources that could not be loaded
-      cy.byId(info)
-          .should('contain.text', 'The following Questionnaire was loaded from')
-          .should('contain.text', 'questionnaire-use-package.json')
-          .should('contain.text', 'but failed to fetch the package file from')
+          .should('be.visible') // to show the resources that could not be loaded
+          .should('contain.text', 'Failed to fetch the package file from')
           .should('contain.text', 'invalid-package-url');
+      cy.byId(info)
+          .should('contain.text', 'questionnaire-use-package.json')
+          .should('contain.text', 'Please note the error messages');
     });
 
     it('should show related info message when Questionaire is fine, but the package file cannot be read', () => {
@@ -141,24 +141,26 @@ describe('FHIR Questionnaire Viewer', {testIsolation: true}, () => {
        'package file is a corrupted gzip file', () => {
       loadQuestionnaire("questionnaire-use-package.json", "package.json.corrupted_gzip.tgz");
       cy.byId(error)
-          .should('be.visible'); // to show the resources that could not be loaded
+          .should('be.visible') // to show the resources that could not be loaded
+          .should('contain.text', 'Failed to unzip the package file from')
+          .should('contain.text', 'package.json.corrupted_gzip.tgz');
       cy.byId(info)
           .should('contain.text', 'The following Questionnaire was loaded from')
           .should('contain.text', 'questionnaire-use-package.json')
-          .should('contain.text', 'but failed to unzip the package file from')
-          .should('contain.text', 'package.json.corrupted_gzip.tgz');
+          .should('contain.text', 'Please note the error messages');
+
     });
 
     it('should show related info message when Questionaire is fine, but the ' +
        'package file contains a corrupted tar file', () => {
       loadQuestionnaire("questionnaire-use-package.json", "package.json.corrupted_tar.tgz");
       cy.byId(error)
-          .should('be.visible'); // to show the resources that could not be loaded
+          .should('be.visible') // to show the resources that could not be loaded
+          .should('contain.text', 'Failed to untar the package file from')
+          .should('contain.text', 'package.json.corrupted_tar.tgz');
       cy.byId(info)
           .should('contain.text', 'The following Questionnaire was loaded from')
           .should('contain.text', 'questionnaire-use-package.json')
-          .should('contain.text', 'but failed to untar the package file from')
-          .should('contain.text', 'package.json.corrupted_tar.tgz');
     });
 
     it('should show related info message when Questionaire is fine, but the package file cannot be processed', () => {
@@ -192,9 +194,9 @@ describe('FHIR Questionnaire Viewer', {testIsolation: true}, () => {
 
     function loadQuestionnaire(qFileName, pFileName) {
       const baseUrl = Cypress.config().baseUrl;
-      let url = baseUrl + '/?q=' + baseUrl + '/' + qFileName;
+      let url = baseUrl + '?q=' + baseUrl + qFileName;
       if (pFileName) {
-        url += '&p=' + baseUrl + '/' + pFileName;
+        url += '&p=' + baseUrl + pFileName;
       }
       cy.visit(url);
       cy.waitUntil(() => cy.window().then(win => win.LForms?.FHIR !== undefined));
@@ -205,7 +207,8 @@ describe('FHIR Questionnaire Viewer', {testIsolation: true}, () => {
       loadQuestionnaire(qFile);
       assertFormRendered();
       cy.byId(info)
-          .should('contain.text', qFile);
+          .should('contain.text', qFile)
+          .should('not.contain.text', 'Please note the error messages above');
       cy.byId(error)
           .should('not.be.visible');
       cy.byId(inputs)
@@ -221,7 +224,8 @@ describe('FHIR Questionnaire Viewer', {testIsolation: true}, () => {
           .should('contain.text', 'The following Questionnaire was loaded from')
           .should('contain.text', 'questionnaire-use-package.json')
           .should('contain.text', 'with resources from')
-          .should('contain.text', 'package.json.tgz');
+          .should('contain.text', 'package.json.tgz')
+          .should('not.contain.text', 'Please note the error messages above');
       cy.byId(inputs)
           .should('not.be.visible');
     });
@@ -263,12 +267,13 @@ describe('FHIR Questionnaire Viewer', {testIsolation: true}, () => {
     it('should show related info message when Questionaire is fine, but the package cannot be fetched', () => {
       loadQuestionnaire("questionnaire-use-package.json", "invalid-package-url");
       cy.byId(error)
-          .should('be.visible');
+          .should('be.visible')
+          .should('contain.text', 'Failed to fetch the package file from')
+          .should('contain.text', 'invalid-package-url');
       cy.byId(info)
           .should('contain.text', 'The following Questionnaire was loaded from')
           .should('contain.text', 'questionnaire-use-package.json')
-          .should('contain.text', 'but failed to fetch the package file from')
-          .should('contain.text', 'invalid-package-url');
+          .should('contain.text', 'Please note the error messages above');
       cy.byId(inputs)
           .should('not.be.visible');
     });
@@ -281,12 +286,13 @@ describe('FHIR Questionnaire Viewer', {testIsolation: true}, () => {
        'package file is a corrupted gzip file', () => {
       loadQuestionnaire("questionnaire-use-package.json", "package.json.corrupted_gzip.tgz");
       cy.byId(error)
-          .should('not.be.visible');
+          .should('be.visible')
+          .should('contain.text', 'Failed to unzip the package file from')
+          .should('contain.text', 'package.json.corrupted_gzip.tgz');
       cy.byId(info)
           .should('contain.text', 'The following Questionnaire was loaded from')
           .should('contain.text', 'questionnaire-use-package.json')
-          .should('contain.text', 'but failed to unzip the package file from')
-          .should('contain.text', 'package.json.corrupted_gzip.tgz');
+          .should('contain.text', 'Please note the error messages above');
       cy.byId(inputs)
           .should('not.be.visible');
     });
@@ -295,12 +301,13 @@ describe('FHIR Questionnaire Viewer', {testIsolation: true}, () => {
        'package file contains a corrupted tar file', () => {
       loadQuestionnaire("questionnaire-use-package.json", "package.json.corrupted_tar.tgz");
       cy.byId(error)
-          .should('not.be.visible');
+          .should('contain.text', 'Failed to untar the package file from')
+          .should('contain.text', 'package.json.corrupted_tar.tgz')
+          .should('be.visible');
       cy.byId(info)
           .should('contain.text', 'The following Questionnaire was loaded from')
           .should('contain.text', 'questionnaire-use-package.json')
-          .should('contain.text', 'but failed to untar the package file from')
-          .should('contain.text', 'package.json.corrupted_tar.tgz');
+          .should('contain.text', 'Please note the error messages above');
       cy.byId(inputs)
           .should('not.be.visible');
     });
@@ -323,7 +330,8 @@ describe('FHIR Questionnaire Viewer', {testIsolation: true}, () => {
     it('should show errors when a STU3 Questionnaire is loaded but answer list are not loaded from urls', () => {
       loadQuestionnaire("4712701.json");
       cy.byId(info)
-          .should('contain.text', '4712701.json');
+          .should('contain.text', '4712701.json')
+          .should('contain.text', 'Please note the error messages above');
       cy.byId(error)
           .should('be.visible')
           .should('contain.text', 'http://hl7.org/fhir/ValueSet/v3-ActEncounterCode') // 1st message

@@ -130,22 +130,20 @@ function showInfoMessages() {
           default:
             errorMsg = "to fetch/process the package file from " + urlPSelected;
         }
-        notes += ', but failed ' + errorMsg;
+        //notes += ', but failed ' + errorMsg;
       }
     }
     else if (results.hasUrlS && !results.gotS) {
-      const errorMsg = "to access to the FHIR Server at " + urlSSelected"
-      notes += ", but failed "+errorMsg;
+      errorMsg = "to access to the FHIR Server at " + urlSSelected;
+      //notes += ", but failed "+errorMsg;
     }
     else if (results.hasUrlS && results.gotS) {
       notes += ", with resources loaded from the FHIR Server at " + urlSSelected;
     }
 
     notes += ".";
-    if (document.getElementById('qv-error').style.display == '') {
-      notes += '  Please note the error messages above.';
-    }
-    else if (errorMsg) {
+
+    if (errorMsg) {
       showErrorMessages('Failed ' + errorMsg);
     }
     else if (!LForms.lformsVersion || LForms.lformsVersion < '36.15.0') {
@@ -154,8 +152,11 @@ function showInfoMessages() {
       let answerMessages = LForms.Util.getAnswersResourceStatus();
       if (answerMessages && answerMessages.length > 0) {
         showErrorMessages(answerMessages);
-        notes += '  Please note the error messages above.';
       }
+    }
+
+    if (document.getElementById('qv-error').style.display == '') {
+      notes += '  Please note the error messages above.';
     }
   }
 
