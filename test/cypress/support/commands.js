@@ -24,6 +24,8 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
+import 'cypress-wait-until';
+
 // Get one or more DOM elements by element's id where '/' and '.' is escaped
 // and "#" is added if not already present.
 Cypress.Commands.add(

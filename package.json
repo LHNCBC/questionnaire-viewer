@@ -1,6 +1,6 @@
 {
   "name": "questionnaire-viewer",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "A website for rendering a FHIR Questionnaire using the LHC-Forms widget",
   "config": {
     "testServerPort": 4029,
@@ -44,9 +44,10 @@
     "start-server-and-test": "^2.0.0"
   },
   "dependencies": {
+    "cypress-wait-until": "^3.0.2",
     "fhirclient": "^2.3.10",
     "js-untar-lhc": "^2.1.1",
-    "lforms-loader": "^3.0.0",
+    "lforms-loader": "^3.1.2",
     "lforms-updater": "^30.0.0",
     "pako": "^1.0.11",
     "string-to-arraybuffer": "^1.0.2",

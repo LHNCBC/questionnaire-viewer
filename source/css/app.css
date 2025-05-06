@@ -7,6 +7,10 @@ body {
   margin: 0;
 }
 
+#header a, #qv-form-input-intro a {
+  color: #337ab7;
+}
+
 /* Styles for the header */
 #header {
   position: relative;
@@ -16,7 +20,7 @@ body {
   border-bottom: 2px solid #17b4e3;
   line-height: normal;
   padding-bottom: 10px;
-  margin: 5px;
+/*  margin: 5px;*/
   display: none; /* until lforms CSS is loaded */
 }
 #siteNameBox {
@@ -92,9 +96,15 @@ body {
   margin: 10px 5px;
 }
 
-
 #qv-error {
+  margin-top: 0.5em;
+  background-color: lightyellow;
   font-family: Arial,Helvetica,sans-serif;
+  border: 2px solid red;
+  padding-top: 1em;
+  padding-right: 1em;
+  padding-left: 1em;
+  font-size: 14px;
 }
 #qv-error-header {
   font-size: 120%;
@@ -113,7 +123,8 @@ body {
 }
 
 #qv-form-notes {
-  margin: 5px;
+  margin-bottom: 5px;
+  margin-top: 5px;
 }
 #qv-form-warning {
   padding: 2px;

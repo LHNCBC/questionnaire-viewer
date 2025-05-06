@@ -37,11 +37,16 @@ describe('FHIR Questionnaire Viewer', () => {
       // but there are others in that IG.
       const defaultVersion = '29.2.3'
       cy.visit('/?q='+encodeURIComponent(qURL));
-      cy.byId('lformsVersion').should('have.value', defaultVersion);
-      cy.window().then(win=>{
-        expect(win.LForms.lformsVersion).to.equal(defaultVersion);
+      cy.window().then(win=> {
+        // This won't pass when testing a new version of LForms, so skip it then.
+        if (!win.urlForTestingLForms) {
+          cy.byId('lformsVersion').should('have.value', defaultVersion);
+          cy.window().then(win=>{
+            expect(win.LForms.lformsVersion).to.equal(defaultVersion);
+          });
+          cy.byId('qv-lforms').should('contain.text', 'Weight'); // confirm the questionnaire is loaded
+        }
       });
-      cy.byId('qv-lforms').should('contain.text', 'Weight'); // confirm the questionnaire is loaded
     });
 
     it('should work to load the specified version of LForms', ()=>{

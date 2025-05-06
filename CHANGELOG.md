@@ -3,6 +3,13 @@
 This log documents the significant changes for each release.
 This project follows [Semantic Versioning](http://semver.org/).
 
+## [0.6.1] - 2025-01-30
+### Fixed
+- Missing message about the source of the Questionnaire being displayed.
+- Updated tests due to change in server test data.
+### Changed
+- Moved display of warning messages into the same block as displays the errors.
+
 ## [0.6.0] - 2024-02-27
 ### Changed
 - Updated lforms-loader version.
