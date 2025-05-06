@@ -7,6 +7,8 @@ This project follows [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Missing message about the source of the Questionnaire being displayed.
 - Updated tests due to change in server test data.
+### Changed
+- Moved display of warning messages into the same block as displays the errors.
 
 ## [0.6.0] - 2024-02-27
 ### Changed
