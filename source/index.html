@@ -6,6 +6,8 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+ <!-- Set the Referrer-Policy -->
+  <meta name="referrer" content="origin">
     <title>FHIR Questionnaire Viewer</title>
 
     <!-- Google Tag Manager -->
@@ -74,25 +76,43 @@
         </div>
         <div class="qv-url-row">
           <div class='qv-url-name'>
-            <input type="radio" id="radioPackage" name="resourceURL" value="package" checked onclick="app.toggleInputFields('urlFhirServer', 'urlPackage')">
-            <label for="radioPackage">URL of a FHIR resource package:</label>
+            <label for="urlPackage">URL of a FHIR resource package:</label>
           </div>
           <div class='qv-url-value'><input type="text" id="urlPackage"></div>
         </div>
         <div class="qv-url-row">
           <div class='qv-url-name'>
-            <input type="radio" id="radioFhirServer" name="resourceURL" value="fhirServer" onclick="app.toggleInputFields('urlPackage', 'urlFhirServer')">
-            <label for="radioFhirServer">URL of a FHIR server for resources:</label>
+            <label for="urlFhirServer">URL of a FHIR server for resources:</label>
           </div>
-          <div class='qv-url-value'><input type="text" id="urlFhirServer" disabled></div>
+          <div class='qv-url-value'><input type="text" id="urlFhirServer"></div>
         </div>
 
-        <div id="qv-param-notes">*Note: These field values can be specified in the URL.
-          Use URL parameter "q" to provide the URL for a Questionnaire JSON, and
-          optionally either parameter "p" to provide the URL for a FHIR resource package (package.tgz), or
-          parameter "s" to provide the URL for a FHIR server.  The parameter "lfv"
-          can be used to set the version of LHC-Forms being used to render the
-          form.</div>
+        <div id="qv-param-notes">*Note: These field values can be specified in
+        the URL.  (<a href="javascript:void(0)"
+        onclick="document.getElementById('supportedURLParams').style.display='block'">View
+        supported URL parameters</a>)
+          <ul id=supportedURLParams>
+            <li><b>q</b> - a URL for a fetching a Questionnaire JSON.  Either
+             this or qCanonical can be used to specify the Questionnaire. </li>
+            <li><b>qCanonical</b> - a FHIR canonical URI for the Questionnaire,
+             for which a match will be sought in the package specified by other
+             parameters.</li>
+            <li><b>p</b> - a URL for a FHIR resource package, which could contain
+             the Questionnaire and/or other resources the FHIR Questionnaire
+             needs, such as ValueSets.</li>
+            <li><b>pID</b> - a package ID, to be used to fetch the package from a
+             package server.  If this is used, pVersion must also be present.</li>
+            <li><b>pVersion</b> - a package version, to be used with package ID
+             above.</li>
+            <li><b>s</b> - a server from which the Questionnaire's resources can
+             be fetched if they are not found in the package specified via other
+             parameters.   A special value of "default" may be used to have this
+             app select and use a terminology server.</li>
+            <li><b>lfv</b> - the version number of lforms to be used.  If this is
+             not specified, a default will be chosen.  If this is specified as
+             "latest", the last-published version will be used.</li>
+          </ul>
+        </div>
       </div>
       <button id="qv-btn-load" onclick="app.viewQuestionnaire()">Load Data</button>
 

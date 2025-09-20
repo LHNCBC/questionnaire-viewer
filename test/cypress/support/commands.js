@@ -56,3 +56,18 @@ Cypress.Commands.add(
         cy.get(subject).invoke('attr', 'class', 'hide');
     }
 );
+
+
+// Written by an AI, in a few iterations of input from a human.
+/**
+ * Mocks an API response for a specified URL with data from a fixture file.
+ *
+ * @param {string} url - The URL to intercept and mock the response for.
+ * @param {string} dataFile - The name of the fixture file to return as the response body.
+ * @param {string} alias - The alias to use for the intercepted request, allowing for waiting on the request later.
+ */
+Cypress.Commands.add('mockApiResponse', (url, dataFile, alias) => {
+  // Load the fixture data asynchronously
+  cy.fixture(dataFile).then((data) => cy.intercept('GET', url, data).as(alias));
+});
+

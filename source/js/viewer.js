@@ -9,32 +9,57 @@ import * as app from './app.js';
 const params = new URL(document.location).searchParams;
 const lfv = params.get('lfv');
 let lformsVersion = lfv || '29.2.3';
+let supportedLFormsVersions;
 
-if (/^\d+\.\d+\.\d+(-beta\.\d+)?$/.test(lformsVersion)) {
-  // For testing new releases of lforms, we would like to run as many tests as
-  // possible with the new version.  However:
-  // 1) We have a test that makes sure the default remains as 29.2.3, for
-  //    backward-compatibility.
-  // 2) Some tests confirm that the lfv parameter loads the requested version of
-  //    lhc-forms
-  // 3) We want to make sure that changes to the questionnaire-viewer do not
-  //    break things for version 29.2.3, so we don't want to change the tests to
-  //    always use the latest version.
-  // Therefore, we have a variable here which can override the location for
-  // loading the default version of lforms.   When testing a new version of
-  // lforms, this can be set to a localhost webserver serving the new version--
-  // and the only test that will fail will be the one that checks that the
-  // default is version 29.2.3.  Also, when we change the default, we need to
-  // change the loaded version to something greater than 33, since earlier
-  // versions have a different file structure.
+if (lformsVersion == 'latest') {
+  supportedLFormsVersions = getSupportedLFormsVersions();
+  supportedLFormsVersions.then(versions=>{
+    lformsVersion = versions[0];
+    loadLFormsAndShowHeader(lformsVersion);
+  });
+}
+else {
+  if (/^\d+\.\d+\.\d+(-beta\.\d+)?$/.test(lformsVersion)) {
+    // For testing new releases of lforms, we would like to run as many tests as
+    // possible with the new version.  However:
+    // 1) We have a test that makes sure the default remains as 29.2.3, for
+    //    backward-compatibility.
+    // 2) Some tests confirm that the lfv parameter loads the requested version of
+    //    lhc-forms
+    // 3) We want to make sure that changes to the questionnaire-viewer do not
+    //    break things for version 29.2.3, so we don't want to change the tests to
+    //    always use the latest version.
+    // Therefore, we have a variable here which can override the location for
+    // loading the default version of lforms.   When testing a new version of
+    // lforms, this can be set to a localhost webserver serving the new version--
+    // and the only test that will fail will be the one that checks that the
+    // default is version 29.2.3.  Also, when we change the default, we need to
+    // change the loaded version to something greater than 33, since earlier
+    // versions have a different file structure.
 
-  window.urlForTestingLForms = undefined; // Set to override the default URL for loading LHC-Forms when the lfv parameter is not used
+    window.urlForTestingLForms = undefined; // Set to override the default URL for loading LHC-Forms when the lfv parameter is not used
 
-  let lformsLoadURL = undefined;
-  if (urlForTestingLForms && !lfv) {
-    lformsVersion = '33.0.0'; // not the version actually loaded, but affects the paths for the script & style tags
-    lformsLoadURL = urlForTestingLForms;
+    let lformsLoadURL = undefined;
+    if (urlForTestingLForms && !lfv) {
+      lformsVersion = '33.0.0'; // not the version actually loaded, but affects the paths for the script & style tags
+      lformsLoadURL = urlForTestingLForms;
+    }
+    loadLFormsAndShowHeader(lformsVersion, lformsLoadURL);
   }
+  else {
+    showHeader();
+    showError('An invalid version "'+lformsVersion+'" of the LHC-Forms software was requested.');
+  }
+}
+
+
+/**
+ *  Loads LForms, and shows the page header (which is initially hidden).
+ * @param lformsVersion the version of LForms to load
+ * @param lformsLoadURL (optional) a URL to use in loading LForms (in which case
+ *  lformsVersion will be ignored)
+ */
+function loadLFormsAndShowHeader(lformsVersion, lformsLoadURL) {
   loadLForms(lformsVersion, showHeader, lformsLoadURL).then(()=>initApp(),
     (e)=>{ // promise rejection
       console.log(e); // in case some exception was thrown
@@ -42,10 +67,6 @@ if (/^\d+\.\d+\.\d+(-beta\.\d+)?$/.test(lformsVersion)) {
       showError('Unable to load version "'+lformsVersion+'" of the LHC-Forms software.');
     }
   );
-}
-else {
-  showHeader();
-  showError('An invalid version "'+lformsVersion+'" of the LHC-Forms software was requested.');
 }
 
 
@@ -63,7 +84,7 @@ function showHeader() {
  */
 function initLFormsVersionMenu() {
   // Get the list of lforms versions
-  getSupportedLFormsVersions().then(versions=>{
+  (supportedLFormsVersions || getSupportedLFormsVersions()).then(versions=>{
     const ac = new LForms.Def.Autocompleter.Prefetch('lformsVersion', versions,
       {defaultValue: LForms.lformsVersion, matchListValue: true, addSeqNum: false});
     ac.setFieldToListValue(LForms.lformsVersion);

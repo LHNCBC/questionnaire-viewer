@@ -8,5 +8,6 @@ module.exports = defineConfig({
     baseUrl: 'http://localhost:'+require('../package.json').config.testServerPort+'/',
     specPattern: 'cypress/e2e/**/*.spec.{js,jsx,ts,tsx}'
   },
+  fixturesFolder: '../test/data',
   video: false
 });

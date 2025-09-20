@@ -3,6 +3,15 @@
 This log documents the significant changes for each release.
 This project follows [Semantic Versioning](http://semver.org/).
 
+## [0.7.0] - 2025-09-16
+### Added
+- Added support for lfv=latest
+- Added new parameter, qCanonical which can be used to retrieve a Questionnaire
+  from a package.
+- Allowed use of both "p" and "s" parameters simultaneously, with the package
+  taking prioriy.
+- Added support for s=default (a default terminology server)
+
 ## [0.6.2] - 2025-06-25
 ### Changed
 - Updated tests for new ID lhc-tools-searchResults.

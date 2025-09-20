@@ -1,0 +1,13 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "example-questionnaire",
+  "status": "active",
+  "item": [
+    {
+      "linkId": "1",
+      "text": "Written or verbal?",
+      "type": "choice",
+      "answerValueSet": "http://hl7.org/fhir/ValueSet/language-preference-type"
+    }
+  ]
+}

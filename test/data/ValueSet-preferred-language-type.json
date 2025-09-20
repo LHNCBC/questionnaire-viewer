@@ -1,0 +1,45 @@
+{
+  "resourceType": "ValueSet",
+  "meta": {
+    "extension": [ {
+      "url": "http://hapifhir.io/fhir/StructureDefinition/valueset-expansion-message",
+      "valueString": "ValueSet was expanded using a pre-calculated expansion"
+    } ]
+  },
+  "url": "http://hl7.org/fhir/ValueSet/language-preference-type",
+  "status": "active",
+  "compose": {
+    "include": [ {
+      "system": "http://hl7.org/fhir/language-preference-type",
+      "concept": [ {
+        "code": "verbal",
+        "display": "verbal"
+      }, {
+        "code": "written",
+        "display": "written"
+      } ]
+    } ]
+  },
+  "expansion": {
+    "identifier": "f57ae0bc-573f-4887-a156-4a4fbec5b994",
+    "timestamp": "2025-09-16T19:38:31-04:00",
+    "total": 2,
+    "offset": 0,
+    "parameter": [ {
+      "name": "offset",
+      "valueInteger": 0
+    }, {
+      "name": "count",
+      "valueInteger": 1000
+    } ],
+    "contains": [ {
+      "system": "http://hl7.org/fhir/language-preference-type",
+      "code": "a",
+      "display": "apples"
+    }, {
+      "system": "http://hl7.org/fhir/language-preference-type",
+      "code": "o",
+      "display": "oranges"
+    } ]
+  }
+}
