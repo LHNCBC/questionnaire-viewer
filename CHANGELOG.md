@@ -3,6 +3,10 @@
 This log documents the significant changes for each release.
 This project follows [Semantic Versioning](http://semver.org/).
 
+## [0.7.1] - 2025-09-26
+### Added
+- A link to NLM
+
 ## [0.7.0] - 2025-09-16
 ### Added
 - Added support for lfv=latest
