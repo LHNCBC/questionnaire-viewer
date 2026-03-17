@@ -29,6 +29,14 @@ describe('FHIR Questionnaire Viewer', () => {
   describe('lfv parameter', ()=>{
     const qURL = Cypress.config().baseUrl + '/weightHeightQuestionnaire_r4.json';
 
+    it('should default to latest when there are no URL parameters', () => {
+      cy.visit('/');
+      cy.window().should('have.property', 'LForms');
+      cy.window().then(win => {
+        expect(parseInt(win.LForms.lformsVersion.split('.')[0])).to.be.at.least(38);
+      });
+    });
+
     it('should default to 29.2.3 when not set', ()=>{
       // One of the FHIR implementation guides has published links to the
       // questionnaire viewer, and expects version 29.2.3, and might not work
