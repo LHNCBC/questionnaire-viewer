@@ -208,7 +208,7 @@ describe('FHIR Questionnaire Viewer with a specified FHIR server: ', () => {
       cy.byId(firstItem)
           .should('have.value', 'language-preference-type');
       cy.byId(secondItem)
-          .type('{downArrow}')
+          .type('v')
           .type('{downArrow}')
           .type('{enter}');
       cy.byId(secondItem)
@@ -275,13 +275,13 @@ describe('FHIR Questionnaire Viewer with a specified FHIR server: ', () => {
       cy.byId(firstItem)
           .should('have.value', 'language-preference-type');
       cy.byId(secondItem)
-          .type('{downArrow}')
+          .type('v')
           .type('{downArrow}')
           .type('{enter}');
       cy.byId(secondItem)
           .should('have.value', 'verbal');
       cy.byId(thirdItem)
-          .type('{downArrow}')
+          .type('v')
           .type('{downArrow}')
           .type('{enter}');
       cy.byId(thirdItem)
