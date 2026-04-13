@@ -8,7 +8,8 @@ import * as app from './app.js';
 
 const params = new URL(document.location).searchParams;
 const lfv = params.get('lfv');
-let lformsVersion = lfv || '29.2.3';
+const hasURLParams = Array.from(params.keys()).length > 0;
+let lformsVersion = lfv || (hasURLParams ? '29.2.3' : 'latest');
 let supportedLFormsVersions;
 
 if (lformsVersion == 'latest') {
@@ -22,8 +23,8 @@ else {
   if (/^\d+\.\d+\.\d+(-beta\.\d+)?$/.test(lformsVersion)) {
     // For testing new releases of lforms, we would like to run as many tests as
     // possible with the new version.  However:
-    // 1) We have a test that makes sure the default remains as 29.2.3, for
-    //    backward-compatibility.
+    // 1) We have a test that makes sure the default remains as 29.2.3 when URL
+    //    parameters are present, for backward-compatibility.
     // 2) Some tests confirm that the lfv parameter loads the requested version of
     //    lhc-forms
     // 3) We want to make sure that changes to the questionnaire-viewer do not
@@ -33,7 +34,8 @@ else {
     // loading the default version of lforms.   When testing a new version of
     // lforms, this can be set to a localhost webserver serving the new version--
     // and the only test that will fail will be the one that checks that the
-    // default is version 29.2.3.  Also, when we change the default, we need to
+    // default with URL parameters is version 29.2.3.  Also, when we change the
+    // no-parameter default, we need to
     // change the loaded version to something greater than 33, since earlier
     // versions have a different file structure.
 

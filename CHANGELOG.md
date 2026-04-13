@@ -3,6 +3,11 @@
 This log documents the significant changes for each release.
 This project follows [Semantic Versioning](http://semver.org/).
 
+## [0.7.2] - 2026-03-17
+### Changed
+- It now uses the latest LHC-Forms by default if no URL parameters are
+  specified.
+
 ## [0.7.1] - 2025-09-26
 ### Added
 - A link to NLM
